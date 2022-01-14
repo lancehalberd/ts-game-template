@@ -1,0 +1,22 @@
+{
+  "name": "typescript-template",
+  "version": "1.0.0",
+  "description": "Example typescript project",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server & webpack -w --progress",
+    "server": "node server"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "express": "^4.17.2",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.4",
+    "webpack": "^5.66.0",
+    "webpack-cli": "^4.9.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

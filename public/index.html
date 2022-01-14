@@ -1,0 +1,44 @@
+<html>
+<head>
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    #gameContainer {
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 0;
+        width: 768px;
+        height: 672px;
+        background-color: black;
+        top: 0px;
+        -moz-user-select: none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-user-select: none;
+        cursor: default;
+    }
+    canvas {
+        image-rendering: optimizeSpeed;             /* Older versions of FF          */
+        image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+        image-rendering: -webkit-optimize-contrast; /* Safari                        */
+        image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+        image-rendering: pixelated;                 /* Awesome future-browsers       */
+        -ms-interpolation-mode: nearest-neighbor;
+    }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas
+            id="mainCanvas"
+            width="256" height="224"
+            style="background-color: blue; transform-origin: 0 0; transform: scale(3);"
+        />
+    </div>
+</body>
+<script src="client.js"></script>
+</html>
