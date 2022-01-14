@@ -1,5 +1,5 @@
 import { CANVAS_WIDTH, CANVAS_HEIGHT, FRAME_LENGTH } from 'app/gameConstants';
-import { bindKeyboardListeners } from 'app/utils/keyboard';
+import { bindKeyboardListeners,isKeyboardKeyDown, KEY } from 'app/utils/keyboard';
 
 
 const mainCanvas = document.getElementById('mainCanvas') as HTMLCanvasElement;
@@ -14,11 +14,27 @@ bindKeyboardListeners();
 const state = {
 	time: 0,
 	lastRender: -1,
+	square: {
+		x: CANVAS_WIDTH / 2,
+		y: CANVAS_HEIGHT / 2,
+	}
 };
 
 // Update function advances the state of the game every FRAME_LENGTH milliseconds.
 function update() {
 	state.time += FRAME_LENGTH;
+	if (isKeyboardKeyDown(KEY.UP)) {
+		state.square.y--;
+	}
+	if (isKeyboardKeyDown(KEY.DOWN)) {
+		state.square.y++;
+	}
+	if (isKeyboardKeyDown(KEY.LEFT)) {
+		state.square.x--;
+	}
+	if (isKeyboardKeyDown(KEY.RIGHT)) {
+		state.square.x++;
+	}
 }
 
 // Render will display the current state of the game.
@@ -36,8 +52,7 @@ function render() {
 	// Draw a green square to the screen that oscillates back and forth over time.
 	mainContext.fillStyle = 'green';
 	const size = 50;
-	const x = CANVAS_WIDTH / 2 - size / 2 + Math.round(50 * Math.sin(state.time / 500));
-	const y = CANVAS_HEIGHT / 2 - size / 2;
+	const {x, y} = state.square;
 	mainContext.fillRect(x, y, size, size);
 }
 
