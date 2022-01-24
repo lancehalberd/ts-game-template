@@ -1,6 +1,5 @@
-import { defaultState } from 'app/content';
 import { createContext } from 'react';
 
-const GameContext = createContext(defaultState);
+const GameContext = createContext({} as State);
 
 export default GameContext;

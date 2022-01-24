@@ -1,11 +1,13 @@
+import { getStationApi } from 'app/stationActions';
+
 export {};
 
 declare global {
     interface Window { state?: State; gameApi?: GameApi }
 
-    interface GameApi {
-
-    }
+    type GameApi = {
+        getState(): State
+    } & ReturnType<typeof getStationApi>
 
     interface State {
         debt: number
