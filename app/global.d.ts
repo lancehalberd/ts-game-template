@@ -19,16 +19,18 @@ declare global {
             readonly fuels: readonly Fuel[]
             readonly ores: readonly Ore[]
         }
-        station: {
-            availableContracts: Contract[]
-            cargoSpace: number
-            cargo: Cargo[]
-            ships: Ship[]
-        }
+        station: Station
         atStation: boolean
         currentContract?: Contract
         currentShip?: Ship
     }
+    interface Station {
+        availableContracts: Contract[]
+        cargoSpace: number
+        cargo: Cargo[]
+        ships: Ship[]
+    }
+
     // All Cargo definitions
     interface BaseCargo {
         // In credits per unit
@@ -102,8 +104,8 @@ declare global {
 
     interface MiningCell {
         durability: number
-        resourceType: FuelType | OreType
-        resourceUnits: number
+        resourceType?: FuelType | OreType
+        resourceUnits?: number
         isRevealed?: boolean
     }
 

@@ -1,3 +1,5 @@
+import { generateContractList } from 'app/contract';
+
 // More cost effective than Fuel Cells, but slower acceleration.
 const uranium: Fuel = {
 	type: 'fuel',
@@ -358,7 +360,7 @@ const magicBigShip: ShipDefinition = {
 };
 
 export function generateInitialState(): State {
-	return {
+	const state: State = {
 		// Immutable state that defines what can be bought/found in the game.
         content: {
 	        diggingTools: [
@@ -399,5 +401,8 @@ export function generateInitialState(): State {
         // contains the state of the current asteroid when mining.
         currentContract: undefined,
 	};
+    // Populate the initial list of contracts.
+    state.station.availableContracts = generateContractList(state, 100);
+    return state;
 }
 
