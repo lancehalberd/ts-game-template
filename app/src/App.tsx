@@ -1,14 +1,14 @@
 import * as React from 'react';
+import GameContext from './context';
+import { defaultState } from '../content';
+import SpaceStation from './SpaceStation';
 
 const App = () => {
     return (
-        <div className="app">
-            <h3>Welcome from React!!</h3>
-            <p>Open console to play.</p>
-            <p>Call functions on `gameApi` to take actions.</p>
-            <p>UI + other utilities coming soon!</p>
-        </div>
-    )
-}
+        <GameContext.Provider value={defaultState}>
+            {defaultState.atStation ? <SpaceStation /> : <h1>TBD!</h1>}
+        </GameContext.Provider>
+    );
+};
 
 export default App;
