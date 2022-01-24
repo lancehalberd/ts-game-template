@@ -357,47 +357,49 @@ const magicBigShip: ShipDefinition = {
     isOwned: false,
 };
 
+export const defaultState: State = {
+    // Immutable state that defines what can be bought/found in the game.
+    content: {
+        diggingTools: [
+            basicHarvestingDrill, basicDiggingDrill, basicDiggingLaser,
+            advancedHarvestingDrill, advancedDiggingDrill, advancedDiggingLaser,
+            magicHarvestingDrill, magicDiggingDrill, magicDiggingLaser,
+            smallExplosives, largeExplosives,
+        ],
+        fuels: [uranium, fuelCells, tritium, magicFuel],
+        ores: [iron, silver, gold, platinum, diamond, magicCrystal],
+        ships: [
+            basicSmallShip, basicShip, basicBigShip,
+            advancedSmallShip, advancedShip, advancedBigShip,
+            magicSmallShip, magicShip, magicBigShip,
+        ],
+    },
+    // Time in standard days (100,000 seconds)
+    // Every mining action takes 10,000 seconds so 10 actions a day.
+    time: 0,
+    // Player's liquid assets
+    credits: 10000,
+    // Amount of money the player currently owes
+    debt: 0,
+    // The amount of debt the player may take on, increases based on players actions
+    creditLimit: 50000,
+    // State relevant to being at the space station.
+    station: {
+        availableContracts: [],
+        cargoSpace: 10000,
+        cargo: [],
+        ships: [],
+    },
+    // Flag indicating the player is at the space station.
+    atStation: true,
+    // The ship the player has selected for the current contract
+    currentShip: undefined,
+    // The current contract the player has taken,
+    // contains the state of the current asteroid when mining.
+    currentContract: undefined,
+};
+
 export function generateInitialState(): State {
-	return {
-		// Immutable state that defines what can be bought/found in the game.
-        content: {
-	        diggingTools: [
-	        	basicHarvestingDrill, basicDiggingDrill, basicDiggingLaser,
-	        	advancedHarvestingDrill, advancedDiggingDrill, advancedDiggingLaser,
-	        	magicHarvestingDrill, magicDiggingDrill, magicDiggingLaser,
-	        	smallExplosives, largeExplosives,
-	        ],
-	        fuels: [uranium, fuelCells, tritium, magicFuel],
-	        ores: [iron, silver, gold, platinum, diamond, magicCrystal],
-            ships: [
-            	basicSmallShip, basicShip, basicBigShip,
-            	advancedSmallShip, advancedShip, advancedBigShip,
-            	magicSmallShip, magicShip, magicBigShip,
-            ],
-        },
-        // Time in standard days (100,000 seconds)
-        // Every mining action takes 10,000 seconds so 10 actions a day.
-        time: 0,
-        // Player's liquid assets
-        credits: 10000,
-        // Amount of money the player currently owes
-        debt: 0,
-        // The amount of debt the player may take on, increases based on players actions
-        creditLimit: 50000,
-        // State relevant to being at the space station.
-        station: {
-            availableContracts: [],
-            cargoSpace: 10000,
-            cargo: [],
-            ships: [],
-        },
-        // Flag indicating the player is at the space station.
-        atStation: true,
-        // The ship the player has selected for the current contract
-        currentShip: undefined,
-        // The current contract the player has taken,
-        // contains the state of the current asteroid when mining.
-        currentContract: undefined,
-	};
+	return defaultState;
 }
 
