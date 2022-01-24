@@ -2,6 +2,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 #gameContainer {
     position: relative;
@@ -25,6 +26,22 @@ canvas {
     image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
     image-rendering: pixelated;                 /* Awesome future-browsers       */
     -ms-interpolation-mode: nearest-neighbor;
+}
+
+h1 {
+    color: lightyellow;
+}
+
+h3 {
+    color: lightgray;
+}
+
+// Custom components
+.card {
+    padding: 30px;
+    background: white;
+    width: max-content;
+    border-radius: 20px;
 }
 
 @import 'SpaceStation';
