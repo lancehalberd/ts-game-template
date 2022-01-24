@@ -75,7 +75,7 @@ function getEmptyCargoSpace(cargoSize: number, cargo: Cargo[]): number {
 
 export function getStationApi(state: State) {
 	return {
-		buyShip(shipType: ShipType, { spendCredit = false }): GameApiResponse {
+		buyShip(shipType: ShipType, { spendCredit = false } = {}): GameApiResponse {
 			const ship = getShipByType(state, shipType);
 			const myShip = getMyShipByType(state, shipType);
 			if (myShip?.isOwned) {
@@ -95,7 +95,7 @@ export function getStationApi(state: State) {
 			}
 			return { success: true };
 		},
-		rentShip(shipType: ShipType, days: number, { rentMultiple = false, spendCredit = false }): GameApiResponse {
+		rentShip(shipType: ShipType, days: number, { rentMultiple = false, spendCredit = false } = {}): GameApiResponse {
 			const ship = getShipByType(state, shipType);
 			const myShip = getMyShipByType(state, shipType);
 			if (myShip) {
@@ -123,7 +123,7 @@ export function getStationApi(state: State) {
 			});
 			return { success: true };
 		},
-		purchaseContract(contractId: number, { replace = false, spendCredit = false }): GameApiResponse {
+		purchaseContract(contractId: number, { replace = false, spendCredit = false } = {}): GameApiResponse {
 			if (state.currentContract && !replace) {
 				throw { warningType: 'multipleContracts', warningMessage: `
 					You already have a contract.
@@ -135,7 +135,7 @@ export function getStationApi(state: State) {
 			state.currentContract = contract;
 			return { success: true };
 		},
-		purchaseFuel(shipType: ShipType, units: number, { spendCredit = false }): GameApiResponse {
+		purchaseFuel(shipType: ShipType, units: number, { spendCredit = false } = {}): GameApiResponse {
 			const myShip = requireMyShipByType(state, shipType);
 			const fuel = getFuelByType(state, myShip.fuelType);
 			const volume = fuel.unitVolume * units;
@@ -153,7 +153,7 @@ export function getStationApi(state: State) {
 			});
 			return { success: true };
 		},
-		travelToContract(shipType: ShipType, maxFuelToBurn: number, { ignoreDebtInterest = false, ignoreLongTravelTime = false }): GameApiResponse {
+		travelToContract(shipType: ShipType, maxFuelToBurn: number, { ignoreDebtInterest = false, ignoreLongTravelTime = false } = {}): GameApiResponse {
 			if (!state.currentContract) {
 				throw { errorType: 'noContract', errorMessage: `
 					You need to purchase a contract before traveling.
