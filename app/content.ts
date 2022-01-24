@@ -359,6 +359,7 @@ const magicBigShip: ShipDefinition = {
     isOwned: false,
 };
 
+
 export function generateInitialState(): State {
 	const state: State = {
 		// Immutable state that defines what can be bought/found in the game.
