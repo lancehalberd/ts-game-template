@@ -3,11 +3,12 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
-    "module": "esnext",
+    "module": "es6",
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "outDir": "./tsc/",
     "strictNullChecks": true,
-    "target": "ES2019"
+    "target": "ES2019",
+    "jsx": "react",
   }
 }
