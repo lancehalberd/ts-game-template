@@ -6,14 +6,22 @@ import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ContractPicker from './ContractPicker';
+import { GameContext } from '../App';
 
 const steps = ['Purchase a Contract', 'Rent a Ship', 'Outfit Your Ship'];
 
 export default function StationStepper() {
+    const { gameState } = React.useContext(GameContext);
     const [activeStep, setActiveStep] = React.useState(0);
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
     }>({});
+
+    React.useEffect(() => {
+        if (gameState.currentContract) {
+            setCompleted({ ...completed, 0: true });
+        }
+    }, [gameState.currentContract]);
 
     const totalSteps = () => {
         return steps.length;

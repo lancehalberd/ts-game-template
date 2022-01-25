@@ -40,11 +40,13 @@ const ContractPicker = () => {
         setGameState(gameApi.getState());
     };
 
+    const visibleContracts = gameState.station.availableContracts.slice(0, 10);
+
     return (
         <div className="contract-picker" style={{ display: 'flex' }}>
             <div className="contract-list">
                 <List>
-                    {gameState.station.availableContracts.map((contract) => {
+                    {visibleContracts.map((contract) => {
                         return (
                             <ListItem disablePadding key={contract.id}>
                                 <ListItemButton
@@ -65,31 +67,34 @@ const ContractPicker = () => {
                 </List>
             </div>
             {selectedContract && (
-                <div className="contract-details">
-                    <Stack spacing={2}>
-                        <ContractDetailItem
-                            label="Cost"
-                            value={selectedContract.cost}
-                        />
-                        <ContractDetailItem
-                            label="Cargo"
-                            value={selectedContract.cargo.join(',')}
-                        />
-                        <ContractDetailItem
-                            label="Cargo Space"
-                            value={selectedContract.cargoSpace}
-                        />
-                        <ContractDetailItem
-                            label="Distance"
-                            value={selectedContract.distance}
-                        />
-                        <ContractDetailItem
-                            label="Grid Points"
-                            value={selectedContract.grid.length}
-                        />
+                <>
+                    <div className="contract-details">
+                        <Stack spacing={2}>
+                            <ContractDetailItem
+                                label="Cost"
+                                value={selectedContract.cost}
+                            />
+                            <ContractDetailItem
+                                label="Cargo"
+                                value={selectedContract.cargo.join(',')}
+                            />
+                            <ContractDetailItem
+                                label="Cargo Space"
+                                value={selectedContract.cargoSpace}
+                            />
+                            <ContractDetailItem
+                                label="Distance"
+                                value={selectedContract.distance}
+                            />
+                            <ContractDetailItem
+                                label="Grid Points"
+                                value={selectedContract.grid.length}
+                            />
+                        </Stack>
+                    </div>
+                    <div className="select-contract-pane">
                         <Button
                             variant="contained"
-                            color="success"
                             size="large"
                             onClick={() =>
                                 handleContractSelect(selectedContract)
@@ -97,8 +102,12 @@ const ContractPicker = () => {
                         >
                             Select This Contract
                         </Button>
-                    </Stack>
-                </div>
+                        <p>
+                            Pick the Contract you'd like to work on, then you
+                            can select your Ship!
+                        </p>
+                    </div>
+                </>
             )}
         </div>
     );

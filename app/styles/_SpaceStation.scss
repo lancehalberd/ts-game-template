@@ -39,12 +39,17 @@
     }
 
     .contract-list {
-        width: 30%;
+        width: 20%;
     }
 
     .contract-details {
         padding-top: 8px;
-        width: 70%;
+        width: 60%;
         display: flex;
+    }
+
+    .select-contract-pane {
+        padding-top: 8px;
+        width: 20%;
     }
 }
