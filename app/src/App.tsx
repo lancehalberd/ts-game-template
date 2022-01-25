@@ -3,11 +3,6 @@ import SpaceStation from './SpaceStation';
 
 import 'app/styles/App.scss';
 
-interface IGameContext {
-    gameState: State;
-    gameApi: GameApi;
-    setGameState: React.Dispatch<React.SetStateAction<State>>;
-}
 export const GameContext = React.createContext({} as IGameContext);
 
 const App = () => {

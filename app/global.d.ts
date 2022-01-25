@@ -5,6 +5,12 @@ export {};
 declare global {
     interface Window { state?: State; gameApi?: GameApi }
 
+    interface IGameContext {
+        gameState: State;
+        gameApi: GameApi;
+        setGameState: React.Dispatch<React.SetStateAction<State>>;
+    }
+
     type GameApi = {
         getState(): State
     } & ReturnType<typeof getStationApi>
