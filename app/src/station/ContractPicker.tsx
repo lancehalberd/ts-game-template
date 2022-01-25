@@ -53,6 +53,9 @@ const ContractPicker = () => {
                                     onClick={() =>
                                         handleContractClick(contract)
                                     }
+                                    selected={
+                                        selectedContract?.id === contract.id
+                                    }
                                 >
                                     <ListItemIcon>
                                         <ArticleIcon />
