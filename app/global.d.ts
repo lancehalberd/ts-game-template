@@ -99,9 +99,13 @@ declare global {
 
     interface Contract {
         id: number
-        grid: MiningCell[][]
+        grid: (MiningCell | null)[][]
         cost: number
         distance: number
+        // This is for storing mined resources before moving them onto the ship.
+        cargo: Cargo[]
+        // Just set this high to be practically infinite.
+        cargoSpace: number
     }
 
     interface MiningCell {

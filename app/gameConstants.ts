@@ -11,6 +11,9 @@ export const dayLength = 100000;
 // Energy per energy unit in Joules
 export const energyUnit = 1e9;
 
+// This is compounded daily.
+export const debtInterestRate = 1.01;
+
 
 /*
 1e9 distance in 10 days

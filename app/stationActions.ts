@@ -1,73 +1,20 @@
-import { dayLength, energyUnit } from 'app/gameConstants';
-import { copyState } from 'app/state';
+import { dayLength, debtInterestRate, energyUnit } from 'app/gameConstants';
+import {
+	advanceTimer,
+	consumeFuel,
+	copyState,
+	getEmptyCargoSpace,
+	getFuelByType,
+	getToolByType,
+	getTotalShipFuel,
+} from 'app/state';
 
 const baseRentalRate = 0.005;
 const baseMarkup = 1.05;
 const baseMarkdown = 0.95;
-// This is compounded daily.
-const debtInterestRate = 1.01;
-function requireStorage(state: State, shipType?: ShipType): Ship | Station {
-	return shipType ? requireMyShipByType(state, shipType) : state.station;
-}
-function advanceTimer(state: State, rawDays: number) {
-	const startTime = state.time;
-	// Time is only incremented in increments of 0.1 days
-	state.time = Math.floor((state.time + rawDays) * 10) / 10;
-	const interestTicks = Math.floor(state.time) - Math.floor(startTime);
-	state.debt *= debtInterestRate ** interestTicks;
-}
-function consumeFuel(state: State, fuelType: FuelType, units: number, storage: Ship | Station) {
-	const fuel = getFuelByType(state, fuelType);
-	const storedFuel = getTotalFuelFromCargo(fuelType, storage);
-	if (storedFuel < units) {
-		throw { errorType: 'insufficientFuel', errorMessage: `
-			You only have ${storedFuel}L of ${fuel.name}.
-		`};
-	}
-	let unitsRemaining = units;
-	for (let i = 0; i < storage.cargo.length; i++)  {
-		const cargo = storage.cargo[i];
-		if (cargo.type === 'fuel' && cargo.fuelType === fuelType) {
-			if (cargo.units >= unitsRemaining) {
-				cargo.units -= unitsRemaining;
-				break;
-			}
-			// If we sell the entire stock of fuel in this cargo element, remove
-			// it from the cargo array.
-			unitsRemaining -= cargo.units;
-			storage.cargo.splice(i--, 1);
-		}
-	}
-}
-function getFuelByType(state: State, type: FuelType): Fuel {
-	const fuel = state.content.fuels.find(fuel => fuel.fuelType === type);
-	if (!fuel) {
-		throw { errorType: 'invalidRequest', errorMessage: `
-			There is no fuel of type '${type}'.
-		`};
-	}
-	return fuel;
-}
-function getToolByType(state: State, type: ToolType): DiggingTool {
-	const tool = state.content.diggingTools.find(tool => tool.toolType === type);
-	if (!tool) {
-		throw { errorType: 'invalidRequest', errorMessage: `
-			There is no tool of type '${type}'.
-		`};
-	}
-	return tool;
-}
-function getTotalFuelFromCargo(fuelType: FuelType, storage: Station | Ship): number {
-	let fuel = 0;
-	for (const cargo of storage.cargo) {
-		if (cargo.type === 'fuel' && cargo.fuelType === fuelType) {
-			fuel += cargo.units;
-		}
-	}
-	return fuel;
-}
-function getTotalShipFuel(ship: Ship): number {
-	return getTotalFuelFromCargo(ship.fuelType, ship);
+
+function requireStationStorage(state: State, shipType?: ShipType): Ship | Station {
+    return shipType ? requireMyShipByType(state, shipType) : state.station;
 }
 function getTotalShipMass(ship: Ship): number {
 	let mass = ship.mass;
@@ -134,13 +81,6 @@ function getContractById(state: State, id: number): Contract {
 		`};
 	}
 	return contract;
-}
-function getEmptyCargoSpace(cargoSize: number, cargo: Cargo[]): number {
-	let emptyCargoSpace = cargoSize;
-	for (const item of cargo) {
-		emptyCargoSpace -= item.unitVolume * item.units;
-	}
-	return emptyCargoSpace;
 }
 function travelToContract(state: State, ship: Ship, distance: number, maxFuelToBurn: number) {
 	const fuel = getFuelByType(state, ship.fuelType);
@@ -261,7 +201,7 @@ export function getStationApi(state: State) {
 		purchaseTool(toolType: ToolType, units: number, target?: ShipType, { spendCredit = false } = {}) {
 			const tool = getToolByType(state, toolType);
 			const volumeNeeded = tool.unitVolume * units;
-			const storage = requireStorage(state, target);
+			const storage = requireStationStorage(state, target);
 			const emptyCargoSpace = getEmptyCargoSpace(storage.cargoSpace, storage.cargo);
 			if (emptyCargoSpace < volumeNeeded) {
 				throw { errorType: 'insufficientCargoSpace', errorMessage: `
@@ -322,10 +262,11 @@ export function getStationApi(state: State) {
 			}
 			// If there are no warnings or errors, actually travel to the contract.
 			travelToContract(state, myShip, state.currentContract.distance, maxFuelToBurn);
+			state.currentShip = myShip;
 			state.atStation = false;
 		},
 		sellFuel(fuelType: FuelType, units: number, source?: ShipType) {
-			const storage = requireStorage(state, source);
+			const storage = requireStationStorage(state, source);
 			consumeFuel(state, fuelType, units, storage);
 			const fuel = getFuelByType(state, fuelType);
 			gainCredits(state, fuel.unitCost * units);

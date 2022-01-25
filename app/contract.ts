@@ -2,15 +2,15 @@ import { averageTravelDistance } from 'app/gameConstants';
 import { getOreByType } from 'app/state';
 
 function generateContract(state: State, id : number, targetValue: number): Contract {
-	const baseDiameter = 10 * (Math.log(targetValue) - 4) ;
+	const baseDiameter = 10 * (Math.log(targetValue) / Math.log(10) - 4) ;
 
 	let xRadius = Math.floor(5 + Math.random() * baseDiameter);
 	let yRadius = Math.floor(5 + Math.random() * baseDiameter);
 	// yRadius is at least 10
 	yRadius = Math.max(10, yRadius);
-	// xRadius is in [yRadisus, 5 * yRadius]
+	// xRadius is in [yRadius, 5 * yRadius]
 	xRadius = Math.max(yRadius, Math.min(5 * yRadius, xRadius));
-	let grid: MiningCell[][] = [];
+	let grid: (MiningCell | null)[][] = [];
 
 	const difficultyModifier = Math.max(1, (5 + baseDiameter / 2) / yRadius);
 	let distanceDifficulty = 1, miningDifficulty = 1;
@@ -24,25 +24,30 @@ function generateContract(state: State, id : number, targetValue: number): Contr
 		miningDifficulty = 1 / Math.max(1, 2 * easyModifier - 1 / distanceDifficulty);
 	}
 	const rows = yRadius * 2;
-	const columns = xRadius * 2;
+	const columns = xRadius * 2 + 1;
 
 	const iron = getOreByType(state, 'iron');
 
-	for (let i =0; i < rows; i++) {
+	for (let i = 0; i < rows; i++) {
 		grid[i] = [];
-		// TODO: set this to the correct colum for the left side of the ellipse.
-		const firstColumn = 0;
+		const y = yRadius - 0.5 - i;
+		const firstColumn = Math.floor(xRadius - Math.sqrt(1 - y * y / yRadius / yRadius) * xRadius);
 		const lastColumn = columns - 1 - firstColumn;
-		for (let j = firstColumn; j < lastColumn; j++) {
-			grid[i][j] = {
+		for (let j = 0; j < columns; j++) {
+			if (j < firstColumn || j > lastColumn) {
+				grid[i][j] = null;
+				continue;
+			}
+			const newCell: MiningCell = {
 				durability: miningDifficulty,
 			};
 			if (Math.random() < 0.1) {
-				grid[i][j].resourceType = 'iron';
+				newCell.resourceType = 'iron';
 				const units = 10 + Math.floor(Math.random() * 200);
-				grid[i][j].resourceUnits = units;
-				grid[i][j].durability += iron.miningDurabilityPerUnit * units;
+				newCell.resourceUnits = units;
+				newCell.durability += iron.miningDurabilityPerUnit * units;
 			}
+			grid[i][j] = newCell;
 		}
 	}
 
@@ -50,7 +55,10 @@ function generateContract(state: State, id : number, targetValue: number): Contr
         id,
         grid,
         cost: targetValue * (0.9 + 0.2 * Math.random()) / 5,
-        distance: averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())
+        distance: averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random()),
+        cargo: [],
+        // This should be practically infinite.
+        cargoSpace: 1e12,
 	};
 }
 
