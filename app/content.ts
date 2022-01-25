@@ -8,7 +8,7 @@ const uranium: Fuel = {
     unitCost: 500,
     unitMass: 19, // about 19 g/cm^3
     unitVolume: 1,
-    unitEnergy: 100,
+    unitEnergy: 1,
     miningDurabilityPerUnit: 10,
     units: 0,
 }
@@ -19,7 +19,7 @@ const fuelCells: Fuel = {
     unitCost: 1500,
     unitMass: 20,
     unitVolume: 1,
-    unitEnergy: 200,
+    unitEnergy: 2,
     miningDurabilityPerUnit: 10,
     units: 0,
 }
@@ -30,7 +30,7 @@ const tritium: Fuel = {
     unitCost: 5000,
     unitMass: 12, // Tritium is a gas, so we assume it is in some mineral.
     unitVolume: 1,
-    unitEnergy: 300,
+    unitEnergy: 3,
     miningDurabilityPerUnit: 20,
     units: 0,
 }
@@ -41,7 +41,7 @@ const magicFuel: Fuel = {
     unitCost: 20000,
     unitMass: 10,
     unitVolume: 1,
-    unitEnergy: 1000,
+    unitEnergy: 10,
     miningDurabilityPerUnit: 50,
     units: 0,
 }
@@ -382,11 +382,11 @@ export function generateInitialState(): State {
         // Every mining action takes 10,000 seconds so 10 actions a day.
         time: 0,
         // Player's liquid assets
-        credits: 10000,
+        credits: 100000,
         // Amount of money the player currently owes
         debt: 0,
         // The amount of debt the player may take on, increases based on players actions
-        creditLimit: 50000,
+        creditLimit: 500000,
         // State relevant to being at the space station.
         station: {
             availableContracts: [],
@@ -403,7 +403,7 @@ export function generateInitialState(): State {
         currentContract: undefined,
 	};
     // Populate the initial list of contracts.
-    state.station.availableContracts = generateContractList(state, 100);
+    state.station.availableContracts = generateContractList(state, 20);
     return state;
 }
 

@@ -57,7 +57,7 @@ function generateContract(state: State, id : number, targetValue: number): Contr
 export function generateContractList(state: State, amount: number): Contract[] {
 	const contracts: Contract[] = [];
 	for (let i = 0; i < amount; i++) {
-		contracts[i] = generateContract(state, i, 100e3 * i);
+		contracts[i] = generateContract(state, i, 100e3 * (i * 4 + 1));
 	}
 	return contracts;
 }

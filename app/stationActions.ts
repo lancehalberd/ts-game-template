@@ -1,4 +1,4 @@
-import { dayLength } from 'app/gameConstants';
+import { dayLength, energyUnit } from 'app/gameConstants';
 import { copyState } from 'app/state';
 
 const baseRentalRate = 0.005;
@@ -10,10 +10,10 @@ function requireStorage(state: State, shipType?: ShipType): Ship | Station {
 	return shipType ? requireMyShipByType(state, shipType) : state.station;
 }
 function advanceTimer(state: State, rawDays: number) {
+	const startTime = state.time;
 	// Time is only incremented in increments of 0.1 days
-	const days = Math.floor(rawDays * 10) / 10;
-	const interestTicks = Math.floor(state.time + days) - Math.floor(state.time);
-	state.time += days;
+	state.time = Math.floor((state.time + rawDays) * 10) / 10;
+	const interestTicks = Math.floor(state.time) - Math.floor(startTime);
 	state.debt *= debtInterestRate ** interestTicks;
 }
 function consumeFuel(state: State, fuelType: FuelType, units: number, storage: Ship | Station) {
@@ -153,18 +153,21 @@ function travelToContract(state: State, ship: Ship, distance: number, maxFuelToB
 		// or already covered half of the distance.
 		if (distanceTraveled < distance / 2 && fuelBurnt < maxFuelToBurn / 2) {
 			// Burn fuel to accelerate.
-			kineticEnergy += fuel.unitEnergy;
+			kineticEnergy += fuel.unitEnergy * energyUnit;
 			kineticEnergy *= (mass - fuel.unitMass) / mass;
 			mass -= fuel.unitMass;
 			fuelBurnt++;
 		} else if (distanceTraveled < distance / 2) {
 			// Travel at constant speed until we are ready to decelerate
 			const cruiseDistance = distance - 2 * distanceTraveled;
-			const cruiseTime = cruiseDistance / currentVelocity;
+			const cruiseTime = Math.floor(10 * cruiseDistance / currentVelocity / dayLength) / 10;
 			advanceTimer(state, cruiseTime);
+			distanceTraveled += cruiseTime * dayLength * currentVelocity;
+			// Just in case make sure we get to the back half of the trip, probably not necessary.
+			distanceTraveled = Math.max(distanceTraveled, distance / 2);
 		} else {
 			// Burn fuel to decelerate.
-			kineticEnergy -= fuel.unitEnergy;
+			kineticEnergy -= fuel.unitEnergy * energyUnit;
 			kineticEnergy *= (mass - fuel.unitMass) / mass;
 			mass -= fuel.unitMass;
 			fuelBurnt++;
@@ -173,6 +176,7 @@ function travelToContract(state: State, ship: Ship, distance: number, maxFuelToB
 		const newVelocity = Math.sqrt(2 * kineticEnergy / mass); // m / s
 		distanceTraveled += (newVelocity + currentVelocity) / 2 * dayLength / 10;
 		currentVelocity = newVelocity;
+		// console.log({ time: state.time, kineticEnergy, currentVelocity, distanceTraveled });
 	}
 	consumeFuel(state, ship.fuelType, fuelBurnt, ship);
 	return fuelBurnt;
@@ -180,7 +184,7 @@ function travelToContract(state: State, ship: Ship, distance: number, maxFuelToB
 
 export function getStationApi(state: State) {
 	return {
-		buyShip(shipType: ShipType, { spendCredit = false } = {}) {
+		purchaseShip(shipType: ShipType, { spendCredit = false } = {}) {
 			const ship = getShipByType(state, shipType);
 			const myShip = getMyShipByType(state, shipType);
 			if (myShip?.isOwned) {
@@ -316,9 +320,8 @@ export function getStationApi(state: State) {
 					Increase fuel, decrease weight or call with ignoreDebtInterest=true.
 				`};
 			}
-
-			// Calculate travel days
-			// Warn if 2x[travel days] of interest will bankrupt you.
+			// If there are no warnings or errors, actually travel to the contract.
+			travelToContract(state, myShip, state.currentContract.distance, maxFuelToBurn);
 			state.atStation = false;
 		},
 		sellFuel(fuelType: FuelType, units: number, source?: ShipType) {
