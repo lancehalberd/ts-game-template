@@ -5,6 +5,7 @@ import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import ContractPicker from './ContractPicker';
 
 const steps = ['Purchase a Contract', 'Rent a Ship', 'Outfit Your Ship'];
 
@@ -60,6 +61,16 @@ export default function StationStepper() {
         setCompleted({});
     };
 
+    const getStepContent = (activeStep: number) => {
+        switch (activeStep) {
+            case 0:
+                return <ContractPicker />;
+                break;
+            default:
+                return 'TBD';
+        }
+    };
+
     return (
         <div className="station-stepper">
             <Box sx={{ width: '100%' }}>
@@ -94,9 +105,8 @@ export default function StationStepper() {
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
-                            <Typography sx={{ mt: 2, mb: 1 }}>
-                                Step {activeStep + 1}
-                            </Typography>
+                            {getStepContent(activeStep)}
+
                             <Box
                                 sx={{
                                     display: 'flex',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import SpaceStation from './SpaceStation';
+import SpaceStation from './station/SpaceStation';
 
 import 'app/styles/App.scss';
 

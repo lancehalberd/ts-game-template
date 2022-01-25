@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { MuiHeader } from './mui';
+import { MuiHeader } from '../mui';
+import TopStatusBar from '../TopStatusBar';
 import StationStepper from './StationStepper';
-import TopStatusBar from './TopStatusBar';
 
 const SpaceStation = () => {
     return (
