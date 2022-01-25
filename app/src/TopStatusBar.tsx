@@ -2,6 +2,9 @@ import * as React from 'react';
 
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import ArticleIcon from '@mui/icons-material/Article';
+
 import { GameContext } from './App';
 
 export default function TopStatusBar() {
@@ -41,6 +44,12 @@ export default function TopStatusBar() {
                     <strong>Debt: </strong>
                     {gameState.debt}
                 </span>
+                <Divider orientation="vertical" flexItem />
+                <RocketLaunchIcon />:
+                <span>{gameState.currentShip || 'None'}</span>
+                <Divider orientation="vertical" flexItem />
+                <ArticleIcon />:{' '}
+                <span>{gameState.currentContract || 'None'}</span>
             </Box>
         </div>
     );
