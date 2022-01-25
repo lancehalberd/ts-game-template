@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import ContractPicker from './ContractPicker';
 import { GameContext } from '../App';
 import ShipPicker from './ShipPicker';
+import CargoPicker from './CargoPicker';
 
 const steps = ['Purchase a Contract', 'Rent a Ship', 'Outfit Your Ship'];
 
@@ -80,6 +81,9 @@ export default function StationStepper() {
                 break;
             case 1:
                 return <ShipPicker />;
+                break;
+            case 2:
+                return <CargoPicker />;
                 break;
             default:
                 return 'TBD';

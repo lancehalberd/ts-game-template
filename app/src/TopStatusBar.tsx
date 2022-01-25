@@ -11,7 +11,9 @@ export default function TopStatusBar() {
     const { gameState } = React.useContext(GameContext);
 
     const shipName = gameState.station.ships[0]?.name || 'None';
-
+    const contractID = gameState.currentContract
+        ? gameState.currentContract.id
+        : 'None';
     return (
         <div className="top-status-bar">
             <Box
@@ -49,8 +51,7 @@ export default function TopStatusBar() {
                 <Divider orientation="vertical" flexItem />
                 <RocketLaunchIcon />:<span>{shipName}</span>
                 <Divider orientation="vertical" flexItem />
-                <ArticleIcon />:{' '}
-                <span>{gameState.currentContract?.id || 'None'}</span>
+                <ArticleIcon />: <span>{contractID}</span>
             </Box>
         </div>
     );
