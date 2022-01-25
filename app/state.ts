@@ -135,7 +135,7 @@ export function gainResource(state: State, resourceType: FuelType | OreType, uni
 export function advanceTimer(state: State, rawDays: number) {
     const startTime = state.time;
     // Time is only incremented in increments of 0.1 days
-    state.time = Math.floor((state.time + rawDays) * 10) / 10;
+    state.time = Math.round((state.time + rawDays) * 10) / 10;
     const interestTicks = Math.floor(state.time) - Math.floor(startTime);
     state.debt *= debtInterestRate ** interestTicks;
 }
