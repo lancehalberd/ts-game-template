@@ -46,10 +46,10 @@ export default function TopStatusBar() {
                 </span>
                 <Divider orientation="vertical" flexItem />
                 <RocketLaunchIcon />:
-                <span>{gameState.currentShip || 'None'}</span>
+                <span>{gameState.currentShip?.name || 'None'}</span>
                 <Divider orientation="vertical" flexItem />
                 <ArticleIcon />:{' '}
-                <span>{gameState.currentContract || 'None'}</span>
+                <span>{gameState.currentContract?.id || 'None'}</span>
             </Box>
         </div>
     );

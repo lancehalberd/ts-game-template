@@ -28,11 +28,16 @@ const ContractDetailItem = ({
 };
 
 const ContractPicker = () => {
-    const { gameState } = React.useContext(GameContext);
+    const { gameState, gameApi, setGameState } = React.useContext(GameContext);
     const [selectedContract, setSelectedContract] = React.useState<Contract>();
 
     const handleContractClick = (contract: Contract) => {
         setSelectedContract(contract);
+    };
+
+    const handleContractSelect = (contract: Contract) => {
+        gameApi.purchaseContract(contract.id, { spendCredit: true });
+        setGameState(gameApi.getState());
     };
 
     return (
@@ -86,6 +91,9 @@ const ContractPicker = () => {
                             variant="contained"
                             color="success"
                             size="large"
+                            onClick={() =>
+                                handleContractSelect(selectedContract)
+                            }
                         >
                             Select This Contract
                         </Button>
