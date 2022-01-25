@@ -10,6 +10,8 @@ import { GameContext } from './App';
 export default function TopStatusBar() {
     const { gameState } = React.useContext(GameContext);
 
+    const shipName = gameState.station.ships[0]?.name || 'None';
+
     return (
         <div className="top-status-bar">
             <Box
@@ -45,8 +47,7 @@ export default function TopStatusBar() {
                     {gameState.debt}
                 </span>
                 <Divider orientation="vertical" flexItem />
-                <RocketLaunchIcon />:
-                <span>{gameState.currentShip?.name || 'None'}</span>
+                <RocketLaunchIcon />:<span>{shipName}</span>
                 <Divider orientation="vertical" flexItem />
                 <ArticleIcon />:{' '}
                 <span>{gameState.currentContract?.id || 'None'}</span>

@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ContractPicker from './ContractPicker';
 import { GameContext } from '../App';
+import ShipPicker from './ShipPicker';
 
 const steps = ['Purchase a Contract', 'Rent a Ship', 'Outfit Your Ship'];
 
@@ -21,7 +22,10 @@ export default function StationStepper() {
         if (gameState.currentContract) {
             setCompleted({ ...completed, 0: true });
         }
-    }, [gameState.currentContract]);
+        if (gameState.station.ships.length) {
+            setCompleted({ ...completed, 1: true });
+        }
+    }, [gameState.currentContract, gameState.station.ships]);
 
     const totalSteps = () => {
         return steps.length;
@@ -73,6 +77,9 @@ export default function StationStepper() {
         switch (activeStep) {
             case 0:
                 return <ContractPicker />;
+                break;
+            case 1:
+                return <ShipPicker />;
                 break;
             default:
                 return 'TBD';

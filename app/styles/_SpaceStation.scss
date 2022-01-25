@@ -31,24 +31,28 @@
     margin: 0 40px;
 }
 
-.contract-picker {
+.contract-picker,
+.ship-picker {
     padding: 20px;
 
     .MuiPaper-root {
         padding: 15px;
     }
 
-    .contract-list {
+    .contract-list,
+    .ship-list {
         width: 20%;
     }
 
-    .contract-details {
+    .contract-details,
+    .ship-details {
         padding-top: 8px;
         width: 30%;
         display: flex;
     }
 
-    .select-contract-pane {
+    .select-contract-pane,
+    .select-ship-pane {
         padding-top: 8px;
         width: 20%;
     }
