@@ -84,6 +84,10 @@ export function getCargoByType(state: State, cargoType: CargoType): Cargo {
 // as many units as is valid up to the limit. It can stop early if there are no more units
 // or if the target storage is too full.
 export function moveCargo(state: State, cargoType: CargoType, units: number, source: CargoStorage, target: CargoStorage) {
+    // Do nothing if the source and target are not distinct.
+    if (source === target) {
+        return;
+    }
     let emptySpace = getEmptyCargoSpace(target);
     const isDiscrete = isToolType(state, cargoType);
     for (let i = 0; i < source.cargo.length; i++) {
@@ -179,7 +183,7 @@ export function getToolFromStorage(state: State, type: ToolType, storage: CargoS
 
 export function consumeFuel(state: State, fuelType: FuelType, units: number, storage: CargoStorage) {
     const fuel = getFuelByType(state, fuelType);
-    const storedFuel = getTotalFuelFromCargo(fuelType, storage);
+    const storedFuel = getTotalCargoUnits(fuelType, storage);
     if (storedFuel < units) {
         throw { errorType: 'insufficientFuel', errorMessage: `
             You only have ${storedFuel}L of ${fuel.name}.
@@ -200,17 +204,17 @@ export function consumeFuel(state: State, fuelType: FuelType, units: number, sto
         }
     }
 }
-export function getTotalFuelFromCargo(fuelType: FuelType, storage: CargoStorage): number {
-    let fuel = 0;
+export function getTotalShipFuel(ship: Ship): number {
+    return getTotalCargoUnits(ship.fuelType, ship);
+}
+export function getTotalCargoUnits(cargoType: CargoType, storage: CargoStorage): number {
+    let units = 0;
     for (const cargo of storage.cargo) {
-        if (cargo.type === 'fuel' && cargo.cargoType === fuelType) {
-            fuel += cargo.units;
+        if (cargo.cargoType === cargoType) {
+            units += cargo.units;
         }
     }
-    return fuel;
-}
-export function getTotalShipFuel(ship: Ship): number {
-    return getTotalFuelFromCargo(ship.fuelType, ship);
+    return units;
 }
 
 
@@ -242,6 +246,11 @@ export function requireMyShipByType(state: State, type: ShipType): Ship {
 }
 
 export function attemptTravel(state: State, ship: Ship, distance: number, maxFuelToBurn: number, { ignoreDebtInterest = false, ignoreLongTravelTime = false } = {}) {
+    if (maxFuelToBurn < 2) {
+        throw { errorType: 'invalidAction', errorMessage: `
+            You must burn at least 2 units of fuel during travel.
+        `};
+    }
     const fuel = getFuelByType(state, ship.fuelType);
     const fuelAmount = getTotalShipFuel(ship);
     if (fuelAmount < maxFuelToBurn) {
@@ -302,6 +311,9 @@ function travelDistance(state: State, ship: Ship, distance: number, maxFuelToBur
             kineticEnergy *= (mass - fuel.unitMass) / mass;
             mass -= fuel.unitMass;
             fuelBurnt++;
+            if (kineticEnergy <= 0) {
+                break;
+            }
         }
         // E = 1/2 mass * v**2
         const newVelocity = Math.sqrt(2 * kineticEnergy / mass); // m / s

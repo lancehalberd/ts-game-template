@@ -1,3 +1,4 @@
+import { generateContractList } from 'app/contract';
 import {
     attemptTravel,
     consumeFuel,
@@ -78,20 +79,17 @@ export function getMiningApi(state: State) {
         },
         returnToStation(maxFuelToBurn: number, { ignoreDebtInterest = false, ignoreLongTravelTime = false } = {}) {
             const { contract, ship } = requireAtContract(state);
-            if (maxFuelToBurn < 2) {
-                throw { errorType: 'invalidAction', errorMessage: `
-                    You must burn at least 2 units of fuel during travel.
-                `};
-            }
             attemptTravel(state, ship, contract.distance, maxFuelToBurn, { ignoreDebtInterest, ignoreLongTravelTime });
             state.currentShip = undefined;
             state.atStation = true;
+            // A new set of contracts is generated once you return to the station.
+            state.station.availableContracts = generateContractList(state, 20);
         },
-        loadCargo(cargoType: ToolType | OreType | FuelType, units: number) {
+        loadCargo(cargoType: CargoType, units: number) {
             const { contract, ship } = requireAtContract(state);
             moveCargo(state, cargoType, units, contract, ship);
         },
-        unloadCargo(cargoType: ToolType | OreType | FuelType, units: number) {
+        unloadCargo(cargoType: CargoType, units: number) {
             const { contract, ship } = requireAtContract(state);
             moveCargo(state, cargoType, units, ship, contract);
         },
