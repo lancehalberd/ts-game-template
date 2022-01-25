@@ -1,4 +1,4 @@
-import { dayLength, debtInterestRate, energyUnit } from 'app/gameConstants';
+import { baseMarkup, dayLength, debtInterestRate, energyUnit } from 'app/gameConstants';
 
 function copyCargo(cargo: Cargo[]) {
     return cargo.map(cargo => ({...cargo}));
@@ -142,6 +142,25 @@ export function advanceTimer(state: State, rawDays: number) {
     state.time = Math.round((state.time + rawDays) * 10) / 10;
     const interestTicks = Math.floor(state.time) - Math.floor(startTime);
     state.debt *= debtInterestRate ** interestTicks;
+}
+
+export function spendCredits(state: State, baseCost: number, { spendCredit = false, force = false }) {
+    const cost = Math.ceil(baseCost * baseMarkup);
+    const debtSpending = Math.max(0, cost - state.credits);
+    if (!force && state.debt + debtSpending > state.creditLimit) {
+        throw { errorType: 'creditExceeded', errorMessage: `
+            Your credit limit is $${state.creditLimit}.
+            Spending $${cost} would increase your debt to $${state.debt + debtSpending}.
+        `};
+    }
+    if (!spendCredit && !force && debtSpending > 0) {
+        throw { warningType: 'spendingCredit', warningMessage: `
+            This action will increase your debt to $${state.debt + debtSpending}.
+            Call with spendCredit=true to complete this transaction.
+        `};
+    }
+    state.credits = Math.max(0, state.credits - cost);
+    state.debt += debtSpending;
 }
 
 export function getOreByType(state: State, type: OreType): Ore {

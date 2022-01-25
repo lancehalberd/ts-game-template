@@ -13,6 +13,9 @@ export const energyUnit = 1e9;
 
 // This is compounded daily.
 export const debtInterestRate = 1.01;
+export const baseRentalRate = 0.005;
+export const baseMarkup = 1.05;
+export const baseMarkdown = 0.95;
 
 
 /*
