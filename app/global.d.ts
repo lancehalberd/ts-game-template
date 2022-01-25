@@ -71,7 +71,7 @@ declare global {
         // Number.POSITIVE_INFINITY can be used indefinitely.
         remainingUses: number
         // Number.POSITIVE_INFINITY destroys any cell.
-        readonly miningerPower: number
+        readonly miningPower: number
         // 0-1, % resources harvested while mining.
         readonly miningEfficiency: number
         // Can be 0 for tools that don't use energy.
