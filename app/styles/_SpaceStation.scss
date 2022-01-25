@@ -30,3 +30,21 @@
     padding: 30px;
     margin: 0 40px;
 }
+
+.contract-picker {
+    padding: 20px;
+
+    .MuiPaper-root {
+        padding: 15px;
+    }
+
+    .contract-list {
+        width: 30%;
+    }
+
+    .contract-details {
+        padding-top: 8px;
+        width: 70%;
+        display: flex;
+    }
+}
