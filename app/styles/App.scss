@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Roboto', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 #gameContainer {
     position: relative;
@@ -20,28 +20,20 @@ body {
     cursor: default;
 }
 canvas {
-    image-rendering: optimizeSpeed;             /* Older versions of FF          */
-    image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+    image-rendering: optimizeSpeed; /* Older versions of FF          */
+    image-rendering: -moz-crisp-edges; /* FF 6.0+                       */
     image-rendering: -webkit-optimize-contrast; /* Safari                        */
-    image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
-    image-rendering: pixelated;                 /* Awesome future-browsers       */
+    image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
+    image-rendering: pixelated; /* Awesome future-browsers       */
     -ms-interpolation-mode: nearest-neighbor;
 }
 
-h1 {
+.MuiTypography-h1 {
     color: lightyellow;
 }
 
-h3 {
+.MuiTypography-h2 {
     color: lightgray;
-}
-
-// Custom components
-.card {
-    padding: 30px;
-    background: white;
-    width: max-content;
-    border-radius: 20px;
 }
 
 @import 'SpaceStation';
