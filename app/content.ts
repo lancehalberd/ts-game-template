@@ -2,9 +2,9 @@ import { generateContractList } from 'app/contract';
 
 // More cost effective than Fuel Cells, but slower acceleration.
 const uranium: Fuel = {
-	type: 'fuel',
-	fuelType: 'uranium',
-	name: 'Uranium',
+    type: 'fuel',
+    cargoType: 'uranium',
+    name: 'Uranium',
     unitCost: 500,
     unitMass: 19, // about 19 g/cm^3
     unitVolume: 1,
@@ -13,9 +13,9 @@ const uranium: Fuel = {
     units: 0,
 }
 const fuelCells: Fuel = {
-	type: 'fuel',
-	fuelType: 'fuelCells',
-	name: 'Fuel Cells',
+    type: 'fuel',
+    cargoType: 'fuelCells',
+    name: 'Fuel Cells',
     unitCost: 1500,
     unitMass: 20,
     unitVolume: 1,
@@ -24,9 +24,9 @@ const fuelCells: Fuel = {
     units: 0,
 }
 const tritium: Fuel = {
-	type: 'fuel',
-	fuelType: 'tritium',
-	name: 'Tritium',
+    type: 'fuel',
+    cargoType: 'tritium',
+    name: 'Tritium',
     unitCost: 5000,
     unitMass: 12, // Tritium is a gas, so we assume it is in some mineral.
     unitVolume: 1,
@@ -35,9 +35,9 @@ const tritium: Fuel = {
     units: 0,
 }
 const magicFuel: Fuel = {
-	type: 'fuel',
-	fuelType: 'magicFuel',
-	name: 'Magic Fuel',
+    type: 'fuel',
+    cargoType: 'magicFuel',
+    name: 'Magic Fuel',
     unitCost: 20000,
     unitMass: 10,
     unitVolume: 1,
@@ -47,9 +47,9 @@ const magicFuel: Fuel = {
 }
 
 const iron: Ore = {
-	type: 'ore',
-	oreType: 'iron',
-	name: 'Iron',
+    type: 'ore',
+    cargoType: 'iron',
+    name: 'Iron',
     unitCost: 100,
     unitMass: 8, // 7.874 g/cm^3
     unitVolume: 1,
@@ -57,9 +57,9 @@ const iron: Ore = {
     units: 0,
 };
 const silver: Ore = {
-	type: 'ore',
-	oreType: 'silver',
-	name: 'Silver',
+    type: 'ore',
+    cargoType: 'silver',
+    name: 'Silver',
     unitCost: 300,
     unitMass: 10.5, // 10.49 g/cm^3
     unitVolume: 1,
@@ -67,9 +67,9 @@ const silver: Ore = {
     units: 0,
 };
 const gold: Ore = {
-	type: 'ore',
-	oreType: 'gold',
-	name: 'Gold',
+    type: 'ore',
+    cargoType: 'gold',
+    name: 'Gold',
     unitCost: 1000,
     unitMass: 19, // 19.3 g/cm^3
     unitVolume: 1,
@@ -77,9 +77,9 @@ const gold: Ore = {
     units: 0,
 };
 const platinum: Ore = {
-	type: 'ore',
-	oreType: 'platinum',
-	name: 'Platinum',
+    type: 'ore',
+    cargoType: 'platinum',
+    name: 'Platinum',
     unitCost: 2500,
     unitMass: 21.5, // 21.45 g/cm^3
     unitVolume: 1,
@@ -87,9 +87,9 @@ const platinum: Ore = {
     units: 0,
 };
 const diamond: Ore = {
-	type: 'ore',
-	oreType: 'diamond',
-	name: 'Diamond',
+    type: 'ore',
+    cargoType: 'diamond',
+    name: 'Diamond',
     unitCost: 700,
     unitMass: 3.5, // 3.53 g/cm^3
     unitVolume: 1,
@@ -97,9 +97,9 @@ const diamond: Ore = {
     units: 0,
 };
 const magicCrystal: Ore = {
-	type: 'ore',
-	oreType: 'magicCrystal',
-	name: 'Magic Crystal',
+    type: 'ore',
+    cargoType: 'magicCrystal',
+    name: 'Magic Crystal',
     unitCost: 15000,
     unitMass: 50, // diamond is already very light, so let's make magic crystals heavy.
     unitVolume: 1,
@@ -113,8 +113,8 @@ const magicCrystal: Ore = {
 
 const basicHarvestingDrill: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'basicHarvestingDrill',
-	name: 'Harvesting Drill',
+    cargoType: 'basicHarvestingDrill',
+    name: 'Harvesting Drill',
     remainingUses: 50,
     miningPower: 100,
     miningEfficiency: 0.9,
@@ -126,8 +126,8 @@ const basicHarvestingDrill: DiggingToolDefinition = {
 };
 const basicDiggingDrill: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'basicDiggingDrill',
-	name: 'Digging Drill',
+    cargoType: 'basicDiggingDrill',
+    name: 'Digging Drill',
     remainingUses: 100,
     miningPower: 200,
     miningEfficiency: 0.5,
@@ -139,8 +139,8 @@ const basicDiggingDrill: DiggingToolDefinition = {
 };
 const basicDiggingLaser: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'basicDiggingLaser',
-	name: 'Laser',
+    cargoType: 'basicDiggingLaser',
+    name: 'Laser',
     remainingUses: 10000,
     miningPower: 100,
     miningEfficiency: 0.6,
@@ -152,8 +152,8 @@ const basicDiggingLaser: DiggingToolDefinition = {
 };
 const advancedHarvestingDrill: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'advancedHarvestingDrill',
-	name: 'Advanced Harvesting Drill',
+    cargoType: 'advancedHarvestingDrill',
+    name: 'Advanced Harvesting Drill',
     remainingUses: 50,
     miningPower: 100,
     miningEfficiency: 0.9,
@@ -165,8 +165,8 @@ const advancedHarvestingDrill: DiggingToolDefinition = {
 };
 const advancedDiggingDrill: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'advancedDiggingDrill',
-	name: 'Advanced Digging Drill',
+    cargoType: 'advancedDiggingDrill',
+    name: 'Advanced Digging Drill',
     remainingUses: 100,
     miningPower: 200,
     miningEfficiency: 0.5,
@@ -178,8 +178,8 @@ const advancedDiggingDrill: DiggingToolDefinition = {
 };
 const advancedDiggingLaser: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'advancedDiggingLaser',
-	name: 'Advanced Laser',
+    cargoType: 'advancedDiggingLaser',
+    name: 'Advanced Laser',
     remainingUses: 10000,
     miningPower: 100,
     miningEfficiency: 0.6,
@@ -191,8 +191,8 @@ const advancedDiggingLaser: DiggingToolDefinition = {
 };
 const magicHarvestingDrill: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'magicHarvestingDrill',
-	name: 'Magic Harvesting Drill',
+    cargoType: 'magicHarvestingDrill',
+    name: 'Magic Harvesting Drill',
     remainingUses: 50,
     miningPower: 100,
     miningEfficiency: 0.9,
@@ -204,8 +204,8 @@ const magicHarvestingDrill: DiggingToolDefinition = {
 };
 const magicDiggingDrill: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'magicDiggingDrill',
-	name: 'Magic Digging Drill',
+    cargoType: 'magicDiggingDrill',
+    name: 'Magic Digging Drill',
     remainingUses: 100,
     miningPower: 200,
     miningEfficiency: 0.5,
@@ -217,8 +217,8 @@ const magicDiggingDrill: DiggingToolDefinition = {
 };
 const magicDiggingLaser: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'magicDiggingLaser',
-	name: 'Magic Laser',
+    cargoType: 'magicDiggingLaser',
+    name: 'Magic Laser',
     remainingUses: 10000,
     miningPower: 100,
     miningEfficiency: 0.6,
@@ -231,8 +231,8 @@ const magicDiggingLaser: DiggingToolDefinition = {
 // Destroys a diamond of radius 1 around the target destorying up to 4 tiles.
 const smallExplosives: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'smallExplosives',
-	name: 'Small Explosives',
+    cargoType: 'smallExplosives',
+    name: 'Small Explosives',
     remainingUses: 1,
     miningPower: 10000,
     miningEfficiency: 0.1,
@@ -245,8 +245,8 @@ const smallExplosives: DiggingToolDefinition = {
 // Destroys a diamond of radius 4 around the target, ~25 tiles on surface, ~37 tiles in interior
 const largeExplosives: DiggingToolDefinition = {
     type: 'tool',
-    toolType: 'largeExplosives',
-	name: 'Large Explosives',
+    cargoType: 'largeExplosives',
+    name: 'Large Explosives',
     remainingUses: 1,
     miningPower: 10000,
     miningEfficiency: 0.1,
@@ -258,8 +258,8 @@ const largeExplosives: DiggingToolDefinition = {
 };
 
 const basicSmallShip: ShipDefinition = {
-	shipType: 'basicSmallShip',
-	name: 'Scout Ship',
+    shipType: 'basicSmallShip',
+    name: 'Scout Ship',
     cargoSpace: 1000,
     cargo: [],
     fuelType: 'fuelCells',
@@ -269,8 +269,8 @@ const basicSmallShip: ShipDefinition = {
     isOwned: false,
 };
 const basicShip: ShipDefinition = {
-	shipType: 'basicShip',
-	name: 'Mining Ship',
+    shipType: 'basicShip',
+    name: 'Mining Ship',
     cargoSpace: 5000,
     cargo: [],
     fuelType: 'fuelCells',
@@ -280,8 +280,8 @@ const basicShip: ShipDefinition = {
     isOwned: false,
 };
 const basicBigShip: ShipDefinition = {
-	shipType: 'basicBigShip',
-	name: 'Cargo Ship',
+    shipType: 'basicBigShip',
+    name: 'Cargo Ship',
     cargoSpace: 50000,
     cargo: [],
     fuelType: 'uranium',
@@ -292,8 +292,8 @@ const basicBigShip: ShipDefinition = {
 };
 
 const advancedSmallShip: ShipDefinition = {
-	shipType: 'advancedSmallShip',
-	name: 'Advanced Scout Ship',
+    shipType: 'advancedSmallShip',
+    name: 'Advanced Scout Ship',
     cargoSpace: 1200,
     cargo: [],
     fuelType: 'tritium',
@@ -303,8 +303,8 @@ const advancedSmallShip: ShipDefinition = {
     isOwned: false,
 };
 const advancedShip: ShipDefinition = {
-	shipType: 'advancedShip',
-	name: 'Advanced Mining Ship',
+    shipType: 'advancedShip',
+    name: 'Advanced Mining Ship',
     cargoSpace: 6000,
     cargo: [],
     fuelType: 'tritium',
@@ -314,8 +314,8 @@ const advancedShip: ShipDefinition = {
     isOwned: false,
 };
 const advancedBigShip: ShipDefinition = {
-	shipType: 'advancedBigShip',
-	name: 'Advanced Cargo Ship',
+    shipType: 'advancedBigShip',
+    name: 'Advanced Cargo Ship',
     cargoSpace: 60000,
     cargo: [],
     fuelType: 'uranium',
@@ -326,8 +326,8 @@ const advancedBigShip: ShipDefinition = {
 };
 
 const magicSmallShip: ShipDefinition = {
-	shipType: 'magicSmallShip',
-	name: 'Magic Scout Ship',
+    shipType: 'magicSmallShip',
+    name: 'Magic Scout Ship',
     cargoSpace: 1500,
     cargo: [],
     fuelType: 'magicFuel',
@@ -337,8 +337,8 @@ const magicSmallShip: ShipDefinition = {
     isOwned: false,
 };
 const magicShip: ShipDefinition = {
-	shipType: 'magicShip',
-	name: 'Magic Mining Ship',
+    shipType: 'magicShip',
+    name: 'Magic Mining Ship',
     cargoSpace: 7500,
     cargo: [],
     fuelType: 'magicFuel',
@@ -348,8 +348,8 @@ const magicShip: ShipDefinition = {
     isOwned: false,
 };
 const magicBigShip: ShipDefinition = {
-	shipType: 'magicBigShip',
-	name: 'Magic Cargo Ship',
+    shipType: 'magicBigShip',
+    name: 'Magic Cargo Ship',
     cargoSpace: 100000,
     cargo: [],
     fuelType: 'magicFuel',
@@ -361,21 +361,21 @@ const magicBigShip: ShipDefinition = {
 
 
 export function generateInitialState(): State {
-	const state: State = {
-		// Immutable state that defines what can be bought/found in the game.
+    const state: State = {
+        // Immutable state that defines what can be bought/found in the game.
         content: {
-	        diggingTools: [
-	        	basicHarvestingDrill, basicDiggingDrill, basicDiggingLaser,
-	        	advancedHarvestingDrill, advancedDiggingDrill, advancedDiggingLaser,
-	        	magicHarvestingDrill, magicDiggingDrill, magicDiggingLaser,
-	        	smallExplosives, largeExplosives,
-	        ],
-	        fuels: [uranium, fuelCells, tritium, magicFuel],
-	        ores: [iron, silver, gold, platinum, diamond, magicCrystal],
+            diggingTools: [
+                basicHarvestingDrill, basicDiggingDrill, basicDiggingLaser,
+                advancedHarvestingDrill, advancedDiggingDrill, advancedDiggingLaser,
+                magicHarvestingDrill, magicDiggingDrill, magicDiggingLaser,
+                smallExplosives, largeExplosives,
+            ],
+            fuels: [uranium, fuelCells, tritium, magicFuel],
+            ores: [iron, silver, gold, platinum, diamond, magicCrystal],
             ships: [
-            	basicSmallShip, basicShip, basicBigShip,
-            	advancedSmallShip, advancedShip, advancedBigShip,
-            	magicSmallShip, magicShip, magicBigShip,
+                basicSmallShip, basicShip, basicBigShip,
+                advancedSmallShip, advancedShip, advancedBigShip,
+                magicSmallShip, magicShip, magicBigShip,
             ],
         },
         // Time in standard days (100,000 seconds)
@@ -401,7 +401,7 @@ export function generateInitialState(): State {
         // The current contract the player has taken,
         // contains the state of the current asteroid when mining.
         currentContract: undefined,
-	};
+    };
     // Populate the initial list of contracts.
     state.station.availableContracts = generateContractList(state, 20);
     return state;

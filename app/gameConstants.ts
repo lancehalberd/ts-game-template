@@ -18,7 +18,7 @@ export const debtInterestRate = 1.01;
 /*
 1e9 distance in 10 days
 peak velocity is 1e9 = 10days * v / 2 => V = 2e8 meters per day
-	Since 1 day = 100,000s this is 2e8 / 1e5 = 2e3 = 2000 m / s
+    Since 1 day = 100,000s this is 2e8 / 1e5 = 2e3 = 2000 m / s
 
 
 */

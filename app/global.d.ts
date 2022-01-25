@@ -1,3 +1,4 @@
+import { getMiningApi } from 'app/miningActions';
 import { getStationApi } from 'app/stationActions';
 
 export {};
@@ -7,7 +8,8 @@ declare global {
 
     type GameApi = {
         getState(): State
-    } & ReturnType<typeof getStationApi>
+    } & ReturnType<typeof getMiningApi>
+      & ReturnType<typeof getStationApi>;
 
     interface State {
         debt: number
@@ -26,15 +28,20 @@ declare global {
         currentContract?: Contract
         currentShip?: Ship
     }
-    interface Station {
-        availableContracts: Contract[]
+    // CargoStorage
+    interface CargoStorage {
         cargoSpace: number
         cargo: Cargo[]
+    }
+    interface Station extends CargoStorage {
+        availableContracts: Contract[]
         ships: Ship[]
     }
 
     // All Cargo definitions
     interface BaseCargo {
+        readonly type: string
+        readonly cargoType: string
         // In credits per unit
         readonly unitCost: number
         // In kg per unit
@@ -49,15 +56,15 @@ declare global {
     type FuelType = 'uranium' | 'fuelCells' | 'tritium' | 'magicFuel';
     interface Fuel extends Resource {
         type: 'fuel'
+        cargoType: FuelType
         readonly name: string
-        readonly fuelType: FuelType
         readonly unitEnergy: number
     }
     type OreType = 'iron' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'magicCrystal';
     interface Ore extends Resource {
         type: 'ore'
+        cargoType: OreType
         readonly name: string
-        readonly oreType: OreType
     }
     type OreDefinition = Readonly<Ore>;
     type ToolType = 'basicHarvestingDrill' | 'basicDiggingDrill' | 'basicDiggingLaser' |
@@ -66,8 +73,8 @@ declare global {
         'smallExplosives' | 'largeExplosives';
     interface DiggingTool extends BaseCargo {
         type: 'tool'
+        cargoType: ToolType
         readonly name: string
-        readonly toolType: ToolType
         // Number.POSITIVE_INFINITY can be used indefinitely.
         remainingUses: number
         // Number.POSITIVE_INFINITY destroys any cell.
@@ -78,16 +85,15 @@ declare global {
         readonly energyPerUse: number
     }
     type DiggingToolDefinition = Readonly<DiggingTool>;
+    type CargoType = ToolType | FuelType | OreType;
     type Cargo = DiggingTool | Fuel | Ore
 
     type ShipType = 'basicSmallShip' | 'basicShip' | 'basicBigShip'
         | 'advancedSmallShip' | 'advancedShip' | 'advancedBigShip'
         | 'magicSmallShip' | 'magicShip' | 'magicBigShip'
-    interface Ship {
+    interface Ship extends CargoStorage {
         readonly shipType: ShipType
         readonly name: string
-        readonly cargoSpace: number
-        cargo: Cargo[]
         readonly fuelType: FuelType
         readonly mass: number
         readonly cost: number
@@ -97,16 +103,13 @@ declare global {
     }
     type ShipDefinition = Readonly<Ship>;
 
-    interface Contract {
+    interface Contract extends CargoStorage {
         id: number
         grid: (MiningCell | null)[][]
         cost: number
         distance: number
-        // This is for storing mined resources before moving them onto the ship.
-        cargo: Cargo[]
-        // Just set this high to be practically infinite.
-        cargoSpace: number
     }
+
 
     interface MiningCell {
         durability: number
