@@ -1,8 +1,8 @@
 import * as React from 'react';
-import GameContext from './context';
+import { GameContext } from './App';
 
 const SpaceStation = () => {
-    const state = React.useContext(GameContext);
+    const { gameState } = React.useContext(GameContext);
 
     return (
         <div className="space-station">
@@ -10,9 +10,10 @@ const SpaceStation = () => {
             <h3>You're at the Station.</h3>
 
             <div className="card">
-                <p>Credits: {state.credits}</p>
-                <p>Credit Limit: {state.creditLimit}</p>
-                <p>Current Ship: {state.currentShip}</p>
+                <p>Credits: {gameState.credits}</p>
+                <p>Credit Limit: {gameState.creditLimit}</p>
+                <p>Current Ship: {gameState.currentShip}</p>
+                <p>Current Contract: {gameState.currentContract}</p>
             </div>
         </div>
     );
