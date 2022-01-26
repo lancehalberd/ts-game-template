@@ -53,7 +53,7 @@ const iron: Ore = {
     unitCost: 100,
     unitMass: 8, // 7.874 g/cm^3
     unitVolume: 1,
-    miningDurabilityPerUnit: 20,
+    miningDurabilityPerUnit: 10,
     units: 0,
 };
 const silver: Ore = {
@@ -63,7 +63,7 @@ const silver: Ore = {
     unitCost: 300,
     unitMass: 10.5, // 10.49 g/cm^3
     unitVolume: 1,
-    miningDurabilityPerUnit: 30,
+    miningDurabilityPerUnit: 15,
     units: 0,
 };
 const gold: Ore = {
@@ -73,7 +73,7 @@ const gold: Ore = {
     unitCost: 1000,
     unitMass: 19, // 19.3 g/cm^3
     unitVolume: 1,
-    miningDurabilityPerUnit: 40,
+    miningDurabilityPerUnit: 20,
     units: 0,
 };
 const platinum: Ore = {
@@ -83,7 +83,7 @@ const platinum: Ore = {
     unitCost: 2500,
     unitMass: 21.5, // 21.45 g/cm^3
     unitVolume: 1,
-    miningDurabilityPerUnit: 50,
+    miningDurabilityPerUnit: 25,
     units: 0,
 };
 const diamond: Ore = {
@@ -93,7 +93,7 @@ const diamond: Ore = {
     unitCost: 700,
     unitMass: 3.5, // 3.53 g/cm^3
     unitVolume: 1,
-    miningDurabilityPerUnit: 60,
+    miningDurabilityPerUnit: 30,
     units: 0,
 };
 const magicCrystal: Ore = {
@@ -103,7 +103,7 @@ const magicCrystal: Ore = {
     unitCost: 15000,
     unitMass: 50, // diamond is already very light, so let's make magic crystals heavy.
     unitVolume: 1,
-    miningDurabilityPerUnit: 100,
+    miningDurabilityPerUnit: 50,
     units: 0,
 }
 

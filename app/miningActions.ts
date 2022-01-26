@@ -1,5 +1,6 @@
 import { generateContractList } from 'app/contract';
 import {
+    advanceTimer,
     attemptTravel,
     consumeFuel,
     gainResource,
@@ -82,6 +83,7 @@ export function getMiningApi(state: State) {
             } else {
                 mineCell(state, contract, x, y, tool.miningPower);
             }
+            advanceTimer(state, 0.1);
             tool.remainingUses--;
             if (tool.remainingUses <= 0) {
                 ship.cargo.splice(ship.cargo.indexOf(tool), 1);

@@ -7,28 +7,32 @@ import { getMiningApi } from 'app/miningActions';
 import { getStationApi } from 'app/stationActions';
 import { copyState } from 'app/state';
 
-window.gameApi = (() => {
-    const state: State = generateInitialState();
-    return {
+function getGameApi(state: State, isSimulation = false): GameApi {
+    const gameApi: GameApi = {
         getState() {
             return copyState(state);
         },
         // To use the simulation
         simulate() {
             const simulatedState = copyState(state);
-            return {
-                simulatedState,
-                ...getStationApi(simulatedState),
-                ...getMiningApi(simulatedState),
-            };
+            return getGameApi(simulatedState, true);
         },
         ...getStationApi(state),
         ...getMiningApi(state),
     };
+    if (isSimulation) {
+        gameApi.state = state;
+    }
+    return gameApi;
+}
+
+window.gameApi = (() => {
+    const state: State = generateInitialState();
+    return getGameApi(state);
 })();
 
-window.refreshReact = () => {
-    localStorage.setItem('lastForceRefreshAt', String(Date.now()));
-};
 
-ReactDOM.render(<App />, document.getElementById('gameContainer'));
+function renderReactClient() {
+    ReactDOM.render(<App />, document.getElementById('gameContainer'));
+}
+renderReactClient();
