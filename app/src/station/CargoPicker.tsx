@@ -61,7 +61,7 @@ const CargoPicker = () => {
                     gameApi.purchaseTool(
                         item.cargoType,
                         1,
-                        gameState?.currentShip?.shipType,
+                        currentShip.shipType,
                         { spendCredit: true }
                     );
                     break;

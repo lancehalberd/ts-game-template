@@ -10,8 +10,14 @@ import { GameContext } from '../App';
 import ShipPicker from './ShipPicker';
 import CargoPicker from './CargoPicker';
 import { Paper } from '@mui/material';
+import PreviewTrip from './PreviewTrip';
 
-const steps = ['Purchase a Contract', 'Rent a Ship', 'Outfit Your Ship'];
+const steps = [
+    'Purchase a Contract',
+    'Rent a Ship',
+    'Outfit Your Ship',
+    'Preview your Trip',
+];
 
 export const DetailItem = ({
     label,
@@ -99,6 +105,9 @@ export default function StationStepper() {
                 break;
             case 2:
                 return <CargoPicker />;
+                break;
+            case 3:
+                return <PreviewTrip />;
                 break;
             default:
                 return 'TBD';
