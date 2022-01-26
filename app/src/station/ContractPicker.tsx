@@ -76,14 +76,6 @@ const ContractPicker = () => {
                             value={selectedContract.cost}
                         />
                         <ContractDetailItem
-                            label="Cargo"
-                            value={selectedContract.cargo.join(',')}
-                        />
-                        <ContractDetailItem
-                            label="Cargo Space"
-                            value={selectedContract.cargoSpace}
-                        />
-                        <ContractDetailItem
                             label="Distance"
                             value={selectedContract.distance}
                         />

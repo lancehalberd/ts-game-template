@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
     Box,
     Button,
+    Divider,
     List,
     ListItem,
     ListItemButton,
@@ -17,6 +18,7 @@ import DiamondIcon from '@mui/icons-material/Diamond';
 
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
+import YourCargo from './YourCargo';
 
 type CargoItem = DiggingTool | Fuel | Ore;
 
@@ -109,34 +111,35 @@ const CargoPicker = () => {
                         })}
                     </List>
                 </div>
-                {selectedItem && (
-                    <>
-                        <div className="item-details">
-                            {Object.keys(selectedItem).map((keyStr) => {
-                                return (
-                                    <DetailItem
-                                        key={keyStr}
-                                        label={camelToSpaces(keyStr)}
-                                        value={
-                                            selectedItem[
-                                                keyStr as keyof CargoItem
-                                            ]
-                                        }
-                                    />
-                                );
-                            })}
-                        </div>
-                        <div className="select-item-pane">
-                            <Button
-                                variant="contained"
-                                size="large"
-                                onClick={() => handleItemSelect(selectedItem)}
-                            >
-                                Add to Cargo
-                            </Button>
-                        </div>
-                    </>
-                )}
+
+                <div className="item-details">
+                    {selectedItem &&
+                        Object.keys(selectedItem).map((keyStr) => {
+                            return (
+                                <DetailItem
+                                    key={keyStr}
+                                    label={camelToSpaces(keyStr)}
+                                    value={
+                                        selectedItem[keyStr as keyof CargoItem]
+                                    }
+                                />
+                            );
+                        })}
+                </div>
+                <div className="select-item-pane">
+                    {selectedItem && (
+                        <Button
+                            variant="contained"
+                            size="large"
+                            className="item-select-button"
+                            onClick={() => handleItemSelect(selectedItem)}
+                        >
+                            Add to Cargo
+                        </Button>
+                    )}
+                    <Divider />
+                    <YourCargo />
+                </div>
             </div>
         </div>
     );

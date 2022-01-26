@@ -56,5 +56,9 @@
     .select-item-pane {
         padding-top: 8px;
         width: 20%;
+
+        .item-select-button {
+            margin-bottom: 10px;
+        }
     }
 }
