@@ -9,7 +9,11 @@ import {
     Tab,
     Tabs,
 } from '@mui/material';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
+
+import BuildIcon from '@mui/icons-material/Build';
+import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
+import DiamondIcon from '@mui/icons-material/Diamond';
+
 import { GameContext } from '../App';
 
 type CargoItem = DiggingTool | Fuel | Ore;
@@ -49,6 +53,20 @@ const CargoPicker = () => {
         }
     };
 
+    const getItemIcon = () => {
+        switch (value) {
+            case 0:
+                return <BuildIcon />;
+                break;
+            case 1:
+                return <LocalGasStationIcon />;
+                break;
+            case 2:
+                return <DiamondIcon />;
+                break;
+        }
+    };
+
     return (
         <div className="item-picker">
             <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
@@ -72,7 +90,7 @@ const CargoPicker = () => {
                                         }
                                     >
                                         <ListItemIcon>
-                                            <Inventory2Icon />
+                                            {getItemIcon()}
                                         </ListItemIcon>
                                         <ListItemText primary={item.name} />
                                     </ListItemButton>
