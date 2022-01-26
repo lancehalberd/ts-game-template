@@ -6,7 +6,6 @@ import {
     ListItemIcon,
     ListItemText,
     Paper,
-    Stack,
 } from '@mui/material';
 import ArticleIcon from '@mui/icons-material/Article';
 
@@ -43,7 +42,7 @@ const ContractPicker = () => {
     const visibleContracts = gameState.station.availableContracts.slice(0, 10);
 
     return (
-        <div className="item-picker" style={{ display: 'flex' }}>
+        <div className="item-picker">
             <div className="item-list">
                 <List>
                     {visibleContracts.map((contract) => {
@@ -72,28 +71,18 @@ const ContractPicker = () => {
             {selectedContract && (
                 <>
                     <div className="item-details">
-                        <Stack spacing={2}>
-                            <ContractDetailItem
-                                label="Cost"
-                                value={selectedContract.cost}
-                            />
-                            <ContractDetailItem
-                                label="Cargo"
-                                value={selectedContract.cargo.join(',')}
-                            />
-                            <ContractDetailItem
-                                label="Cargo Space"
-                                value={selectedContract.cargoSpace}
-                            />
-                            <ContractDetailItem
-                                label="Distance"
-                                value={selectedContract.distance}
-                            />
-                            <ContractDetailItem
-                                label="Grid Points"
-                                value={selectedContract.grid.length}
-                            />
-                        </Stack>
+                        <ContractDetailItem
+                            label="Cost"
+                            value={selectedContract.cost}
+                        />
+                        <ContractDetailItem
+                            label="Distance"
+                            value={selectedContract.distance}
+                        />
+                        <ContractDetailItem
+                            label="Grid Points"
+                            value={selectedContract.grid.length}
+                        />
                     </div>
                     <div className="select-item-pane">
                         <Button
@@ -103,7 +92,7 @@ const ContractPicker = () => {
                                 handleContractSelect(selectedContract)
                             }
                         >
-                            Select This Contract
+                            Buy Contract
                         </Button>
                         <p>
                             Pick the Contract you'd like to work on, then you

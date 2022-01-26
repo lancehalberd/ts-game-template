@@ -2,6 +2,7 @@
     background: url('/app/assets/space-station-bkg.png');
     background-size: contain;
     background-repeat: no-repeat;
+    background-position: center;
     height: 100vh;
 
     padding: 20px;
@@ -33,23 +34,49 @@
 
 .item-picker {
     padding: 20px;
+    display: flex;
 
     .MuiPaper-root {
         padding: 15px;
     }
 
     .item-list {
-        width: 40%;
+        width: 30%;
     }
 
     .item-details {
-        padding-top: 8px;
-        width: 30%;
+        padding: 8px 10px;
+        width: 50%;
         display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 10px;
     }
 
     .select-item-pane {
         padding-top: 8px;
-        width: 30%;
+        width: 20%;
+
+        .item-select-button {
+            margin-bottom: 10px;
+        }
+    }
+}
+
+.your-cargo {
+    margin-top: 20px;
+
+    .cargo-items {
+        margin-top: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+    }
+
+    .cargo-agg-item {
+        display: flex;
+        .label {
+            margin-left: 16px;
+        }
     }
 }

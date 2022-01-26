@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 
-type MuiHeaderVariant = 'h1' | 'h2' | 'h3' | 'h4';
+type MuiHeaderVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
 
 interface MuiHeaderProps {
     variant: MuiHeaderVariant;

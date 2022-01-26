@@ -9,8 +9,23 @@ import ContractPicker from './ContractPicker';
 import { GameContext } from '../App';
 import ShipPicker from './ShipPicker';
 import CargoPicker from './CargoPicker';
+import { Paper } from '@mui/material';
 
 const steps = ['Purchase a Contract', 'Rent a Ship', 'Outfit Your Ship'];
+
+export const DetailItem = ({
+    label,
+    value,
+}: {
+    label: string;
+    value: string | number;
+}): JSX.Element => {
+    return (
+        <Paper>
+            {label}: {value}
+        </Paper>
+    );
+};
 
 export default function StationStepper() {
     const { gameState } = React.useContext(GameContext);
