@@ -54,8 +54,8 @@ function generateContract(state: State, id : number, targetValue: number): Contr
     return {
         id,
         grid,
-        cost: targetValue * (0.9 + 0.2 * Math.random()) / 5,
-        distance: averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random()),
+        cost: Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5),
+        distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
         cargo: [],
         // This should be practically infinite.
         cargoSpace: 1e12,
