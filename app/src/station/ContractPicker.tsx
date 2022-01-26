@@ -43,8 +43,8 @@ const ContractPicker = () => {
     const visibleContracts = gameState.station.availableContracts.slice(0, 10);
 
     return (
-        <div className="contract-picker" style={{ display: 'flex' }}>
-            <div className="contract-list">
+        <div className="item-picker" style={{ display: 'flex' }}>
+            <div className="item-list">
                 <List>
                     {visibleContracts.map((contract) => {
                         return (
@@ -71,7 +71,7 @@ const ContractPicker = () => {
             </div>
             {selectedContract && (
                 <>
-                    <div className="contract-details">
+                    <div className="item-details">
                         <Stack spacing={2}>
                             <ContractDetailItem
                                 label="Cost"
@@ -95,7 +95,7 @@ const ContractPicker = () => {
                             />
                         </Stack>
                     </div>
-                    <div className="select-contract-pane">
+                    <div className="select-item-pane">
                         <Button
                             variant="contained"
                             size="large"

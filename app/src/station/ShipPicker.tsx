@@ -44,8 +44,8 @@ const ShipPicker = () => {
     const visibleItems = gameState.content.ships;
 
     return (
-        <div className="ship-picker" style={{ display: 'flex' }}>
-            <div className="ship-list">
+        <div className="item-picker" style={{ display: 'flex' }}>
+            <div className="item-list">
                 <List>
                     {visibleItems.map((ship) => {
                         return (
@@ -68,7 +68,7 @@ const ShipPicker = () => {
             </div>
             {selectedShip && (
                 <>
-                    <div className="ship-details">
+                    <div className="item-details">
                         <Stack spacing={2}>
                             <DetailItem
                                 label="Ship Type"
@@ -104,7 +104,7 @@ const ShipPicker = () => {
                             />
                         </Stack>
                     </div>
-                    <div className="select-ship-pane">
+                    <div className="select-item-pane">
                         <Button
                             variant="contained"
                             size="large"

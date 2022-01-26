@@ -9,7 +9,7 @@ const CargoPicker = () => {
     };
 
     return (
-        <div className="cargo-picker">
+        <div className="item-picker">
             <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 <Tabs value={value} onChange={handleChange} centered>
                     <Tab label="Digging Tools" />
