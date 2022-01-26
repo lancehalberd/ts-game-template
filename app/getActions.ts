@@ -11,10 +11,10 @@ export function getGetActions(state: State) {
             return copyMiningState(state);
         },
         getMiningCell(x: number, y: number) {
-            return state.currentContract?.grid?.[y]?.[x];
+            return {...state.currentContract?.grid?.[y]?.[x]};
         },
         getMiningTool(toolType: ToolType) {
-            return state.currentShip?.cargo.find(cargo => cargo.cargoType === toolType);
+            return {...state.currentShip?.cargo.find(cargo => cargo.cargoType === toolType)};
         },
         getStationState() {
             return copyStationState(state);
