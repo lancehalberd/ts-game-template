@@ -4,7 +4,7 @@ import { getStationApi } from 'app/stationActions';
 export {};
 
 declare global {
-    interface Window { state?: State; gameApi?: GameApi }
+    interface Window { state?: State; gameApi?: GameApi, refreshReact?: () => void }
 
     interface IGameContext {
         gameState: State;

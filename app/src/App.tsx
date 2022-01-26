@@ -8,6 +8,16 @@ export const GameContext = React.createContext({} as IGameContext);
 const App = () => {
     const gameApi = window!.gameApi!;
     const [gameState, setGameState] = React.useState(gameApi.getState());
+    let lastForceRefreshEpoch = localStorage.getItem('lastForceRefreshAt');
+
+    setInterval(() => {
+        const curForceRefreshEpoch = localStorage.getItem('lastForceRefreshAt');
+        if (lastForceRefreshEpoch != curForceRefreshEpoch) {
+            console.log('App: Forcing app refresh');
+            lastForceRefreshEpoch = curForceRefreshEpoch;
+            setGameState(gameApi.getState());
+        }
+    }, 1000);
 
     console.log('gameState: ', gameState);
 
