@@ -3,20 +3,19 @@ import * as ReactDOM from 'react-dom';
 import App from './App';
 
 import { generateInitialState } from 'app/content';
+import { getGetActions } from 'app/getActions';
 import { getMiningApi } from 'app/miningActions';
 import { getStationApi } from 'app/stationActions';
 import { copyState } from 'app/state';
 
 function getGameApi(state: State, isSimulation = false): GameApi {
     const gameApi: GameApi = {
-        getState() {
-            return copyState(state);
-        },
         // To use the simulation
         simulate() {
             const simulatedState = copyState(state);
             return getGameApi(simulatedState, true);
         },
+        ...getGetActions(state),
         ...getStationApi(state),
         ...getMiningApi(state),
     };

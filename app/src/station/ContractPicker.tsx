@@ -11,6 +11,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 
 import * as React from 'react';
 import { GameContext } from '../App';
+import AsteroidPane from '../mining/AsteroidPane';
 
 const ContractDetailItem = ({
     label,
@@ -79,9 +80,9 @@ const ContractPicker = () => {
                             label="Distance"
                             value={selectedContract.distance}
                         />
-                        <ContractDetailItem
-                            label="Grid Points"
-                            value={selectedContract.grid.length}
+                        <AsteroidPane
+                            contract={selectedContract}
+                            readonly
                         />
                     </div>
                     <div className="select-item-pane">
