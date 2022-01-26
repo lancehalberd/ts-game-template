@@ -98,6 +98,7 @@ export function getStationApi(state: State) {
             } else {
                 state.station.ships.push({
                     ...ship,
+                    cargo: [],
                     isOwned: true,
                 });
             }
@@ -150,6 +151,7 @@ export function getStationApi(state: State) {
             spendCredits(state, cost, { spendCredit });
             state.station.ships.push({
                 ...ship,
+                cargo: [],
                 isRented: true,
                 returnTime: Math.floor(state.time + days),
             });
