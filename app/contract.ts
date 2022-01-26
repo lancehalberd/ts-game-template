@@ -162,7 +162,7 @@ function generateContract(state: State, id : number, targetValue: number): Contr
             grid[i][j] = newCell;
         }
     }
-    console.log(grid);
+
     return {
         id,
         grid,
