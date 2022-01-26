@@ -154,7 +154,7 @@ export function getStationApi(state: State) {
                 returnTime: Math.floor(state.time + days),
             });
         },
-        returnShip(shipType: ShipType, { liquidateCargo = false }) {
+        returnShip(shipType: ShipType, { liquidateCargo = false } = {}) {
             requireAtStation(state);
             const myShip = requireMyShipByType(state, shipType);
             if (!myShip.isRented) {
@@ -274,6 +274,17 @@ export function getStationApi(state: State) {
             }
             if (unitsSold > 0) {
                 gainCredits(state, cargoDefinition.unitCost * unitsSold);
+            }
+        },
+        sellAllOre(source?: ShipType) {
+            requireAtStation(state);
+            const storage = requireStationStorage(state, source);
+            for (let i = 0; i < storage.cargo.length; i++) {
+                const cargo = storage.cargo[i];
+                if (cargo.type === 'ore') {
+                    storage.cargo.splice(i--, 1);
+                    gainCredits(state, cargo.unitCost * cargo.units);
+                }
             }
         },
         // Sell all cargo located in a specific storage source.

@@ -2,6 +2,99 @@ import { averageTravelDistance } from 'app/gameConstants';
 import { getOreByType } from 'app/state';
 import Random from 'app/utils/Random';
 
+function getAllowedResources(targetContractValue: number): Array<string> {
+    let ores;
+    if (targetContractValue < 100000) {
+        ores = ['iron']
+    } else if (targetContractValue < 200000) {
+        ores = ['iron', 'silver']
+    } else if (targetContractValue < 300000) {
+        ores = ['iron', 'silver', 'gold']
+    } else if (targetContractValue < 400000) {
+        ores = ['iron', 'silver', 'gold', 'platinum']
+    } else if (targetContractValue < 600000) {
+        ores = ['iron', 'silver', 'gold', 'platinum', 'diamond']
+    } else {
+        ores = ['iron', 'silver', 'gold', 'platinum', 'diamond', 'magicCrystal']
+    }
+    return ores
+}
+
+function cellHasResource(targetContractValue: number, relativeDepth: number): boolean {
+    let minimumProbablity = 0.1;
+    let valueCoefficient = targetContractValue/10000;
+    let additionalProbability = Math.min(0.3, Math.pow(valueCoefficient, 0.45)/35) * relativeDepth;
+    return Math.random() < minimumProbablity + additionalProbability;
+}
+
+function getResourceProbability(oreLength: number, depthThreshold: number): Array<number> {
+    // Generic graph for resources appearing at different thresholds
+    // depth threshold  0       1       2       3       4
+    // iron             0.9     0.7     0.3     0.1     0
+    // silver           0.1     0.2     0.4     0.3     0.2
+    // gold             0       0.1     0.2     0.3     0.3
+    // platinum         0       0       0.1     0.2     0.25
+    // diamond          0       0       0       0.1     0.15
+    // magicCrystal     0       0       0       0       0.1
+    // if a resource is unavailable due to cost thresholds, its probability will be added to iron
+
+    let probabilities = [
+        [0.9, 0.7, 0.3, 0.1, 0],
+        [0.1, 0.2, 0.4, 0.3, 0.2],
+        [0  , 0.1, 0.2, 0.3, 0.3],
+        [0  , 0  , 0.1, 0.2, 0.25],
+        [0  , 0  , 0  , 0.1, 0.15],
+        [0  , 0  , 0  , 0  , 0.1],
+    ];
+    let oreProbabilities = new Array(oreLength).fill(0)
+    for (let ore = 0; ore < probabilities.length; ore++) {
+        if (ore < oreLength) {
+            oreProbabilities[ore] = probabilities[ore][depthThreshold];
+        } else {
+            oreProbabilities[0] += probabilities[ore][depthThreshold];
+        }
+    }
+    return oreProbabilities
+}
+
+function determineCellResource(targetContractValue: number, relativeDepth: number): OreType {
+    let ores = getAllowedResources(targetContractValue);
+    let depthThreshold = Math.floor(5*relativeDepth);
+    let probabilities = getResourceProbability(ores.length, depthThreshold);
+    let rng = Math.random();
+    for (let probabilityIndex = 0; probabilityIndex < probabilities.length; probabilityIndex++) {
+        if (rng < probabilities[probabilityIndex]) {
+            return <OreType>ores[probabilityIndex];
+        } else {
+            rng -= probabilities[probabilityIndex];
+        }
+    }
+    // If somehow this broke just give them iron
+    return 'iron'
+}
+
+function genResourceUnits(ore: OreType): number {
+    switch (ore) {
+        case "iron":
+            return 15 + Math.floor(Math.random() * 300);
+        case "silver":
+            return 10 + Math.floor(Math.random() * 200);
+        case "gold":
+            return 7 + Math.floor(Math.random() * 140);
+        case "platinum":
+            return 4 + Math.floor(Math.random() * 100);
+        case "diamond":
+            return 3 + Math.floor(Math.random() * 70);
+        case "magicCrystal":
+            return 1 + Math.floor(Math.random() * 30);
+    }
+}
+
+/*
+const mineralDistributions: [FuelType | OreType, number, number, number][][] = [
+    [['gold', 0.05, 10, 40], ['silver', 0.05, 20, 80], ['iron', 0.1, 40, 200], ['uranium', 0.1, 40, 200]],
+]
+*/
 function generateContract(state: State, id : number, targetValue: number): Contract {
     const baseDiameter = 10 * (Math.log(targetValue) / Math.log(10) - 4) ;
 
@@ -27,13 +120,23 @@ function generateContract(state: State, id : number, targetValue: number): Contr
     const rows = yRadius * 2;
     const columns = xRadius * 2 + 1;
 
-    const iron = getOreByType(state, 'iron');
+    const oreMapping = {
+        'iron': getOreByType(state, 'iron'),
+        'silver': getOreByType(state, 'silver'),
+        'gold': getOreByType(state, 'gold'),
+        'platinum': getOreByType(state, 'platinum'),
+        'diamond': getOreByType(state, 'diamond'),
+        'magicCrystal': getOreByType(state, 'magicCrystal')
+    };
+
 
     const densityDistribution = Random.element([
         [0.5, 2],
         [5, 0.1, 0.1, 1, 1, 1],
         [3, 0.5, 0.5, 3, 0.5],
     ]);
+
+    //const mineralDistribution = Random.element(mineralDistributions);
 
     for (let i = 0; i < rows; i++) {
         grid[i] = [];
@@ -59,12 +162,19 @@ function generateContract(state: State, id : number, targetValue: number): Contr
             const newCell: MiningCell = {
                 durability: 100 * densityCoefficient * miningDifficulty,
             };
-            if (Math.random() < 0.1) {
-                newCell.resourceType = 'iron';
-                const units = 10 + Math.floor(Math.random() * 200);
-                newCell.resourceUnits = units;
-                newCell.durability += iron.miningDurabilityPerUnit * units;
+            if (cellHasResource(targetValue, percentDepth)) {
+                newCell.resourceType = determineCellResource(targetValue, percentDepth);
+                newCell.resourceUnits = genResourceUnits(newCell.resourceType);
+                newCell.durability += oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
             }
+            /*for (const [cargoType, chance, min, max] of mineralDistribution) {
+                if (Math.random() < chance) {
+                    newCell.resourceType = cargoType;
+                    const units = Random.range(min, max)
+                    newCell.resourceUnits = units;
+                    newCell.durability += iron.miningDurabilityPerUnit * units;
+                }
+            }*/
             grid[i][j] = newCell;
         }
     }
@@ -83,7 +193,8 @@ function generateContract(state: State, id : number, targetValue: number): Contr
 export function generateContractList(state: State, amount: number): Contract[] {
     const contracts: Contract[] = [];
     for (let i = 0; i < amount; i++) {
-        contracts[i] = generateContract(state, i, 100e3 * (i * 4 + 1));
+        const targetValue = 100e3 * (i * 4 + 1);
+        contracts[i] = generateContract(state, i, targetValue);
     }
     return contracts;
 }

@@ -2,35 +2,52 @@
 function asteroidToString(contract) {
     return contract.grid.map(row => row.map(cell => {
         if (!cell) return ' ';
-        if (cell.resourceType === 'iron') {
-            return 'I';
+        if (cell.resourceType) {
+            return cell.resourceType[0];
         }
         return Math.min(9, Math.round(cell.durability / 100));
     }).join('')).join("\n");
+}
+function storageToString(storage) {
+    return storage.cargo.map(cargo =>
+        cargo.cargoType + ': ' + (cargo.remainingUses || cargo.units)
+    ).join("\n");
 }
 
 gameApi.purchaseContract(0)
 gameApi.rentShip('basicShip', 20)
 gameApi.purchaseFuel('basicShip', 60, { spendCredit: true });
 gameApi.purchaseTool('basicDiggingDrill', 1, 'basicShip', { spendCredit: true });
+gameApi.purchaseTool('basicHarvestingDrill', 2, 'basicShip', { spendCredit: true });
 simulation = gameApi.simulate();
-let simulatedState = simulation.simulatedState;
-console.log('time', simulatedState.time);
-console.log('debt', simulatedState.debt);
-console.log('distance', simulatedState.currentContract.distance);
+let state = simulation.state;
+console.log('time', state.time);
+console.log('debt', state.debt);
+console.log('distance', state.currentContract.distance);
 simulation.travelToContract('basicShip', 30);
-console.log('time', simulatedState.time);
+console.log('time', state.time);
 
-console.log(asteroidToString(simulatedState.currentContract));
-let rows = simulatedState.currentContract.grid.length
-let columns = simulatedState.currentContract.grid[0].length
+console.log(asteroidToString(state.currentContract));
+let rows = state.currentContract.grid.length
+let columns = state.currentContract.grid[0].length
 let x = 0, y = 0;
-while (simulatedState.currentShip.cargo[1]?.remainingUses) {
-    try {
-        simulation.dig(x, y, 'basicDiggingDrill');
-        continue;
-    } catch {
-
+function getTool(toolType) {
+    return state.currentShip.cargo.find(cargo => cargo.cargoType === toolType);
+}
+while (getTool('basicDiggingDrill')?.remainingUses) {
+    if (state.currentContract.grid[y][x]?.durability) {
+        try {
+            // Use the harvesting drill for resources if any uses are left.
+            if (getTool('basicHarvestingDrill')?.remainingUses
+                && state.currentContract.grid[y][x].resourceType
+            ) {
+                simulation.dig(x, y, 'basicHarvestingDrill');
+            } else {
+                simulation.dig(x, y, 'basicDiggingDrill');
+            }
+            continue;
+        } catch (e) {
+        }
     }
     x++;
     if (x >= columns) {
@@ -41,10 +58,14 @@ while (simulatedState.currentShip.cargo[1]?.remainingUses) {
         }
     }
 }
-console.log(asteroidToString(simulatedState.currentContract));
+console.log(asteroidToString(state.currentContract));
 // Set the amount high to make sure we load it all.
 simulation.loadCargo('iron', 10000);
+console.log(storageToString(state.currentShip));
 simulation.returnToStation(30);
-simulation.sellAllCargoByType('iron', 'basicShip');
-console.log('Credit/Debt', simulatedState.credits, '/', simulatedState.debt);
-console.log('Time/Rental Due', simulatedState.time, '/', simulatedState.station.ships[0].returnTime);
+console.log('Credit/Debt', state.credits, '/', state.debt);
+simulation.sellAllOre('basicShip');
+console.log('Credit/Debt', state.credits, '/', state.debt);
+console.log('Time/Rental Due', state.time, '/', state.station.ships[0].returnTime);
+simulation.returnShip('basicShip', { liquidateCargo: true });
+refreshReact(simulation);

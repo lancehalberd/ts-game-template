@@ -6,21 +6,17 @@ import 'app/styles/App.scss';
 export const GameContext = React.createContext({} as IGameContext);
 
 const App = () => {
-    const FORCE_REFRESH_KEY = 'lastForceRefreshAt';
-    const gameApi = window!.gameApi!;
+    const [gameApi, setGameApi] = React.useState(window.gameApi!);
     const [gameState, setGameState] = React.useState(gameApi.getState());
-    let lastForceRefreshEpoch = localStorage.getItem(FORCE_REFRESH_KEY);
-
-    setInterval(() => {
-        const curForceRefreshEpoch = localStorage.getItem(FORCE_REFRESH_KEY);
-        if (lastForceRefreshEpoch != curForceRefreshEpoch) {
-            console.log('App: Forcing app refresh');
-            lastForceRefreshEpoch = curForceRefreshEpoch;
+    // This takes `newGameApi` as an argument to allow attaching a simulated state to the UI.
+    window.refreshReact = (newGameApi?: GameApi) => {
+        if (newGameApi) {
+            setGameApi(newGameApi);
+            setGameState(newGameApi.getState());
+        } else {
             setGameState(gameApi.getState());
         }
-    }, 1000);
-
-    console.log('gameState: ', gameState);
+    };
 
     return (
         <GameContext.Provider value={{ gameState, gameApi, setGameState }}>

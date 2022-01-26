@@ -4,7 +4,11 @@ import { getStationApi } from 'app/stationActions';
 export {};
 
 declare global {
-    interface Window { state?: State; gameApi?: GameApi, refreshReact?: () => void }
+    interface Window {
+        state?: State
+        gameApi?: GameApi
+        refreshReact?: (gameApi: GameApi) => void
+    }
 
     interface IGameContext {
         gameState: State;
@@ -13,7 +17,15 @@ declare global {
     }
 
     type GameApi = {
+        // This will only be available on a simulation.
+        state?: State
+        // Outside of simulation you must call `getState` to read the state.
+        // This is to prevent writing directly to the "real" game state.
         getState(): State
+        // This returns a copy of the game api for simulation only.
+        // Scripts can use this to test the outcome of a complex course of action.
+        // And UI elements can use this for previewing results of single actions.
+        simulate: () => GameApi
     } & ReturnType<typeof getMiningApi>
       & ReturnType<typeof getStationApi>;
 
