@@ -5,27 +5,13 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    Paper,
     Stack,
 } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 import * as React from 'react';
 import { GameContext } from '../App';
-
-const DetailItem = ({
-    label,
-    value,
-}: {
-    label: string;
-    value: string | number;
-}): JSX.Element => {
-    return (
-        <Paper>
-            {label}: {value}
-        </Paper>
-    );
-};
+import { DetailItem } from './StationStepper';
 
 const ShipPicker = () => {
     const { gameState, gameApi, setGameState } = React.useContext(GameContext);
@@ -44,7 +30,7 @@ const ShipPicker = () => {
     const visibleItems = gameState.content.ships;
 
     return (
-        <div className="item-picker" style={{ display: 'flex' }}>
+        <div className="item-picker">
             <div className="item-list">
                 <List>
                     {visibleItems.map((ship) => {

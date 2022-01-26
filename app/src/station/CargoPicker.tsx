@@ -1,11 +1,13 @@
 import * as React from 'react';
 import {
     Box,
+    Button,
     List,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    Stack,
     Tab,
     Tabs,
 } from '@mui/material';
@@ -15,6 +17,7 @@ import LocalGasStationIcon from '@mui/icons-material/LocalGasStation';
 import DiamondIcon from '@mui/icons-material/Diamond';
 
 import { GameContext } from '../App';
+import { DetailItem } from './StationStepper';
 
 type CargoItem = DiggingTool | Fuel | Ore;
 
@@ -25,10 +28,18 @@ const CargoPicker = () => {
     const [selectedItem, setSelectedItem] = React.useState<CargoItem>();
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
+        setSelectedItem(null);
     };
 
     const handleItemClick = (item: CargoItem) => {
         setSelectedItem(item);
+    };
+
+    const handleItemSelect = (item: CargoItem) => {
+        // gameApi.purchaseShip(ship.shipType, { spendCredit: true });
+        // gameApi.rentShip(ship.shipType, 1, { spendCredit: true });
+        // setGameState(gameApi.getState());
+        console.log('Adding item to cargo...TODO');
     };
 
     const camelToSpaces = (str: string): string => {
@@ -68,7 +79,7 @@ const CargoPicker = () => {
     };
 
     return (
-        <div className="item-picker">
+        <div style={{ margin: '20px' }}>
             <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 <Tabs value={value} onChange={handleTabChange} centered>
                     <Tab label="Digging Tools" />
@@ -76,7 +87,7 @@ const CargoPicker = () => {
                     <Tab label="Ores" />
                 </Tabs>
             </Box>
-            <div className="picker-interior">
+            <div className="item-picker">
                 <div className="item-list">
                     <List>
                         {visibleItems().map((item) => {
@@ -99,6 +110,36 @@ const CargoPicker = () => {
                         })}
                     </List>
                 </div>
+                {selectedItem && (
+                    <>
+                        <div className="item-details">
+                            <Stack spacing={2}>
+                                {Object.keys(selectedItem).map((keyStr) => {
+                                    return (
+                                        <DetailItem
+                                            key={keyStr}
+                                            label={camelToSpaces(keyStr)}
+                                            value={
+                                                selectedItem[
+                                                    keyStr as keyof CargoItem
+                                                ]
+                                            }
+                                        />
+                                    );
+                                })}
+                            </Stack>
+                        </div>
+                        <div className="select-item-pane">
+                            <Button
+                                variant="contained"
+                                size="large"
+                                onClick={() => handleItemSelect(selectedItem)}
+                            >
+                                Add to Cargo
+                            </Button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

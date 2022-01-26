@@ -43,7 +43,7 @@ const ContractPicker = () => {
     const visibleContracts = gameState.station.availableContracts.slice(0, 10);
 
     return (
-        <div className="item-picker" style={{ display: 'flex' }}>
+        <div className="item-picker">
             <div className="item-list">
                 <List>
                     {visibleContracts.map((contract) => {
