@@ -92,6 +92,7 @@ export function getMiningApi(state: State) {
         returnToStation(maxFuelToBurn: number, { ignoreDebtInterest = false, ignoreLongTravelTime = false } = {}) {
             const { contract, ship } = requireAtContract(state);
             attemptTravel(state, ship, contract.distance, maxFuelToBurn, { ignoreDebtInterest, ignoreLongTravelTime });
+            state.currentContract = undefined;
             state.currentShip = undefined;
             state.atStation = true;
             // A new set of contracts is generated once you return to the station.

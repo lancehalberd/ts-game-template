@@ -232,7 +232,7 @@ export function consumeFuel(state: State, fuelType: FuelType, units: number, sto
     const storedFuel = getTotalCargoUnits(fuelType, storage);
     if (storedFuel < units) {
         throw { errorType: 'insufficientFuel', errorMessage: `
-            You only have ${storedFuel}L of ${fuel.name}.
+            Attempted to burn ${units}L of ${fuel.name} but you only have ${storedFuel}L.
         `};
     }
     let unitsRemaining = units;
@@ -367,6 +367,5 @@ function travelDistance(state: State, ship: Ship, distance: number, maxFuelToBur
         currentVelocity = newVelocity;
         // console.log({ time: state.time, kineticEnergy, currentVelocity, distanceTraveled });
     }
-    consumeFuel(state, ship.fuelType, fuelBurnt, ship);
-    return fuelBurnt;
+    consumeFuel(state, ship.fuelType, Math.min(maxFuelToBurn, fuelBurnt), ship);
 }

@@ -5,7 +5,7 @@ for (const fuel of content.fuels) {
     resouceTypes.push(fuel.cargoType);
     resourceMap[fuel.cargoType] = fuel;
 }
-for (const ore of content.pres) {
+for (const ore of content.ores) {
     resouceTypes.push(ore.cargoType);
     resourceMap[ore.cargoType] = ore;
 }
@@ -74,9 +74,11 @@ function attemptPlan(api, plan) {
     try {
         plan(api.simulate());
         plan(api);
+        return true;
     } catch {
         // Do nothing if the simulation throws an error.
     }
+    return false;
 }
 // Gets the state, quickly if the api is a simulation.
 function getState(api) {
@@ -85,8 +87,11 @@ function getState(api) {
 function getMiningState(api) {
     return api.state || api.getMiningState();
 }
-function digCell(api, x, y, diggingTool, harvestingTool) {
+function digCell(api, x, y, diggingTool, harvestingTool, {debugMining} = {}) {
     cell = api.getMiningCell(x, y);
+    if (debugMining) {
+        console.log(`Diggin at ${x},${y}`, cell.durability, cell.resourceType, cell.resourceUnits);
+    }
     while (cell?.durability) {
         if (!cell.resourceType) {
             api.dig(x, y, diggingTool);
@@ -100,7 +105,7 @@ function digCell(api, x, y, diggingTool, harvestingTool) {
         cell = api.getMiningCell(x, y);
     }
 }
-function mineAsteroidBetter(api, {debugCargo, debugAsteroid} = {}) {
+function mineAsteroidBetter(api, {debugCargo, debugAsteroid, debugMining} = {}) {
     let state = getMiningState(api);
     if (debugAsteroid) {
         console.log(asteroidToString(state.currentContract));
@@ -126,12 +131,23 @@ function mineAsteroidBetter(api, {debugCargo, debugAsteroid} = {}) {
         const {
             path, miningDigs, harvestDigs
         } = findBestPathToDig(grid, resourceCoords, 5, diggingPower, harvestingPower);
-        attemptPlan(api, api => {
-            // Apply the dig
-            for (const {x, y} of path) {
-                digCell(api, x, y, 'basicDiggingDrill', 'basicHarvestingDrill');
+        if (!path) {
+            if (debugMining) {
+                console.log('No good paths left, stopping mining');
             }
-        });
+        }
+        if (!attemptPlan(api, (api, dryRun) => {
+            // Dig the described path to harvest from the cell.
+            for (const {x, y} of path) {
+                digCell(api, x, y, 'basicDiggingDrill', 'basicHarvestingDrill', {debugMining: !dryRun && debugMining});
+            }
+        })) {
+            // If the plan failed, we are done digging.
+            if (debugMining) {
+                console.log('Could not complete path, stopping mining');
+            }
+            break;
+        }
     }
     // Set the amount high to make sure we load it all.
     for (const resourceType of resouceTypes) {
@@ -145,20 +161,92 @@ function mineAsteroidBetter(api, {debugCargo, debugAsteroid} = {}) {
         console.log(storageToString(state.currentShip));
     }
 }
+function findShortestPathToCell(grid, x, y, sx, sy, maxDigs, diggingPower, isGoal = false) {
+    const cell = grid[y]?.[x];
+    // Do not allow shortest path to go through a cell with resources.
+    if (!isGoal && cell?.resourceType) {
+        return null;
+    }
+    // If we reach the surface we are done.
+    if (!cell?.durability) {
+        return {path: [], digs: 0};
+    }
+    const currentDigs = isGoal ? 0 : Math.ceil(cell.durability / diggingPower);
+    // Stop once we have exceeded the max dig allowance for this path.
+    if (currentDigs > maxDigs) {
+        return null;
+    }
+    let bestPath;
+    let neighbors;
+    const T = {x, y: y - 1}, B = {x, y: y + 1}, L = {x: x - 1, y}, R = {x: x + 1, y};
+    const t = y, b = grid.length - 1 - y, l = x, r = grid[0].length - 1 - x;
+    const min = Math.min(t, b, l, r);
+    if (t === min) {
+        if (l <= r) {
+            neighbors = [T, L, R];
+        } else {
+            neighbors = [T, R, L];
+        }
+    } else if (b === min) {
+        if (l <= r) {
+            neighbors = [B, L, R];
+        } else {
+            neighbors = [B, R, L];
+        }
+    } else if (l === min) {
+        if (t <= b) {
+            neighbors = [L, T, B];
+        } else {
+            neighbors = [L, B, T];
+        }
+    } else {
+        if (t <= b) {
+            neighbors = [R, T, B];
+        } else {
+            neighbors = [R, B, T];
+        }
+    }
+    for (const neighbor of neighbors) {
+        // Skip the cell we just came from.
+        if (neighbor.x === sx && neighbor.y === sy) {
+            continue;
+        }
+        const { path, digs } = findShortestPathToCell(
+            grid, neighbor.x, neighbor.y, x, y, maxDigs - currentDigs, diggingPower
+        ) || {};
+        if (path) {
+            if (digs + currentDigs <= maxDigs) {
+                bestPath = path;
+                maxDigs = digs + currentDigs;
+            } else {
+
+            }
+        }
+    }
+    if (bestPath) {
+        return { path: [...bestPath, {x, y}], digs: maxDigs };
+    }
+}
 function findBestPathToDig(grid, resourceCoords, maxDigs, diggingPower, harvestingPower) {
     let bestValue = 0, bestPath = null, bestMiningDigs = 0, bestHarvestDigs = 0;
     for (const {x, y} of resourceCoords) {
         const cell = grid[y][x];
-        const { path, digs } = findShortestPathToCell(grid, x, y, maxDigs, diggingPower);
+        if (!cell?.durability) {
+            continue;
+        }
         const harvestDigs = Math.ceil(cell.durability / harvestingPower);
-        const totalDigs = digs + harvestDigs;
-        const totalValuePerMassPerDigs
-            = cell.resourceUnits * resourceMap[cell.resourceType].unitCost / cell.unitMass / totalDigs;
-        if (totalValuePerMassPerTime > bestValue) {
-            bestPath = [...path, {x, y}];
-            bestValue = totalValuePerMassPerDigs;
-            bestMiningDigs = digs;
-            bestHarvestDigs = harvestDigs;
+        const { path, digs } = findShortestPathToCell(grid, x, y, x, y, maxDigs, diggingPower, true) || {};
+        if (path) {
+            const totalDigs = digs + harvestDigs;
+            const { unitCost, unitMass } = resourceMap[cell.resourceType];
+            const totalValuePerMassPerDigs
+                = cell.resourceUnits * unitCost / unitMass / totalDigs;
+            if (totalValuePerMassPerDigs > bestValue) {
+                bestPath = path;
+                bestValue = totalValuePerMassPerDigs;
+                bestMiningDigs = digs;
+                bestHarvestDigs = harvestDigs;
+            }
         }
     }
     return {
@@ -168,13 +256,13 @@ function findBestPathToDig(grid, resourceCoords, maxDigs, diggingPower, harvesti
     };
 }
 function travelToContract(api) {
-    const state = api.state || api.getState();
+    const state = api.state || api.getStationState();
     const ship = state.station.ships[0];
     const fuelAmount = ship.cargo.find(cargo => cargo.cargoType === ship.fuelType).units;
     api.travelToContract(ship.shipType, Math.floor(fuelAmount / 2));
 }
 function returnToStation(api) {
-    const state = api.state || api.getState();
+    const state = api.state || api.getMiningState();
     const ship = state.currentShip;
     const fuelAmount = ship.cargo.find(cargo => cargo.cargoType === ship.fuelType).units;
     api.returnToStation(Math.floor(fuelAmount));
@@ -226,29 +314,32 @@ function runContract(api, contractIndex, {debugActions, debugCargo, debugAsteroi
     api.returnShip('basicShip', { liquidateCargo: true });
 }
 
-
-let bestContract = 0, bestResult = -1000000, bestRentalTime = 20;
-const startState = gameApi.getState();
-const startTime = startState.time;
-const startCredits = startState.credits - startState.debt;
-for (let i = 0; i < 10; i++) {
-    try {
-        const simulation = gameApi.simulate();
-        runContract(simulation, i, { debugAsteroid: false, debugCargo: true });
-        const deltaCredits = (simulation.state.credits - simulation.state.debt) - startCredits;
-        const deltaTime = simulation.state.time - startTime;
-        const result = deltaCredits / deltaTime;
-        if (result > bestResult) {
-            console.log('New PR :) ', result, i, deltaTime);
-            bestResult = result;
-            bestContract = i;
-            bestRentalTime = Math.ceil(deltaTime);
-        } else {
-            console.log('Worse :( ', result, i, deltaTime);
+function runNextContract(api, maxContractIndex, { debugActions, debugAsteroid = false, debugCargo = false } = {}) {
+    let bestContract = 0, bestResult = -1000000, bestRentalTime = 20;
+    const startState = gameApi.getStationState();
+    const startTime = startState.time;
+    const startCredits = startState.credits - startState.debt;
+    for (let i = 0; i < maxContractIndex; i++) {
+        try {
+            const simulation = gameApi.simulate();
+            runContract(simulation, i, { debugAsteroid, debugCargo });
+            const deltaCredits = (simulation.state.credits - simulation.state.debt) - startCredits;
+            const deltaTime = simulation.state.time - startTime;
+            const result = deltaCredits / deltaTime;
+            if (result > bestResult) {
+                console.log('New PR :) ', result, i, deltaTime);
+                bestResult = result;
+                bestContract = i;
+                bestRentalTime = Math.ceil(deltaTime);
+            } else {
+                console.log('Worse :( ', result, i, deltaTime);
+            }
+        } catch (e) {
+            console.log('Failed on', i, e);
         }
-    } catch (e) {
-        console.log('Failed on', i, e);
     }
+    runContract(gameApi, bestContract, {debugActions});
+    refreshReact();
 }
-runContract(gameApi, bestContract, {debugActions: true});
-refreshReact();
+
+runNextContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
