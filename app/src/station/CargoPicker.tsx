@@ -40,6 +40,8 @@ const CargoPicker = () => {
     const [selectedItem, setSelectedItem] = React.useState<Cargo>();
     const currentShip = gameState.station.ships[0];
 
+    console.log('CargoPicker gameState: ', gameState);
+
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
         setSelectedItem(undefined);
@@ -56,7 +58,6 @@ const CargoPicker = () => {
         if (shipType) {
             switch (item.type) {
                 case 'tool':
-                    console.log('purchased tool');
                     gameApi.purchaseTool(
                         item.cargoType,
                         1,
@@ -68,7 +69,7 @@ const CargoPicker = () => {
                     gameApi.purchaseFuel(shipType, 1, { spendCredit: true });
                     break;
                 case 'ore':
-                    console.log('BLOCKER: Need purchaseOre()');
+                    console.log('ERROR: Cannot purchase Ore');
                     break;
             }
             setGameState(gameApi.getState());
@@ -154,8 +155,12 @@ const CargoPicker = () => {
                     >
                         Add to Cargo
                     </Button>
-                    {!canAddItem && <p>Please purchase a Ship first.</p>}
+
+                    {!currentShip && <p>Please purchase a Ship first.</p>}
+                    {!selectedItem && <p>Please select a Cargo item.</p>}
+
                     <Divider />
+
                     <YourCargo />
                 </div>
             </div>

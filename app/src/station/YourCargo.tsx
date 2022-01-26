@@ -29,9 +29,10 @@ const CargoAggregateItem: React.FC<AggItemProps> = ({
 
 const YourCargo = () => {
     const { gameState } = React.useContext(GameContext);
-    const cargo = gameState.station.cargo;
-
-    console.log('cargo: ', cargo);
+    const cargo = [
+        ...gameState.station.cargo,
+        ...(gameState.station.ships[0]?.cargo || []),
+    ];
 
     // Each aggregate item is an icon, name of item, and count badge
     const uniqCargoTypes = new Set(cargo.map((item) => item.cargoType));
