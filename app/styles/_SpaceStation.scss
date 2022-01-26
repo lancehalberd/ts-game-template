@@ -62,3 +62,20 @@
         }
     }
 }
+
+.your-cargo {
+    margin-top: 20px;
+    .cargo-items {
+        margin-top: 26px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+    }
+
+    .cargo-agg-item {
+        display: flex;
+        .label {
+            margin-left: 16px;
+        }
+    }
+}

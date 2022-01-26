@@ -20,31 +20,43 @@ import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
 import YourCargo from './YourCargo';
 
-type CargoItem = DiggingTool | Fuel | Ore;
+export const getCargoItemIcon = (cargoType: string) => {
+    switch (cargoType) {
+        case 'tool':
+            return <BuildIcon />;
+            break;
+        case 'fuel':
+            return <LocalGasStationIcon />;
+            break;
+        case 'ore':
+            return <DiamondIcon />;
+            break;
+    }
+};
 
 const CargoPicker = () => {
     const [value, setValue] = React.useState(0);
     const { gameState, gameApi, setGameState } = React.useContext(GameContext);
-    const [selectedItem, setSelectedItem] = React.useState<CargoItem>();
+    const [selectedItem, setSelectedItem] = React.useState<Cargo>();
+    const currentShip = gameState.station.ships[0];
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
         setSelectedItem(undefined);
     };
 
-    const handleItemClick = (item: CargoItem) => {
+    const handleItemClick = (item: Cargo) => {
         setSelectedItem(item);
     };
 
-    const handleItemSelect = (item: CargoItem | undefined) => {
+    const handleItemSelect = (item: Cargo | undefined) => {
         if (!item) return;
-        // gameApi.purchaseShip(ship.shipType, { spendCredit: true });
-        // gameApi.rentShip(ship.shipType, 1, { spendCredit: true });
-        // setGameState(gameApi.getState());
-        const shipType = gameState.currentShip?.shipType;
+
+        const shipType = currentShip?.shipType;
         if (shipType) {
             switch (item.type) {
                 case 'tool':
+                    console.log('purchased tool');
                     gameApi.purchaseTool(
                         item.cargoType,
                         1,
@@ -59,6 +71,7 @@ const CargoPicker = () => {
                     console.log('BLOCKER: Need purchaseOre()');
                     break;
             }
+            setGameState(gameApi.getState());
         }
     };
 
@@ -84,23 +97,7 @@ const CargoPicker = () => {
         }
     };
 
-    const getItemIcon = () => {
-        switch (value) {
-            case 0:
-                return <BuildIcon />;
-                break;
-            case 1:
-                return <LocalGasStationIcon />;
-                break;
-            case 2:
-                return <DiamondIcon />;
-                break;
-        }
-    };
-
-    const canAddItem = !!(gameState.station.ships.length && selectedItem);
-
-    console.log('canAddItem: ', canAddItem);
+    const canAddItem = !!(currentShip && selectedItem);
 
     return (
         <div style={{ margin: '20px' }}>
@@ -125,7 +122,7 @@ const CargoPicker = () => {
                                         }
                                     >
                                         <ListItemIcon>
-                                            {getItemIcon()}
+                                            {getCargoItemIcon(item.type)}
                                         </ListItemIcon>
                                         <ListItemText primary={item.name} />
                                     </ListItemButton>
@@ -142,9 +139,7 @@ const CargoPicker = () => {
                                 <DetailItem
                                     key={keyStr}
                                     label={camelToSpaces(keyStr)}
-                                    value={
-                                        selectedItem[keyStr as keyof CargoItem]
-                                    }
+                                    value={selectedItem[keyStr as keyof Cargo]}
                                 />
                             );
                         })}
