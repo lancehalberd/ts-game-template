@@ -7,7 +7,6 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    Stack,
     Tab,
     Tabs,
 } from '@mui/material';
@@ -28,7 +27,7 @@ const CargoPicker = () => {
     const [selectedItem, setSelectedItem] = React.useState<CargoItem>();
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
-        setSelectedItem(null);
+        setSelectedItem(undefined);
     };
 
     const handleItemClick = (item: CargoItem) => {
@@ -113,21 +112,19 @@ const CargoPicker = () => {
                 {selectedItem && (
                     <>
                         <div className="item-details">
-                            <Stack spacing={2}>
-                                {Object.keys(selectedItem).map((keyStr) => {
-                                    return (
-                                        <DetailItem
-                                            key={keyStr}
-                                            label={camelToSpaces(keyStr)}
-                                            value={
-                                                selectedItem[
-                                                    keyStr as keyof CargoItem
-                                                ]
-                                            }
-                                        />
-                                    );
-                                })}
-                            </Stack>
+                            {Object.keys(selectedItem).map((keyStr) => {
+                                return (
+                                    <DetailItem
+                                        key={keyStr}
+                                        label={camelToSpaces(keyStr)}
+                                        value={
+                                            selectedItem[
+                                                keyStr as keyof CargoItem
+                                            ]
+                                        }
+                                    />
+                                );
+                            })}
                         </div>
                         <div className="select-item-pane">
                             <Button

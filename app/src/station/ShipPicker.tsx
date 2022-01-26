@@ -5,7 +5,6 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    Stack,
 } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
@@ -55,40 +54,32 @@ const ShipPicker = () => {
             {selectedShip && (
                 <>
                     <div className="item-details">
-                        <Stack spacing={2}>
-                            <DetailItem
-                                label="Ship Type"
-                                value={selectedShip.shipType}
-                            />
-                            <DetailItem
-                                label="Cost"
-                                value={selectedShip.cost}
-                            />
-                            <DetailItem
-                                label="Mass"
-                                value={selectedShip.mass}
-                            />
-                            <DetailItem
-                                label="Cargo"
-                                value={selectedShip.cargo.join(',')}
-                            />
-                            <DetailItem
-                                label="Cargo Space"
-                                value={selectedShip.cargoSpace}
-                            />
-                            <DetailItem
-                                label="Fuel Type"
-                                value={selectedShip.fuelType}
-                            />
-                            <DetailItem
-                                label="Current Owned?"
-                                value={`${selectedShip.isOwned}`}
-                            />
-                            <DetailItem
-                                label="Current Rented?"
-                                value={`${selectedShip.isRented}`}
-                            />
-                        </Stack>
+                        <DetailItem
+                            label="Ship Type"
+                            value={selectedShip.shipType}
+                        />
+                        <DetailItem label="Cost" value={selectedShip.cost} />
+                        <DetailItem label="Mass" value={selectedShip.mass} />
+                        <DetailItem
+                            label="Cargo"
+                            value={selectedShip.cargo.join(',')}
+                        />
+                        <DetailItem
+                            label="Cargo Space"
+                            value={selectedShip.cargoSpace}
+                        />
+                        <DetailItem
+                            label="Fuel Type"
+                            value={selectedShip.fuelType}
+                        />
+                        <DetailItem
+                            label="Current Owned?"
+                            value={`${selectedShip.isOwned}`}
+                        />
+                        <DetailItem
+                            label="Current Rented?"
+                            value={`${selectedShip.isRented}`}
+                        />
                     </div>
                     <div className="select-item-pane">
                         <Button
@@ -96,7 +87,7 @@ const ShipPicker = () => {
                             size="large"
                             onClick={() => handleShipSelect(selectedShip)}
                         >
-                            Select This Ship
+                            Rent This Ship
                         </Button>
                         <p>
                             Choose the desired ship for this Contract. Then,

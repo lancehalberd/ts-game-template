@@ -41,17 +41,20 @@
     }
 
     .item-list {
-        width: 40%;
+        width: 30%;
     }
 
     .item-details {
-        padding-top: 8px;
-        width: 30%;
+        padding: 8px 10px;
+        width: 50%;
         display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 10px;
     }
 
     .select-item-pane {
         padding-top: 8px;
-        width: 30%;
+        width: 20%;
     }
 }
