@@ -2,8 +2,8 @@
 function asteroidToString(contract) {
     return contract.grid.map(row => row.map(cell => {
         if (!cell) return ' ';
-        if (cell.resourceType === 'iron') {
-            return 'I';
+        if (cell.resourceType) {
+            return cell.resourceType[0];
         }
         return Math.min(9, Math.round(cell.durability / 100));
     }).join('')).join("\n");

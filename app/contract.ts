@@ -90,6 +90,11 @@ function genResourceUnits(ore: OreType): number {
     }
 }
 
+/*
+const mineralDistributions: [FuelType | OreType, number, number, number][][] = [
+    [['gold', 0.05, 10, 40], ['silver', 0.05, 20, 80], ['iron', 0.1, 40, 200], ['uranium', 0.1, 40, 200]],
+]
+*/
 function generateContract(state: State, id : number, targetValue: number): Contract {
     const baseDiameter = 10 * (Math.log(targetValue) / Math.log(10) - 4) ;
 
@@ -124,11 +129,14 @@ function generateContract(state: State, id : number, targetValue: number): Contr
         'magicCrystal': getOreByType(state, 'magicCrystal')
     };
 
+
     const densityDistribution = Random.element([
         [0.5, 2],
         [5, 0.1, 0.1, 1, 1, 1],
         [3, 0.5, 0.5, 3, 0.5],
     ]);
+
+    //const mineralDistribution = Random.element(mineralDistributions);
 
     for (let i = 0; i < rows; i++) {
         grid[i] = [];
@@ -159,6 +167,14 @@ function generateContract(state: State, id : number, targetValue: number): Contr
                 newCell.resourceUnits = genResourceUnits(newCell.resourceType);
                 newCell.durability += oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
             }
+            /*for (const [cargoType, chance, min, max] of mineralDistribution) {
+                if (Math.random() < chance) {
+                    newCell.resourceType = cargoType;
+                    const units = Random.range(min, max)
+                    newCell.resourceUnits = units;
+                    newCell.durability += iron.miningDurabilityPerUnit * units;
+                }
+            }*/
             grid[i][j] = newCell;
         }
     }
@@ -177,7 +193,7 @@ function generateContract(state: State, id : number, targetValue: number): Contr
 export function generateContractList(state: State, amount: number): Contract[] {
     const contracts: Contract[] = [];
     for (let i = 0; i < amount; i++) {
-        let targetValue = 100e3 * (i * 4 + 1);
+        const targetValue = 100e3 * (i * 4 + 1);
         contracts[i] = generateContract(state, i, targetValue);
     }
     return contracts;
