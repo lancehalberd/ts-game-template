@@ -24,9 +24,9 @@ type CargoItem = DiggingTool | Fuel | Ore;
 
 const CargoPicker = () => {
     const [value, setValue] = React.useState(0);
-    const { gameState } = React.useContext(GameContext);
-
+    const { gameState, gameApi, setGameState } = React.useContext(GameContext);
     const [selectedItem, setSelectedItem] = React.useState<CargoItem>();
+
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
         setSelectedItem(undefined);
@@ -36,11 +36,30 @@ const CargoPicker = () => {
         setSelectedItem(item);
     };
 
-    const handleItemSelect = (item: CargoItem) => {
+    const handleItemSelect = (item: CargoItem | undefined) => {
+        if (!item) return;
         // gameApi.purchaseShip(ship.shipType, { spendCredit: true });
         // gameApi.rentShip(ship.shipType, 1, { spendCredit: true });
         // setGameState(gameApi.getState());
-        console.log('Adding item to cargo...TODO');
+        const shipType = gameState.currentShip?.shipType;
+        if (shipType) {
+            switch (item.type) {
+                case 'tool':
+                    gameApi.purchaseTool(
+                        item.cargoType,
+                        1,
+                        gameState?.currentShip?.shipType,
+                        { spendCredit: true }
+                    );
+                    break;
+                case 'fuel':
+                    gameApi.purchaseFuel(shipType, 1, { spendCredit: true });
+                    break;
+                case 'ore':
+                    console.log('BLOCKER: Need purchaseOre()');
+                    break;
+            }
+        }
     };
 
     const camelToSpaces = (str: string): string => {
@@ -79,13 +98,17 @@ const CargoPicker = () => {
         }
     };
 
+    const canAddItem = !!(gameState.station.ships.length && selectedItem);
+
+    console.log('canAddItem: ', canAddItem);
+
     return (
         <div style={{ margin: '20px' }}>
             <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 <Tabs value={value} onChange={handleTabChange} centered>
                     <Tab label="Digging Tools" />
                     <Tab label="Fuels" />
-                    <Tab label="Ores" />
+                    <Tab label="Ores" disabled />
                 </Tabs>
             </Box>
             <div className="item-picker">
@@ -127,16 +150,16 @@ const CargoPicker = () => {
                         })}
                 </div>
                 <div className="select-item-pane">
-                    {selectedItem && (
-                        <Button
-                            variant="contained"
-                            size="large"
-                            className="item-select-button"
-                            onClick={() => handleItemSelect(selectedItem)}
-                        >
-                            Add to Cargo
-                        </Button>
-                    )}
+                    <Button
+                        variant="contained"
+                        size="large"
+                        className="item-select-button"
+                        disabled={!canAddItem}
+                        onClick={() => handleItemSelect(selectedItem)}
+                    >
+                        Add to Cargo
+                    </Button>
+                    {!canAddItem && <p>Please purchase a Ship first.</p>}
                     <Divider />
                     <YourCargo />
                 </div>
