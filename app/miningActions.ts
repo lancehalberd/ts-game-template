@@ -52,6 +52,16 @@ export function getMiningApi(state: State) {
                     There is nothing to dig at ${x},${y}
                 `};
             }
+            // Cannot dig a cell unless a cell next to it is empty/off the grid.
+            if (contract.grid[y - 1]?.[x]
+                && contract.grid[y + 1]?.[x]
+                && contract.grid[y]?.[x - 1]
+                && contract.grid[y]?.[x + 1]
+            ) {
+                throw { errorType: 'enclosedCell', errorMessage: `
+                    ${x},${y} is not reachable yet
+                `};
+            }
             const tool = getToolFromStorage(state, toolType, ship);
             if (tool.energyPerUse) {
                 const fuel = getFuelByType(state, ship.fuelType);

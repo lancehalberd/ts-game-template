@@ -1,5 +1,6 @@
 import { averageTravelDistance } from 'app/gameConstants';
 import { getOreByType } from 'app/state';
+import Random from 'app/utils/Random';
 
 function generateContract(state: State, id : number, targetValue: number): Contract {
     const baseDiameter = 10 * (Math.log(targetValue) / Math.log(10) - 4) ;
@@ -28,6 +29,12 @@ function generateContract(state: State, id : number, targetValue: number): Contr
 
     const iron = getOreByType(state, 'iron');
 
+    const densityDistribution = Random.element([
+        [0.5, 2],
+        [5, 0.1, 0.1, 1, 1, 1],
+        [3, 0.5, 0.5, 3, 0.5],
+    ]);
+
     for (let i = 0; i < rows; i++) {
         grid[i] = [];
         const y = yRadius - 0.5 - i;
@@ -38,8 +45,19 @@ function generateContract(state: State, id : number, targetValue: number): Contr
                 grid[i][j] = null;
                 continue;
             }
+            const x = xRadius - 0.5 - j;
+            const distanceFromCore = Math.sqrt(y * y + x * x);
+            const theta = Math.atan2(y, x);
+            const surfaceX = xRadius * Math.cos(theta);
+            const surfaceY = yRadius * Math.sin(theta);
+            const surfaceDistance = Math.sqrt(surfaceY * surfaceY + surfaceX * surfaceX);
+            const percentDepth = Math.max(0, Math.min(1, 1 - distanceFromCore / surfaceDistance));
+            const distributionIndex = percentDepth * densityDistribution.length;
+            const leftDensity = densityDistribution[distributionIndex | 0];
+            const rightDensity = densityDistribution[Math.min(distributionIndex | 0 + 1, densityDistribution.length - 1)];
+            const densityCoefficient = leftDensity * (1 - distributionIndex % 1) + rightDensity * (distributionIndex % 1);
             const newCell: MiningCell = {
-                durability: miningDifficulty,
+                durability: 100 * densityCoefficient * miningDifficulty,
             };
             if (Math.random() < 0.1) {
                 newCell.resourceType = 'iron';
@@ -54,8 +72,8 @@ function generateContract(state: State, id : number, targetValue: number): Contr
     return {
         id,
         grid,
-        cost: targetValue * (0.9 + 0.2 * Math.random()) / 5,
-        distance: averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random()),
+        cost: Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5),
+        distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
         cargo: [],
         // This should be practically infinite.
         cargoSpace: 1e12,
