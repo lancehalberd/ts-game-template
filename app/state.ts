@@ -9,7 +9,7 @@ function copyShip(ship: Ship) {
         cargo: copyCargo(ship.cargo),
     }
 }
-function copyContract(contract: Contract): Contract {
+export function copyContract(contract: Contract): Contract {
     return {
         ...contract,
         grid: contract.grid.map(row => row.map(cell => cell ? {...cell} : cell)),
@@ -28,6 +28,33 @@ export function copyState(state: State): State {
         atStation: state.atStation,
         currentContract: state.currentContract ? copyContract(state.currentContract) : undefined,
         currentShip: state.currentShip ? copyShip(state.currentShip) : undefined,
+    };
+}
+
+export function copyCoreState(state: State): Partial<State> {
+    return {
+        time: state.time,
+        credits: state.credits,
+        debt: state.debt,
+        creditLimit: state.creditLimit,
+    };
+}
+export function copyMiningState(state: State): Partial<State> {
+    return {
+        ...copyCoreState(state),
+        currentContract: state.currentContract ? copyContract(state.currentContract) : undefined,
+        currentShip: state.currentShip ? copyShip(state.currentShip) : undefined,
+    };
+}
+export function copyStationState(state: State): Partial<State> {
+    return {
+        ...copyCoreState(state),
+        station: {
+            availableContracts: [],
+            cargoSpace: state.station.cargoSpace,
+            cargo: copyCargo(state.station.cargo),
+            ships: state.station.ships.map(copyShip),
+        },
     };
 }
 
