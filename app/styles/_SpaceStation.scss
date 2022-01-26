@@ -31,25 +31,25 @@
     margin: 0 40px;
 }
 
-.contract-picker {
+.item-picker {
     padding: 20px;
 
     .MuiPaper-root {
         padding: 15px;
     }
 
-    .contract-list {
-        width: 20%;
+    .item-list {
+        width: 40%;
     }
 
-    .contract-details {
+    .item-details {
         padding-top: 8px;
         width: 30%;
         display: flex;
     }
 
-    .select-contract-pane {
+    .select-item-pane {
         padding-top: 8px;
-        width: 20%;
+        width: 30%;
     }
 }
