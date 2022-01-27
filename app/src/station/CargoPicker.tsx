@@ -10,6 +10,7 @@ import {
     ListItemText,
     Tab,
     Tabs,
+    Slider,
 } from '@mui/material';
 
 import BuildIcon from '@mui/icons-material/Build';
@@ -151,6 +152,8 @@ const CargoPicker = () => {
                         })}
                 </div>
                 <div className="select-item-pane">
+                    <FuelSlider />
+
                     <Button
                         variant="contained"
                         size="large"
@@ -169,6 +172,31 @@ const CargoPicker = () => {
                     <YourCargo />
                 </div>
             </div>
+        </div>
+    );
+};
+
+const FuelSlider = () => {
+    const [fuelUnits, setFuelUnits] = React.useState<number>(20);
+
+    const handleChange = (event: Event, newValue: number | number[]) => {
+        const newUnits = newValue as number;
+        setFuelUnits(newUnits);
+    };
+
+    return (
+        <div className="fuel-slider">
+            <strong>Fuel Units:</strong>
+            {` ${fuelUnits}`}
+            <Slider
+                aria-label="Fuel Units"
+                value={fuelUnits}
+                max={100}
+                marks
+                step={5}
+                valueLabelDisplay="auto"
+                onChange={handleChange}
+            />
         </div>
     );
 };
