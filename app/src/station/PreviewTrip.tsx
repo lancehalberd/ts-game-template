@@ -33,13 +33,14 @@ const FuelSlider = ({
     );
 };
 
-
 const PreviewTrip = () => {
     const { gameState, gameApi, refreshGameState } =
         React.useContext(GameContext);
     const ship = gameState.station.ships[0];
     const shipFuelUnits = ship ? getTotalShipFuel(ship) : 0;
-    const [fuelBurnUnits, setFuelBurnUnits] = React.useState(Math.max(MIN_FUEL_BURN, Math.floor(shipFuelUnits / 2)));
+    const [fuelBurnUnits, setFuelBurnUnits] = React.useState(
+        Math.max(MIN_FUEL_BURN, Math.floor(shipFuelUnits / 2))
+    );
     const contract = gameState.currentContract;
     const diggingTool = ship?.cargo.find(
         (cargoItem) => cargoItem.type === 'tool'
@@ -53,7 +54,9 @@ const PreviewTrip = () => {
         requirements.push('Purchase or rent a ship');
     }
     if (shipFuelUnits < MIN_FUEL_BURN) {
-        requirements.push(`Purchase at least ${MIN_FUEL_BURN}L of Fuel for your Ship`);
+        requirements.push(
+            `Purchase at least ${MIN_FUEL_BURN}L of Fuel for your Ship`
+        );
     }
     if (!diggingTool) {
         requirements.push('Purchase a Digging Tool');
@@ -64,7 +67,9 @@ const PreviewTrip = () => {
                 <h3>Before you can depart</h3>
                 <p>You still need to:</p>
                 <ul>
-                    { requirements.map(text => (<li key={text}>{text}</li>))}
+                    {requirements.map((text) => (
+                        <li key={text}>{text}</li>
+                    ))}
                 </ul>
             </div>
         );
@@ -77,8 +82,11 @@ const PreviewTrip = () => {
         simulateApi.travelToContract(ship.shipType, fuelBurnUnits, {
             ignoreLongTravelTime: true,
         });
-        timeToTravel = `${Math.floor(simulateApi!.state!.time - startTime)} days`;
-    } catch {
+        timeToTravel = `${Math.floor(
+            simulateApi!.state!.time - startTime
+        )} days`;
+    } catch (e) {
+        console.log('PreviewTrip: timeToTravel error: ', e);
         timeToTravel = 'Error, try burning more fuel';
     }
 
@@ -111,7 +119,7 @@ const PreviewTrip = () => {
                 <h3 style={{ color: 'orange' }}>{shipFuelUnits} units</h3>
             </Stack>
             <h3>Time to Arrive:</h3>
-            { timeToTravel }
+            {timeToTravel}
             <div className="action-buttons">
                 <Button
                     variant="contained"

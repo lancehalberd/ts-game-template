@@ -11,7 +11,7 @@ const uranium: Fuel = {
     unitEnergy: 1,
     miningDurabilityPerUnit: 10,
     units: 0,
-}
+};
 const fuelCells: Fuel = {
     type: 'fuel',
     cargoType: 'fuelCells',
@@ -22,7 +22,7 @@ const fuelCells: Fuel = {
     unitEnergy: 2,
     miningDurabilityPerUnit: 10,
     units: 0,
-}
+};
 const tritium: Fuel = {
     type: 'fuel',
     cargoType: 'tritium',
@@ -33,7 +33,7 @@ const tritium: Fuel = {
     unitEnergy: 3,
     miningDurabilityPerUnit: 20,
     units: 0,
-}
+};
 const magicFuel: Fuel = {
     type: 'fuel',
     cargoType: 'magicFuel',
@@ -44,7 +44,7 @@ const magicFuel: Fuel = {
     unitEnergy: 10,
     miningDurabilityPerUnit: 50,
     units: 0,
-}
+};
 
 const iron: Ore = {
     type: 'ore',
@@ -105,7 +105,7 @@ const magicCrystal: Ore = {
     unitVolume: 1,
     miningDurabilityPerUnit: 50,
     units: 0,
-}
+};
 
 /*   type ToolType = 'explosives' |
         'advancedHarvestingDrill' | 'advancedDiggingDrill' | 'advanceDiggingLaser' |
@@ -359,23 +359,35 @@ const magicBigShip: ShipDefinition = {
     isOwned: false,
 };
 
-
 export function generateInitialState(): State {
     const state: State = {
         // Immutable state that defines what can be bought/found in the game.
         content: {
             diggingTools: [
-                basicHarvestingDrill, basicDiggingDrill, basicDiggingLaser,
-                advancedHarvestingDrill, advancedDiggingDrill, advancedDiggingLaser,
-                magicHarvestingDrill, magicDiggingDrill, magicDiggingLaser,
-                smallExplosives, largeExplosives,
+                basicHarvestingDrill,
+                basicDiggingDrill,
+                basicDiggingLaser,
+                advancedHarvestingDrill,
+                advancedDiggingDrill,
+                advancedDiggingLaser,
+                magicHarvestingDrill,
+                magicDiggingDrill,
+                magicDiggingLaser,
+                smallExplosives,
+                largeExplosives,
             ],
             fuels: [uranium, fuelCells, tritium, magicFuel],
             ores: [iron, silver, gold, platinum, diamond, magicCrystal],
             ships: [
-                basicSmallShip, basicShip, basicBigShip,
-                advancedSmallShip, advancedShip, advancedBigShip,
-                magicSmallShip, magicShip, magicBigShip,
+                basicSmallShip,
+                basicShip,
+                basicBigShip,
+                advancedSmallShip,
+                advancedShip,
+                advancedBigShip,
+                magicSmallShip,
+                magicShip,
+                magicBigShip,
             ],
         },
         // Time in standard days (100,000 seconds)
@@ -401,9 +413,9 @@ export function generateInitialState(): State {
         // The current contract the player has taken,
         // contains the state of the current asteroid when mining.
         currentContract: undefined,
+        currentStationStep: 'purchaseContract',
     };
     // Populate the initial list of contracts.
     state.station.availableContracts = generateContractList(state, 20);
     return state;
 }
-
