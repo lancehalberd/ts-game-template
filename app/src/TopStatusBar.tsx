@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
@@ -8,17 +9,44 @@ import ArticleIcon from '@mui/icons-material/Article';
 import { GameContext } from './App';
 import MuiPopover from './MuiPopover';
 
-const ShipElement = ({ shipName }: { shipName: string }) => (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
-        <RocketLaunchIcon />:<span className="ship-name">{shipName}</span>
-    </div>
-);
+type RentalColor = 'default' | 'primary' | 'error' | 'warning';
+
+const ShipElement = ({ color, shipName, rentalTime }: {
+    color: RentalColor,
+    shipName: string,
+    rentalTime: string
+}) => {
+    return (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Badge badgeContent={rentalTime} color={color}>
+                <RocketLaunchIcon />
+            </Badge>
+            <span className="ship-name">{shipName}</span>
+        </div>
+    );
+}
 
 export default function TopStatusBar() {
     const { gameState } = React.useContext(GameContext);
 
     const currentShip = gameState.station.ships[0];
     const shipName = currentShip?.name || 'None';
+    let rentalTime = '-', rentalColor: RentalColor = 'default';
+    if (currentShip?.isRented) {
+        const days = currentShip.returnTime! - Math.floor(gameState.time);
+        rentalTime = `${days}`;
+        if (days <= 0) {
+            rentalColor = 'error';
+        } else if (days < 10) {
+            // Most mining trips take at least 10 days, so warn the user.
+            rentalColor = 'warning';
+        } else {
+            rentalColor = 'primary';
+        }
+    } else if (currentShip?.isOwned) {
+        rentalTime = '∞';
+        rentalColor = 'primary';
+    }
     const contractID = gameState.currentContract
         ? gameState.currentContract.id
         : 'None';
@@ -30,12 +58,12 @@ export default function TopStatusBar() {
             <span>Fuel Type: {currentShip?.fuelType}</span>
             <span>Mass: {currentShip?.mass}</span>
             <span>Ship Type: {currentShip?.shipType}</span>
-            <span>Return Time: {currentShip?.returnTime}</span>
+            { currentShip?.isRented && <span>Return Time: {currentShip?.returnTime}</span> }
         </div>
     );
 
     const getShipIcon = () => {
-        const shipEl = <ShipElement shipName={shipName} />;
+        const shipEl = <ShipElement shipName={shipName} rentalTime={rentalTime} color={rentalColor} />;
         return currentShip ? (
             <MuiPopover popoverContent={shipPopover}>{shipEl}</MuiPopover>
         ) : (
