@@ -40,10 +40,16 @@ interface Props {
     storage: CargoStorage;
     onSelectCargoType?: (cargoType: CargoType) => void;
     showDetails?: boolean;
-    baseMass?: number
+    baseMass?: number;
 }
 
-const Storage = ({ label, storage, onSelectCargoType, showDetails, baseMass = 0 }: Props) => {
+const Storage = ({
+    label,
+    storage,
+    onSelectCargoType,
+    showDetails,
+    baseMass = 0,
+}: Props) => {
     const { gameState } = React.useContext(GameContext);
     let cargo: Cargo[] = storage.cargo;
 
@@ -79,7 +85,7 @@ const Storage = ({ label, storage, onSelectCargoType, showDetails, baseMass = 0 
     return (
         <div className="your-cargo">
             <MuiHeader variant="h5">{label}</MuiHeader>
-            { showDetails && (
+            {showDetails && (
                 <>
                     <div className="storage-volume">
                         <strong>space:</strong>
@@ -87,7 +93,7 @@ const Storage = ({ label, storage, onSelectCargoType, showDetails, baseMass = 0 
                     </div>
                     <div className="storage-mass">
                         <strong>mass:</strong>
-                        {` ${ (baseMass + cargoMass).toFixed(1) }kg`}
+                        {` ${(baseMass + cargoMass).toFixed(1)}kg`}
                     </div>
                 </>
             )}
@@ -146,7 +152,7 @@ const Asteroid = () => {
                                 refreshGameState();
                             }}
                             showDetails
-                            baseMass={ gameState.currentShip!.mass }
+                            baseMass={gameState.currentShip!.mass}
                         />
                         <Storage
                             label="Unloaded Cargo"
@@ -164,6 +170,7 @@ const Asteroid = () => {
                                     color="primary"
                                     onClick={() => {
                                         gameApi.returnToStation(fuelToBurn);
+                                        // setStationStep('rentShip');
                                         refreshGameState();
                                     }}
                                 >

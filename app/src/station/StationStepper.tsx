@@ -57,37 +57,12 @@ export default function StationStepper() {
         return Object.keys(completed).length;
     };
 
-    const isLastStep = () => {
-        return activeStep === totalSteps() - 1;
-    };
-
     const allStepsCompleted = () => {
         return completedSteps() === totalSteps();
     };
 
-    const handleNext = () => {
-        const newActiveStep =
-            isLastStep() && !allStepsCompleted()
-                ? // It's the last step, but not all steps have been completed,
-                  // find the first step that has been completed
-                  steps.findIndex((step, i) => !(i in completed))
-                : activeStep + 1;
-        setActiveStep(newActiveStep);
-    };
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
-
     const handleStep = (step: number) => () => {
         setActiveStep(step);
-    };
-
-    const handleComplete = () => {
-        const newCompleted = completed;
-        newCompleted[activeStep] = true;
-        setCompleted(newCompleted);
-        handleNext();
     };
 
     const handleReset = () => {
@@ -149,44 +124,6 @@ export default function StationStepper() {
                     ) : (
                         <React.Fragment>
                             {getStepContent(activeStep)}
-
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    pt: 2,
-                                }}
-                            >
-                                <Button
-                                    color="inherit"
-                                    disabled={activeStep === 0}
-                                    onClick={handleBack}
-                                    sx={{ mr: 1 }}
-                                >
-                                    Back
-                                </Button>
-                                <Box sx={{ flex: '1 1 auto' }} />
-                                <Button onClick={handleNext} sx={{ mr: 1 }}>
-                                    Next
-                                </Button>
-                                {activeStep !== steps.length &&
-                                    (completed[activeStep] ? (
-                                        <Typography
-                                            variant="caption"
-                                            sx={{ display: 'inline-block' }}
-                                        >
-                                            Step {activeStep + 1} already
-                                            completed
-                                        </Typography>
-                                    ) : (
-                                        <Button onClick={handleComplete}>
-                                            {completedSteps() ===
-                                            totalSteps() - 1
-                                                ? 'Finish'
-                                                : 'Complete Step'}
-                                        </Button>
-                                    ))}
-                            </Box>
                         </React.Fragment>
                     )}
                 </div>
