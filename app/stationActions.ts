@@ -126,7 +126,7 @@ export function getStationApi(state: State) {
                         You already own a ${myShip.name}.
                     `}
                 }
-                if (myShip.returnTime || 0 <= state.time) {
+                if ((myShip.returnTime || 0) <= state.time) {
                     throw { errorType: 'duplicateShip', errorMessage: `
                         You already have a ${myShip.name} rented.
                         Ship is overdue and must be returned before renting again.

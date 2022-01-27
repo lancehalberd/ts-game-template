@@ -5,24 +5,85 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    Slider,
 } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 import * as React from 'react';
+
+import { baseMarkup, baseRentalRate } from 'app/gameConstants';
+
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
+
+const DaySlider = ({
+    ship,
+    onChange,
+    defaultDays = 20,
+}: {
+    ship: Ship
+    onChange: (days: number) => void
+    defaultDays?: number
+}) => {
+    const [days, setDays] = React.useState<number>(defaultDays);
+    const handleChange = (event: Event, newValue: number | number[]) => {
+        const newDays = newValue as number;
+        setDays(newDays);
+        onChange(newDays);
+    };
+
+    const totalCost = ship.cost * days * baseRentalRate * baseMarkup;
+
+    return (
+        <div className="day-slider">
+            <div className="unit-count">
+                <strong>Rental Period:</strong>
+                {` ${days}`}
+            </div>
+            <div className="total-cost">
+                <strong>Total Cost:</strong>
+                {` ${totalCost}`}
+            </div>
+            <Slider
+                aria-label="Fuel Units"
+                value={days}
+                max={100}
+                min={5}
+                marks
+                step={1}
+                valueLabelDisplay="auto"
+                onChange={handleChange}
+            />
+        </div>
+    );
+};
 
 const ShipPicker = () => {
     const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
     const [selectedShip, setSelectedShip] = React.useState<Ship>();
+    const [duration, setDuration] = React.useState(20);
+
+    const myShip: Ship | undefined = selectedShip
+        && gameState.station.ships.find(ship => ship.shipType === selectedShip.shipType);
 
     const handleShipClick = (ship: Ship) => {
         setSelectedShip(ship);
     };
 
-    const handleShipSelect = (ship: Ship) => {
-        // gameApi.purchaseShip(ship.shipType, { spendCredit: true });
-        gameApi.rentShip(ship.shipType, 1, { spendCredit: true });
+    const rentShip = (ship: Ship) => {
+        gameApi.rentShip(ship.shipType, duration, { extendRental: true, spendCredit: true });
+        refreshGameState();
+    };
+    const returnRental = (ship: Ship) => {
+        gameApi.returnShip(ship.shipType);
+        refreshGameState();
+    };
+    const buyShip = (ship: Ship) => {
+        gameApi.purchaseShip(ship.shipType, { spendCredit: true });
+        refreshGameState();
+    };
+    const sellShip = (ship: Ship) => {
+        gameApi.sellShip(ship.shipType);
         refreshGameState();
     };
 
@@ -58,12 +119,9 @@ const ShipPicker = () => {
                             label="Ship Type"
                             value={selectedShip.shipType}
                         />
-                        <DetailItem label="Cost" value={selectedShip.cost} />
+                        <DetailItem label="Cost" value={selectedShip.cost * baseMarkup} />
+                        <DetailItem label="Daily Rate" value={selectedShip.cost * baseRentalRate * baseMarkup} />
                         <DetailItem label="Mass" value={selectedShip.mass} />
-                        <DetailItem
-                            label="Cargo"
-                            value={selectedShip.cargo.join(',')}
-                        />
                         <DetailItem
                             label="Cargo Space"
                             value={selectedShip.cargoSpace}
@@ -74,21 +132,59 @@ const ShipPicker = () => {
                         />
                         <DetailItem
                             label="Current Owned?"
-                            value={`${selectedShip.isOwned}`}
+                            value={`${!!myShip?.isOwned}`}
                         />
                         <DetailItem
                             label="Current Rented?"
-                            value={`${selectedShip.isRented}`}
+                            value={`${!!myShip?.isRented}`}
                         />
                     </div>
                     <div className="select-item-pane">
-                        <Button
-                            variant="contained"
-                            size="large"
-                            onClick={() => handleShipSelect(selectedShip)}
-                        >
-                            Rent This Ship
-                        </Button>
+                        <DaySlider
+                            ship={selectedShip}
+                            onChange={setDuration}
+                            defaultDays={duration}
+                        />
+                        { !myShip && <Button
+                                variant="contained"
+                                size="large"
+                                onClick={() => rentShip(selectedShip)}
+                            >
+                                Rent This Ship
+                            </Button>
+                        }
+                        { !myShip && <Button
+                                variant="contained"
+                                size="large"
+                                onClick={() => buyShip(selectedShip)}
+                            >
+                                Buy This Ship
+                            </Button>
+                        }
+                        { myShip?.isRented && <Button
+                                variant="contained"
+                                size="large"
+                                onClick={() => rentShip(selectedShip)}
+                            >
+                                Extend rental
+                            </Button>
+                        }
+                        { myShip?.isRented && <Button
+                                variant="contained"
+                                size="large"
+                                onClick={() => returnRental(selectedShip)}
+                            >
+                                Return rental
+                            </Button>
+                        }
+                        { myShip?.isOwned && <Button
+                                variant="contained"
+                                size="large"
+                                onClick={() => sellShip(selectedShip)}
+                            >
+                                Sell This Ship
+                            </Button>
+                        }
                         <p>
                             Choose the desired ship for this Contract. Then,
                             outfit it!
