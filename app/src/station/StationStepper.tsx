@@ -12,11 +12,15 @@ import CargoPicker from './CargoPicker';
 import { Paper } from '@mui/material';
 import PreviewTrip from './PreviewTrip';
 
-const steps = [
-    'Purchase a Contract',
-    'Rent a Ship',
-    'Outfit Your Ship',
-    'Preview your Trip',
+interface StepItem {
+    key: StationStep;
+    label: string;
+}
+const steps: StepItem[] = [
+    { label: 'Purchase a Contract', key: 'purchaseContract' },
+    { label: 'Rent a Ship', key: 'rentShip' },
+    { label: 'Outfit Your Ship', key: 'outfitShip' },
+    { label: 'Preview your Trip', key: 'previewTrip' },
 ];
 
 export const DetailItem = ({
@@ -39,6 +43,16 @@ export default function StationStepper() {
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
     }>({});
+
+    React.useEffect(() => {
+        const activeItem = steps.find(
+            (step) => step.key === gameState.currentStationStep
+        );
+        const stepIndex = (activeItem && steps.indexOf(activeItem)) || 0;
+        setActiveStep(stepIndex);
+    }, [gameState.currentStationStep]);
+
+    console.log('CURRENT STEP: ', gameState.currentStationStep);
 
     React.useEffect(() => {
         if (gameState.currentContract) {
@@ -93,13 +107,13 @@ export default function StationStepper() {
         <div className="station-stepper">
             <Box sx={{ width: '100%' }}>
                 <Stepper nonLinear activeStep={activeStep}>
-                    {steps.map((label, index) => (
-                        <Step key={label} completed={completed[index]}>
+                    {steps.map((stepItem, index) => (
+                        <Step key={stepItem.label} completed={completed[index]}>
                             <StepButton
                                 color="inherit"
                                 onClick={handleStep(index)}
                             >
-                                {label}
+                                {stepItem.label}
                             </StepButton>
                         </Step>
                     ))}

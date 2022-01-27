@@ -11,28 +11,36 @@ import {
     spendCredits,
 } from 'app/state';
 
-
 function requireAtStation(state: State) {
     if (!state.atStation) {
-        throw { errorType: 'notAtStation', errorMessage: `
+        throw {
+            errorType: 'notAtStation',
+            errorMessage: `
             You must be at the station to perform this action.
-        `};
+        `,
+        };
     }
 }
-function requireStationStorage(state: State, shipType?: ShipType): Ship | Station {
+function requireStationStorage(
+    state: State,
+    shipType?: ShipType
+): Ship | Station {
     return shipType ? requireMyShipByType(state, shipType) : state.station;
 }
 function getShipByType(state: State, type: ShipType): Ship {
-    const ship = state.content.ships.find(ship => ship.shipType === type);
+    const ship = state.content.ships.find((ship) => ship.shipType === type);
     if (!ship) {
-        throw { errorType: 'invalidRequest', errorMessage: `
+        throw {
+            errorType: 'invalidRequest',
+            errorMessage: `
             There is no ship of type '${type}' for rental.
-        `};
+        `,
+        };
     }
     return ship;
 }
 function getMyShipByType(state: State, type: ShipType): Ship | undefined {
-    return state.station.ships.find(ship => ship.shipType === type);
+    return state.station.ships.find((ship) => ship.shipType === type);
 }
 function gainCredits(state: State, baseAmount: number) {
     let amount = Math.floor(baseAmount * baseMarkdown);
@@ -46,11 +54,16 @@ function gainCredits(state: State, baseAmount: number) {
     state.credits += amount;
 }
 function getContractById(state: State, id: number): Contract {
-    const contract = state.station.availableContracts.find(contract => contract.id === id);
+    const contract = state.station.availableContracts.find(
+        (contract) => contract.id === id
+    );
     if (!contract) {
-        throw { errorType: 'invalidRequest', errorMessage: `
+        throw {
+            errorType: 'invalidRequest',
+            errorMessage: `
             There is no contract available with id '${id}'.
-        `};
+        `,
+        };
     }
     return contract;
 }
@@ -60,7 +73,11 @@ function sellAllCargo(state: State, storage: CargoStorage) {
         if (cargo.type === 'tool') {
             const toolDefinition = getToolByType(state, cargo.cargoType);
             // Sell each tool one at a time, and pro-rate it based on remaining uses.
-            gainCredits(state, cargo.unitCost * cargo.remainingUses / toolDefinition.remainingUses);
+            gainCredits(
+                state,
+                (cargo.unitCost * cargo.remainingUses) /
+                    toolDefinition.remainingUses
+            );
         } else {
             gainCredits(state, cargo.unitCost * cargo.units);
         }
@@ -70,10 +87,13 @@ function sellAllCargo(state: State, storage: CargoStorage) {
 function returnShip(state: State, ship: Ship, liquidateCargo = false) {
     if (ship.cargo.length) {
         if (!liquidateCargo) {
-            throw { warningType: 'shipIsNotEmpty', errorMessage: `
+            throw {
+                warningType: 'shipIsNotEmpty',
+                errorMessage: `
                 The '${ship.name}' still has cargo in it.
                 Remove cargo or call with liquidateCargo=true to automatically sell all cargo.
-            `}
+            `,
+            };
         }
         sellAllCargo(state, ship);
     }
@@ -82,14 +102,21 @@ function returnShip(state: State, ship: Ship, liquidateCargo = false) {
 
 export function getStationApi(state: State) {
     return {
+        setStationStep(stationStep: StationStep) {
+            requireAtStation(state);
+            state.currentStationStep = stationStep;
+        },
         purchaseShip(shipType: ShipType, { spendCredit = false } = {}) {
             requireAtStation(state);
             const ship = getShipByType(state, shipType);
             const myShip = getMyShipByType(state, shipType);
             if (myShip?.isOwned) {
-                throw { errorType: 'duplicateShip', errorMessage: `
+                throw {
+                    errorType: 'duplicateShip',
+                    errorMessage: `
                     You already own a ${myShip.name}.
-                `};
+                `,
+                };
             }
             spendCredits(state, ship.cost, { spendCredit });
             if (myShip) {
@@ -108,45 +135,68 @@ export function getStationApi(state: State) {
             const ship = getShipByType(state, shipType);
             const myShip = getMyShipByType(state, shipType);
             if (!myShip?.isOwned) {
-                throw { errorType: 'shipNotOwned', errorMessage: `
+                throw {
+                    errorType: 'shipNotOwned',
+                    errorMessage: `
                     You do not have a ${ship.name} to sell.
-                `};
+                `,
+                };
             }
             returnShip(state, myShip, liquidateCargo);
             gainCredits(state, ship.cost);
         },
-        rentShip(shipType: ShipType, days: number, { extendRental = false, rentMultiple = false, spendCredit = false } = {}) {
+        rentShip(
+            shipType: ShipType,
+            days: number,
+            {
+                extendRental = false,
+                rentMultiple = false,
+                spendCredit = false,
+            } = {}
+        ) {
             requireAtStation(state);
             const ship = getShipByType(state, shipType);
             const myShip = getMyShipByType(state, shipType);
             const cost = Math.ceil(ship.cost * baseRentalRate * days);
             if (myShip) {
                 if (myShip.isOwned) {
-                    throw { errorType: 'duplicateShip', errorMessage: `
+                    throw {
+                        errorType: 'duplicateShip',
+                        errorMessage: `
                         You already own a ${myShip.name}.
-                    `}
+                    `,
+                    };
                 }
                 if ((myShip.returnTime || 0) <= state.time) {
-                    throw { errorType: 'duplicateShip', errorMessage: `
+                    throw {
+                        errorType: 'duplicateShip',
+                        errorMessage: `
                         You already have a ${myShip.name} rented.
                         Ship is overdue and must be returned before renting again.
-                    `};
+                    `,
+                    };
                 }
                 if (!extendRental) {
-                    throw { warningType: 'duplicateShip', errorMessage: `
+                    throw {
+                        warningType: 'duplicateShip',
+                        errorMessage: `
                         You already have a ${myShip.name} rented.
                         Call with extendRental = true to add additional days.
-                    `};
+                    `,
+                    };
                 }
                 myShip.returnTime = (myShip.returnTime || state.time) + days;
                 spendCredits(state, cost, { spendCredit });
-                return
+                return;
             }
             if (!rentMultiple && state.station.ships.length) {
-                throw { warningType: 'multipleRentals', warningMessage: `
+                throw {
+                    warningType: 'multipleRentals',
+                    warningMessage: `
                     You already have a shipped rented.
                     Return it first or call with rentMultiple=true to complete this transaction.
-                `};
+                `,
+                };
             }
             spendCredits(state, cost, { spendCredit });
             state.station.ships.push({
@@ -160,46 +210,70 @@ export function getStationApi(state: State) {
             requireAtStation(state);
             const myShip = requireMyShipByType(state, shipType);
             if (!myShip.isRented) {
-                throw { errorType: 'shipOwned', errorMessage: `
+                throw {
+                    errorType: 'shipOwned',
+                    errorMessage: `
                     The '${myShip.name}' is not a rental.
-                `}
+                `,
+                };
             }
             returnShip(state, myShip, liquidateCargo);
-            const daysOverdue = Math.floor(state.time) - Math.floor(myShip.returnTime || 0);
+            const daysOverdue =
+                Math.floor(state.time) - Math.floor(myShip.returnTime || 0);
             if (daysOverdue > 0) {
                 // Overdue charge must be spent so it is allowed to exceed debt limit.
                 // Charge is 2x base rental price per day.
-                spendCredits(state, daysOverdue * myShip.cost * baseRentalRate * 2, {force: true})
+                spendCredits(
+                    state,
+                    daysOverdue * myShip.cost * baseRentalRate * 2,
+                    { force: true }
+                );
             } else if (daysOverdue < 0) {
                 // Returning a ship early refunds 1/2 base rental price per day.
-                gainCredits(state, -daysOverdue * myShip.cost * baseRentalRate / 2);
+                gainCredits(
+                    state,
+                    (-daysOverdue * myShip.cost * baseRentalRate) / 2
+                );
             }
         },
-        purchaseContract(contractId: number, { replace = false, spendCredit = false } = {}) {
+        purchaseContract(
+            contractId: number,
+            { replace = false, spendCredit = false } = {}
+        ) {
             requireAtStation(state);
             if (state.currentContract && !replace) {
-                throw { warningType: 'multipleContracts', warningMessage: `
+                throw {
+                    warningType: 'multipleContracts',
+                    warningMessage: `
                     You already have a contract.
                     Complete it first or call with replace=true to replace your current contract.
-                `};
+                `,
+                };
             }
             const contract = getContractById(state, contractId);
             spendCredits(state, contract.cost, { spendCredit });
             state.currentContract = {
                 ...contract,
                 cargo: [],
-            }
+            };
         },
-        purchaseFuel(shipType: ShipType, units: number, { spendCredit = false } = {}) {
+        purchaseFuel(
+            shipType: ShipType,
+            units: number,
+            { spendCredit = false } = {}
+        ) {
             requireAtStation(state);
             const myShip = requireMyShipByType(state, shipType);
             const fuel = getFuelByType(state, myShip.fuelType);
             const volume = fuel.unitVolume * units;
             const emptyCargoSpace = getEmptyCargoSpace(myShip);
             if (emptyCargoSpace < volume) {
-                throw { errorType: 'insufficientCargoSpace', errorMessage: `
+                throw {
+                    errorType: 'insufficientCargoSpace',
+                    errorMessage: `
                     You tried to purchase ${volume}L of fuel but you only have space for ${emptyCargoSpace}L.
-                `};
+                `,
+                };
             }
             const cost = fuel.unitCost * units;
             spendCredits(state, cost, { spendCredit });
@@ -208,16 +282,24 @@ export function getStationApi(state: State) {
                 units,
             });
         },
-        purchaseTool(toolType: ToolType, units: number, target?: ShipType, { spendCredit = false } = {}) {
+        purchaseTool(
+            toolType: ToolType,
+            units: number,
+            target?: ShipType,
+            { spendCredit = false } = {}
+        ) {
             requireAtStation(state);
             const tool = getToolByType(state, toolType);
             const volumeNeeded = tool.unitVolume * units;
             const storage = requireStationStorage(state, target);
             const emptyCargoSpace = getEmptyCargoSpace(storage);
             if (emptyCargoSpace < volumeNeeded) {
-                throw { errorType: 'insufficientCargoSpace', errorMessage: `
+                throw {
+                    errorType: 'insufficientCargoSpace',
+                    errorMessage: `
                     You tried to purchase ${volumeNeeded}L of tools but you only have space for ${emptyCargoSpace}L.
-                `};
+                `,
+                };
             }
             spendCredits(state, tool.unitCost * units, { spendCredit });
             for (let i = 0; i < units; i++) {
@@ -233,13 +315,20 @@ export function getStationApi(state: State) {
             const cargoDefinition = getCargoByType(state, cargoType);
             const total = getTotalCargoUnits(cargoType, storage);
             if (total < units) {
-                throw { errorType: 'invalidAmount', errorMessage: `
+                throw {
+                    errorType: 'invalidAmount',
+                    errorMessage: `
                     You only have ${total} units available to sell.
-                `};
+                `,
+                };
             }
             let unitsRemaining = units;
             const isDiscrete = cargoDefinition.type === 'tool';
-            for (let i = 0; i < storage.cargo.length && unitsRemaining > 0; i++) {
+            for (
+                let i = 0;
+                i < storage.cargo.length && unitsRemaining > 0;
+                i++
+            ) {
                 const cargo = storage.cargo[i];
                 if (cargo.cargoType === cargoType) {
                     if (unitsRemaining >= cargo.units) {
@@ -247,7 +336,11 @@ export function getStationApi(state: State) {
                         storage.cargo.splice(i--, 1);
                         if (isDiscrete && cargo.type === 'tool') {
                             // Sell each tool one at a time, and pro-rate it based on remaining uses.
-                            gainCredits(state, cargo.unitCost * cargo.remainingUses / cargoDefinition.remainingUses);
+                            gainCredits(
+                                state,
+                                (cargo.unitCost * cargo.remainingUses) /
+                                    cargoDefinition.remainingUses
+                            );
                         }
                     } else if (!isDiscrete) {
                         cargo.units -= unitsRemaining;
@@ -269,9 +362,16 @@ export function getStationApi(state: State) {
                 const cargo = storage.cargo[i];
                 if (cargo.cargoType === cargoType) {
                     storage.cargo.splice(i--, 1);
-                    if (cargoDefinition.type === 'tool' && cargo.type === 'tool') {
+                    if (
+                        cargoDefinition.type === 'tool' &&
+                        cargo.type === 'tool'
+                    ) {
                         // Sell each tool one at a time, and pro-rate it based on remaining uses.
-                        gainCredits(state, cargo.unitCost * cargo.remainingUses / cargoDefinition.remainingUses);
+                        gainCredits(
+                            state,
+                            (cargo.unitCost * cargo.remainingUses) /
+                                cargoDefinition.remainingUses
+                        );
                     } else {
                         unitsSold += cargo.units;
                     }
@@ -298,33 +398,57 @@ export function getStationApi(state: State) {
             const storage = requireStationStorage(state, source);
             sellAllCargo(state, storage);
         },
-        moveCargo(cargoType: CargoType, units: number, source?: ShipType, target?: ShipType) {
+        moveCargo(
+            cargoType: CargoType,
+            units: number,
+            source?: ShipType,
+            target?: ShipType
+        ) {
             requireAtStation(state);
             const storageSource = requireStationStorage(state, source);
             const storageTarget = requireStationStorage(state, target);
             moveCargo(state, cargoType, units, storageSource, storageTarget);
         },
-        travelToContract(shipType: ShipType, maxFuelToBurn: number, { ignoreDebtInterest = false, ignoreLongTravelTime = false } = {}) {
+        travelToContract(
+            shipType: ShipType,
+            maxFuelToBurn: number,
+            { ignoreDebtInterest = false, ignoreLongTravelTime = false } = {}
+        ) {
             requireAtStation(state);
             if (!state.currentContract) {
-                throw { errorType: 'noContract', errorMessage: `
+                throw {
+                    errorType: 'noContract',
+                    errorMessage: `
                     You need to purchase a contract before traveling.
-                `};
+                `,
+                };
             }
             const myShip = requireMyShipByType(state, shipType);
             for (const ship of state.station.ships) {
                 if (ship.isRented && (ship.returnTime || 0) <= state.time) {
-                    throw { errorType: 'rentalOverdue', errorMessage: `
+                    throw {
+                        errorType: 'rentalOverdue',
+                        errorMessage: `
                         You have an overdue '${ship.name}' that must be returned before you can leave the station.
-                    `};
+                    `,
+                    };
                 }
             }
-            if (!myShip.cargo.some(cargo => cargo.type === 'tool')) {
-                throw { errorType: 'noTools', errorMessage: `
+            if (!myShip.cargo.some((cargo) => cargo.type === 'tool')) {
+                throw {
+                    errorType: 'noTools',
+                    errorMessage: `
                     The selected ship has no digging tools in its cargo.
-                `};
+                `,
+                };
             }
-            attemptTravel(state, myShip, state.currentContract.distance, maxFuelToBurn, { ignoreDebtInterest, ignoreLongTravelTime } );
+            attemptTravel(
+                state,
+                myShip,
+                state.currentContract.distance,
+                maxFuelToBurn,
+                { ignoreDebtInterest, ignoreLongTravelTime }
+            );
             state.currentShip = myShip;
             state.atStation = false;
         },
