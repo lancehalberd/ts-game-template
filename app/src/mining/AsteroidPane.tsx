@@ -142,7 +142,7 @@ const AsteroidPane = ({
             setTooltipText(`(${durability})`);
         }
         //console.log(' => ', column, row);
-    }, []);
+    }, [contract]);
 
     return (
         <Tooltip title={ tooltipText } arrow followCursor>
