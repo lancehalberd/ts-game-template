@@ -1,5 +1,5 @@
 import {
-    copyContract, copyState, copyMiningState, copyStationState
+    copyContract, copyState, copyMiningState, copyStationState, getTotalShipFuel
 } from 'app/state';
 
 export function getGetActions(state: State) {
@@ -9,6 +9,9 @@ export function getGetActions(state: State) {
         },
         getMiningState() {
             return copyMiningState(state);
+        },
+        getTotalShipFuel(ship: Ship) {
+            return getTotalShipFuel(ship);
         },
         getMiningCell(x: number, y: number) {
             return {...state.currentContract?.grid?.[y]?.[x]};

@@ -43,6 +43,8 @@ export default function TopStatusBar() {
         );
     };
 
+    const vertDivider = <Divider orientation="vertical" flexItem />;
+
     return (
         <div className="top-status-bar">
             <Box
@@ -67,19 +69,19 @@ export default function TopStatusBar() {
                     <strong>Credits: </strong>
                     {gameState.credits}
                 </span>
-                <Divider orientation="vertical" flexItem />
+                {vertDivider}
                 <span>
                     <strong>Credit Limit: </strong>
                     {gameState.creditLimit}
                 </span>
-                <Divider orientation="vertical" flexItem />
+                {vertDivider}
                 <span>
                     <strong>Debt: </strong>
                     {gameState.debt}
                 </span>
-                <Divider orientation="vertical" flexItem />
+                {vertDivider}
                 {getShipIcon()}
-                <Divider orientation="vertical" flexItem />
+                {vertDivider}
                 <ArticleIcon />: <span>{contractID}</span>
             </Box>
         </div>

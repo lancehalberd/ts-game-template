@@ -21,6 +21,7 @@ import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
 import YourCargo from './YourCargo';
 import { baseMarkup } from 'app/gameConstants';
+import { getTotalShipFuel } from 'app/state';
 
 export const getCargoItemIcon = (cargoType: string) => {
     switch (cargoType) {
@@ -36,11 +37,60 @@ export const getCargoItemIcon = (cargoType: string) => {
     }
 };
 
+const FuelSlider = ({
+    fuelItem,
+    onChange,
+    defaultAmount = 20,
+}: {
+    fuelItem: Cargo;
+    onChange: (units: number) => void;
+    defaultAmount?: number;
+}) => {
+    const { gameState } = React.useContext(GameContext);
+    const [fuelUnits, setFuelUnits] = React.useState<number>(defaultAmount);
+    const currentShip = gameState.station.ships[0];
+    const totalFuelUnits = getTotalShipFuel(currentShip);
+    const handleChange = (event: Event, newValue: number | number[]) => {
+        const newUnits = newValue as number;
+        setFuelUnits(newUnits);
+        onChange(newUnits);
+    };
+
+    const totalCost =
+        (fuelUnits + totalFuelUnits) * fuelItem.unitCost * baseMarkup;
+
+    return (
+        <div className="fuel-slider">
+            <div className="unit-count">
+                <strong>Fuel Units:</strong>
+                {` ${fuelUnits}`}
+            </div>
+            <div className="total-cost">
+                <strong>Total Cost:</strong>
+                {` ${totalCost}`}
+            </div>
+            <Slider
+                aria-label="Fuel Units"
+                value={fuelUnits}
+                max={100}
+                min={5}
+                marks
+                step={5}
+                valueLabelDisplay="auto"
+                onChange={handleChange}
+            />
+        </div>
+    );
+};
+
 const CargoPicker = () => {
+    const DEFAULT_FUEL_AMOUNT = 20;
     const [tabIndex, setTabIndex] = React.useState(0);
     const { gameState, gameApi, setGameState } = React.useContext(GameContext);
     const [selectedItem, setSelectedItem] = React.useState<Cargo>();
     const currentShip = gameState.station.ships[0];
+    const [fuelUnits, setFuelUnits] =
+        React.useState<number>(DEFAULT_FUEL_AMOUNT);
 
     console.log('CargoPicker gameState: ', gameState);
 
@@ -65,7 +115,9 @@ const CargoPicker = () => {
                     });
                     break;
                 case 'fuel':
-                    gameApi.purchaseFuel(shipType, 1, { spendCredit: true });
+                    gameApi.purchaseFuel(shipType, fuelUnits, {
+                        spendCredit: true,
+                    });
                     break;
                 case 'ore':
                     console.log('ERROR: Cannot purchase Ore');
@@ -73,6 +125,10 @@ const CargoPicker = () => {
             }
             setGameState(gameApi.getState());
         }
+    };
+
+    const handleFuelChange = (fuelUnits: number) => {
+        setFuelUnits(fuelUnits);
     };
 
     const camelToSpaces = (str: string): string => {
@@ -154,7 +210,11 @@ const CargoPicker = () => {
                 </div>
                 <div className="select-item-pane">
                     {tabIndex === 1 && canAddItem && (
-                        <FuelSlider fuelItem={selectedItem} />
+                        <FuelSlider
+                            fuelItem={selectedItem}
+                            onChange={handleFuelChange}
+                            defaultAmount={DEFAULT_FUEL_AMOUNT}
+                        />
                     )}
 
                     <Button
@@ -175,40 +235,6 @@ const CargoPicker = () => {
                     <YourCargo />
                 </div>
             </div>
-        </div>
-    );
-};
-
-const FuelSlider = ({ fuelItem }: { fuelItem: Cargo }) => {
-    const [fuelUnits, setFuelUnits] = React.useState<number>(20);
-
-    const handleChange = (event: Event, newValue: number | number[]) => {
-        const newUnits = newValue as number;
-        setFuelUnits(newUnits);
-    };
-
-    const totalCost = fuelUnits * fuelItem.unitCost * baseMarkup;
-
-    return (
-        <div className="fuel-slider">
-            <div className="unit-count">
-                <strong>Fuel Units:</strong>
-                {` ${fuelUnits}`}
-            </div>
-            <div className="total-cost">
-                <strong>Total Cost:</strong>
-                {` ${totalCost}`}
-            </div>
-            <Slider
-                aria-label="Fuel Units"
-                value={fuelUnits}
-                max={100}
-                min={5}
-                marks
-                step={5}
-                valueLabelDisplay="auto"
-                onChange={handleChange}
-            />
         </div>
     );
 };

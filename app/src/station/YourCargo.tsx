@@ -34,15 +34,23 @@ const YourCargo = () => {
         ...(gameState.station.ships[0]?.cargo || []),
     ];
 
+    const calculateFuelCount = (fuelCargoItems: Cargo[]): number => {
+        return fuelCargoItems.reduce((total, item) => total + item.units, 0);
+    };
+
     // Each aggregate item is an icon, name of item, and count badge
     const uniqCargoTypes = new Set(cargo.map((item) => item.cargoType));
     const aggItems = [...uniqCargoTypes].map((cargoType) => {
         const items = cargo.filter((item) => item.cargoType === cargoType);
+
+        const count =
+            items[0].type === 'fuel' ? calculateFuelCount(items) : items.length;
         const label = items[0].name;
+
         return (
             <CargoAggregateItem
                 label={label}
-                count={items.length}
+                count={count}
                 itemType={items[0].type}
                 key={label}
             />
