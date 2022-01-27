@@ -132,6 +132,7 @@ declare global {
         durability: number
         resourceType?: FuelType | OreType
         resourceUnits?: number
+        resourceDurability: number
         isRevealed?: boolean
     }
 

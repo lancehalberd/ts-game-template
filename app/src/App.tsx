@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Asteroid from './mining/Asteroid';
 import SpaceStation from './station/SpaceStation';
 
 import 'app/styles/App.scss';
@@ -20,7 +21,7 @@ const App = () => {
 
     return (
         <GameContext.Provider value={{ gameState, gameApi, setGameState }}>
-            {gameState.atStation ? <SpaceStation /> : <h1>TBD!</h1>}
+            {gameState.atStation ? <SpaceStation /> : <Asteroid />}
         </GameContext.Provider>
     );
 };

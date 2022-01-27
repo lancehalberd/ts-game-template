@@ -286,7 +286,8 @@ function purchaseBasicLoadout(api, rentalTime, { debugActions } = {}) {
     api.purchaseTool('basicDiggingDrill', 1, 'basicShip', { spendCredit: true });
     api.purchaseTool('basicHarvestingDrill', 2, 'basicShip', { spendCredit: true });
 }
-function runContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid} = {}) {
+
+function startContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid} = {}) {
     if (debugActions) {
         console.log('Purchasing contract ', contractIndex)
     }
@@ -299,6 +300,9 @@ function runContract(api, contractIndex, {debugActions, debugCargo, debugAsteroi
         console.log('Traveling to contract ');
     }
     travelToContract(api);
+}
+function runContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid} = {}) {
+    startContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid});
     if (debugActions) {
         console.log('Mining asteroid');
     }
@@ -313,8 +317,7 @@ function runContract(api, contractIndex, {debugActions, debugCargo, debugAsteroi
     api.sellAllOre('basicShip');
     api.returnShip('basicShip', { liquidateCargo: true });
 }
-
-function runNextContract(api, maxContractIndex, { debugActions, debugAsteroid = false, debugCargo = false } = {}) {
+function getBestContract(api, maxContractIndex, { debugAsteroid = false, debugCargo = false } = {}) {
     let bestContract = 0, bestResult = -1000000, bestRentalTime = 20;
     const startState = gameApi.getStationState();
     const startTime = startState.time;
@@ -338,8 +341,17 @@ function runNextContract(api, maxContractIndex, { debugActions, debugAsteroid = 
             console.log('Failed on', i, e);
         }
     }
+    return bestContract;
+}
+
+function runBestContract(api, maxContractIndex, { debugActions, debugAsteroid = false, debugCargo = false } = {}) {
+    const bestContract = getBestContract(api, maxContractIndex, { debugAsteroid, debugCargo });
     runContract(gameApi, bestContract, {debugActions});
     refreshReact();
 }
 
-runNextContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
+const bestContract = getBestContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
+startContract(gameApi, bestContract, { debugAsteroid: false, debugCargo: false });
+refreshReact();
+
+//runBestContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
