@@ -28,7 +28,7 @@ const ContractDetailItem = ({
 };
 
 const ContractPicker = () => {
-    const { gameState, gameApi, setGameState } = React.useContext(GameContext);
+    const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
     const [selectedContract, setSelectedContract] = React.useState<Contract>();
 
     const handleContractClick = (contract: Contract) => {
@@ -37,7 +37,7 @@ const ContractPicker = () => {
 
     const handleContractSelect = (contract: Contract) => {
         gameApi.purchaseContract(contract.id, { spendCredit: true });
-        setGameState(gameApi.getState());
+        refreshGameState();
     };
 
     const visibleContracts = gameState.station.availableContracts.slice(0, 10);

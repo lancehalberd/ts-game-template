@@ -13,7 +13,7 @@ import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
 
 const ShipPicker = () => {
-    const { gameState, gameApi, setGameState } = React.useContext(GameContext);
+    const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
     const [selectedShip, setSelectedShip] = React.useState<Ship>();
 
     const handleShipClick = (ship: Ship) => {
@@ -23,7 +23,7 @@ const ShipPicker = () => {
     const handleShipSelect = (ship: Ship) => {
         // gameApi.purchaseShip(ship.shipType, { spendCredit: true });
         gameApi.rentShip(ship.shipType, 1, { spendCredit: true });
-        setGameState(gameApi.getState());
+        refreshGameState();
     };
 
     const visibleItems = gameState.content.ships;

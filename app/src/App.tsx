@@ -18,9 +18,12 @@ const App = () => {
             setGameState(gameApi.getState());
         }
     };
+    const refreshGameState = React.useCallback(() => {
+        setGameState(gameApi.getState());
+    }, [gameApi]);
 
     return (
-        <GameContext.Provider value={{ gameState, gameApi, setGameState }}>
+        <GameContext.Provider value={{ gameState, gameApi, refreshGameState }}>
             {gameState.atStation ? <SpaceStation /> : <Asteroid />}
         </GameContext.Provider>
     );

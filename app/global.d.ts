@@ -12,9 +12,9 @@ declare global {
     }
 
     interface IGameContext {
-        gameState: State;
-        gameApi: GameApi;
-        setGameState: React.Dispatch<React.SetStateAction<State>>;
+        gameState: State
+        gameApi: GameApi
+        refreshGameState: () => void
     }
 
     type GameApi = {

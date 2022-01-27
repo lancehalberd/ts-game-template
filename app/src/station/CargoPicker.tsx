@@ -86,13 +86,11 @@ const FuelSlider = ({
 const CargoPicker = () => {
     const DEFAULT_FUEL_AMOUNT = 20;
     const [tabIndex, setTabIndex] = React.useState(0);
-    const { gameState, gameApi, setGameState } = React.useContext(GameContext);
+    const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
     const [selectedItem, setSelectedItem] = React.useState<Cargo>();
     const currentShip = gameState.station.ships[0];
     const [fuelUnits, setFuelUnits] =
         React.useState<number>(DEFAULT_FUEL_AMOUNT);
-
-    console.log('CargoPicker gameState: ', gameState);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
@@ -123,7 +121,7 @@ const CargoPicker = () => {
                     console.log('ERROR: Cannot purchase Ore');
                     break;
             }
-            setGameState(gameApi.getState());
+            refreshGameState();
         }
     };
 

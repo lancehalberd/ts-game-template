@@ -34,7 +34,7 @@ const FuelSlider = ({
 };
 
 const PreviewTrip = () => {
-    const { gameState, gameApi } = React.useContext(GameContext);
+    const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
     const [fuelBurnUnits, setFuelBurnUnits] = React.useState(2);
     const contract = gameState.currentContract;
     const ship = gameState.station.ships[0];
@@ -60,7 +60,8 @@ const PreviewTrip = () => {
     };
 
     const handleEmbarkClick = () => {
-        console.log("Let's gooooo");
+        gameApi.travelToContract(ship.shipType, fuelBurnUnits);
+        refreshGameState();
     };
 
     return (
