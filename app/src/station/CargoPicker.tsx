@@ -58,12 +58,9 @@ const CargoPicker = () => {
         if (shipType) {
             switch (item.type) {
                 case 'tool':
-                    gameApi.purchaseTool(
-                        item.cargoType,
-                        1,
-                        currentShip.shipType,
-                        { spendCredit: true }
-                    );
+                    gameApi.purchaseTool(item.cargoType, 1, shipType, {
+                        spendCredit: true,
+                    });
                     break;
                 case 'fuel':
                     gameApi.purchaseFuel(shipType, 1, { spendCredit: true });
@@ -100,6 +97,13 @@ const CargoPicker = () => {
 
     const canAddItem = !!(currentShip && selectedItem);
 
+    const isItemDisabled = (cargoItem: Cargo) => {
+        if (cargoItem.type === 'fuel' && currentShip) {
+            return cargoItem.cargoType !== currentShip.fuelType;
+        }
+        return false;
+    };
+
     return (
         <div style={{ margin: '20px' }}>
             <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
@@ -121,6 +125,7 @@ const CargoPicker = () => {
                                             selectedItem?.cargoType ===
                                             item.cargoType
                                         }
+                                        disabled={isItemDisabled(item)}
                                     >
                                         <ListItemIcon>
                                             {getCargoItemIcon(item.type)}

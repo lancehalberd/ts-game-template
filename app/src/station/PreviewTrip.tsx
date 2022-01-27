@@ -2,7 +2,7 @@ import * as React from 'react';
 import { GameContext } from '../App';
 
 const PreviewTrip = () => {
-    const { gameState, gameApi, setGameState } = React.useContext(GameContext);
+    const { gameState, gameApi } = React.useContext(GameContext);
     const contract = gameState.currentContract;
     const ship = gameState.station.ships[0];
     const diggingTool = ship?.cargo.find(
