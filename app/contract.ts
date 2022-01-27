@@ -58,10 +58,10 @@ import { asteroidSizes, asteroidCompositions } from  'app/asteroid';
 // }
 
 function determineCellResource(asteroidType: AsteroidComposition, relativeDepth: number): OreType|FuelType|null {
-    let resources: Array<string> = Object.keys(asteroidType.resources);
+    const resources: Array<FuelType|OreType> = Object.keys(asteroidType.resources) as (FuelType|OreType)[];
     for (let resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
         const rng = Math.random();
-        if (rng < asteroidType.resources[resources[resourceIndex]] * relativeDepth) {
+        if (asteroidType.resources && rng < asteroidType.resources[resources[resourceIndex]]! * relativeDepth) {
             return <OreType|FuelType> resources[resourceIndex]
         }
     }

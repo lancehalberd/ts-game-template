@@ -63,7 +63,7 @@ declare global {
     interface AsteroidComposition {
         probability: number,
         approximate_cost: number,
-        resources: {[index: string]: number}
+        resources: Partial<Record<FuelType | OreType, number>>
     }
 
     // All Cargo definitions
