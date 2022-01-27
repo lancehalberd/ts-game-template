@@ -44,7 +44,7 @@ export default function TopStatusBar() {
             rentalColor = 'primary';
         }
     } else if (currentShip?.isOwned) {
-        rentalTime = '∞';
+        rentalTime = '-';
         rentalColor = 'primary';
     }
     const contractName = gameState.currentContract
