@@ -155,7 +155,7 @@ function generateContract(state: State, id : number, targetValue: number): Contr
             const surfaceY = yRadius * Math.sin(theta);
             const surfaceDistance = Math.sqrt(surfaceY * surfaceY + surfaceX * surfaceX);
             const percentDepth = Math.max(0, Math.min(1, 1 - distanceFromCore / surfaceDistance));
-            const distributionIndex = percentDepth * densityDistribution.length;
+            const distributionIndex = percentDepth * (densityDistribution.length - 1);
             const leftDensity = densityDistribution[distributionIndex | 0];
             const rightDensity = densityDistribution[Math.min(distributionIndex | 0 + 1, densityDistribution.length - 1)];
             const densityCoefficient = leftDensity * (1 - distributionIndex % 1) + rightDensity * (distributionIndex % 1);
