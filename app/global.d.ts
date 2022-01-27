@@ -55,6 +55,17 @@ declare global {
         ships: Ship[]
     }
 
+    // Asteroid definitions
+    interface AsteroidSize {
+        costMultiplier: number
+        sizeCoefficient: number
+    }
+    interface AsteroidComposition {
+        probability: number,
+        approximate_cost: number,
+        resources: {[index: string]: number}
+    }
+
     // All Cargo definitions
     interface BaseCargo {
         readonly type: string
