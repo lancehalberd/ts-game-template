@@ -2,7 +2,7 @@ import * as React from 'react';
 
 interface Props {
     contract: Contract
-    readonly: boolean
+    readonly?: boolean
     width?: number
     height?: number
 }
