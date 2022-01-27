@@ -20,6 +20,7 @@ import DiamondIcon from '@mui/icons-material/Diamond';
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
 import YourCargo from './YourCargo';
+import { baseMarkup } from 'app/gameConstants';
 
 export const getCargoItemIcon = (cargoType: string) => {
     switch (cargoType) {
@@ -36,7 +37,7 @@ export const getCargoItemIcon = (cargoType: string) => {
 };
 
 const CargoPicker = () => {
-    const [value, setValue] = React.useState(0);
+    const [tabIndex, setTabIndex] = React.useState(0);
     const { gameState, gameApi, setGameState } = React.useContext(GameContext);
     const [selectedItem, setSelectedItem] = React.useState<Cargo>();
     const currentShip = gameState.station.ships[0];
@@ -44,7 +45,7 @@ const CargoPicker = () => {
     console.log('CargoPicker gameState: ', gameState);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
+        setTabIndex(newValue);
         setSelectedItem(undefined);
     };
 
@@ -81,7 +82,7 @@ const CargoPicker = () => {
 
     const visibleItems = () => {
         const { diggingTools, fuels, ores } = gameState.content;
-        switch (value) {
+        switch (tabIndex) {
             case 0:
                 return diggingTools;
                 break;
@@ -108,7 +109,7 @@ const CargoPicker = () => {
     return (
         <div style={{ margin: '20px' }}>
             <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                <Tabs value={value} onChange={handleTabChange} centered>
+                <Tabs value={tabIndex} onChange={handleTabChange} centered>
                     <Tab label="Digging Tools" />
                     <Tab label="Fuels" />
                     <Tab label="Ores" disabled />
@@ -152,7 +153,9 @@ const CargoPicker = () => {
                         })}
                 </div>
                 <div className="select-item-pane">
-                    <FuelSlider />
+                    {tabIndex === 1 && canAddItem && (
+                        <FuelSlider fuelItem={selectedItem} />
+                    )}
 
                     <Button
                         variant="contained"
@@ -176,7 +179,7 @@ const CargoPicker = () => {
     );
 };
 
-const FuelSlider = () => {
+const FuelSlider = ({ fuelItem }: { fuelItem: Cargo }) => {
     const [fuelUnits, setFuelUnits] = React.useState<number>(20);
 
     const handleChange = (event: Event, newValue: number | number[]) => {
@@ -184,14 +187,23 @@ const FuelSlider = () => {
         setFuelUnits(newUnits);
     };
 
+    const totalCost = fuelUnits * fuelItem.unitCost * baseMarkup;
+
     return (
         <div className="fuel-slider">
-            <strong>Fuel Units:</strong>
-            {` ${fuelUnits}`}
+            <div className="unit-count">
+                <strong>Fuel Units:</strong>
+                {` ${fuelUnits}`}
+            </div>
+            <div className="total-cost">
+                <strong>Total Cost:</strong>
+                {` ${totalCost}`}
+            </div>
             <Slider
                 aria-label="Fuel Units"
                 value={fuelUnits}
                 max={100}
+                min={5}
                 marks
                 step={5}
                 valueLabelDisplay="auto"
