@@ -3,6 +3,8 @@ import {
     Tooltip
 } from '@mui/material';
 
+import { baseMarkdown } from 'app/gameConstants';
+
 import { GameContext } from '../App';
 
 const resourceColors: Record<OreType | FuelType, string> = {
@@ -107,7 +109,8 @@ function getCellText(gameApi: GameApi, cell?: MiningCell | null): string {
         return `(${durability})`;
     }
     const resource = gameApi.getCargoByType(cell.resourceType);
-    return `(${durability}) ${resource.name} ${cell.resourceUnits!.toFixed(1)}`;
+    return `(${durability}) ${resource.name} ${cell.resourceUnits!.toFixed(1)}L
+        Total Value: $${Math.floor(cell.resourceUnits! * resource.unitCost * baseMarkdown)}`;
 }
 
 interface Props {
