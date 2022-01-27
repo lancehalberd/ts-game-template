@@ -34,33 +34,46 @@ const FuelSlider = ({
 };
 
 const PreviewTrip = () => {
-    const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
-    const [fuelBurnUnits, setFuelBurnUnits] = React.useState(2);
+    const { gameState, gameApi, refreshGameState } =
+        React.useContext(GameContext);
+    const [fuelBurnUnits, setFuelBurnUnits] = React.useState(0);
     const contract = gameState.currentContract;
     const ship = gameState.station.ships[0];
     const diggingTool = ship?.cargo.find(
         (cargoItem) => cargoItem.type === 'tool'
     );
-    if (!contract || !ship || !diggingTool) {
+    const shipFuelUnits = ship ? getTotalShipFuel(ship) : 0;
+
+    if (!contract || !ship || !diggingTool || shipFuelUnits === 0) {
         return (
             <div style={{ padding: '40px' }}>
-                Please purchase a Contract, rent a Ship. and purchase a Digging
-                Tool.
+                <h3>Before you can Preview</h3>
+                <p>You need to:</p>
+                <ul>
+                    <li>Purchase a Contract</li>
+                    <li>Rent a Ship</li>
+                    <li>Purchase Fuel for your Ship</li>
+                    <li>Purchase a Digging Tool</li>
+                </ul>
             </div>
         );
     }
+
+    const actualFuelBurnUnits =
+        fuelBurnUnits > 0 ? fuelBurnUnits : Math.floor(shipFuelUnits / 2);
     const simulateApi = gameApi.simulate();
     const startTime = simulateApi!.state!.time;
-    const fuelUnits = getTotalShipFuel(ship);
-    simulateApi.travelToContract(ship.shipType, fuelBurnUnits);
-    const timeToTravel = Math.ceil(simulateApi!.state!.time - startTime);
+    simulateApi.travelToContract(ship.shipType, actualFuelBurnUnits, {
+        ignoreLongTravelTime: true,
+    });
+    const timeToTravel = Math.floor(simulateApi!.state!.time - startTime);
 
     const handleFuelChange = (units: number) => {
         setFuelBurnUnits(units);
     };
 
     const handleEmbarkClick = () => {
-        gameApi.travelToContract(ship.shipType, fuelBurnUnits);
+        gameApi.travelToContract(ship.shipType, actualFuelBurnUnits);
         refreshGameState();
     };
 
@@ -77,11 +90,11 @@ const PreviewTrip = () => {
             >
                 <h3 style={{ color: 'green' }}>2</h3>
                 <FuelSlider
-                    maxAmount={fuelUnits}
+                    maxAmount={shipFuelUnits}
                     onChange={handleFuelChange}
-                    defaultAmount={Math.floor(fuelUnits / 2)}
+                    defaultAmount={Math.floor(shipFuelUnits / 2)}
                 />
-                <h3 style={{ color: 'orange' }}>{fuelUnits} units</h3>
+                <h3 style={{ color: 'orange' }}>{shipFuelUnits} units</h3>
             </Stack>
             <h3>Time to Arrive:</h3>
             {timeToTravel} days
