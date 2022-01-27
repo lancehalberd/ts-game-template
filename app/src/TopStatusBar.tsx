@@ -10,7 +10,7 @@ import MuiPopover from './MuiPopover';
 
 const ShipElement = ({ shipName }: { shipName: string }) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-        <RocketLaunchIcon />:<span>{shipName}</span>
+        <RocketLaunchIcon />:<span className="ship-name">{shipName}</span>
     </div>
 );
 
@@ -23,12 +23,21 @@ export default function TopStatusBar() {
         ? gameState.currentContract.id
         : 'None';
 
+    const shipPopover = (
+        <div className="ship-stats">
+            <span>Cargo Space: {currentShip?.cargoSpace}</span>
+            <span>Cost: {currentShip?.cost}</span>
+            <span>Fuel Type: {currentShip?.fuelType}</span>
+            <span>Mass: {currentShip?.mass}</span>
+            <span>Ship Type: {currentShip?.shipType}</span>
+            <span>Return Time: {currentShip?.returnTime}</span>
+        </div>
+    );
+
     const getShipIcon = () => {
         const shipEl = <ShipElement shipName={shipName} />;
         return currentShip ? (
-            <MuiPopover popoverContent={<h3>I am a ship!</h3>}>
-                {shipEl}
-            </MuiPopover>
+            <MuiPopover popoverContent={shipPopover}>{shipEl}</MuiPopover>
         ) : (
             shipEl
         );

@@ -81,6 +81,19 @@
     }
 }
 
+.ship-name {
+    border-bottom: 1px dotted lightgrey;
+    text-decoration: none;
+}
+
+.ship-stats {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    gap: 10px;
+}
+
 .fuel-slider {
     margin: 20px 0;
 }
