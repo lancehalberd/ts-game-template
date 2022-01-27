@@ -58,7 +58,7 @@ export default function TopStatusBar() {
             <span>Fuel Type: {currentShip?.fuelType}</span>
             <span>Mass: {currentShip?.mass}</span>
             <span>Ship Type: {currentShip?.shipType}</span>
-            { currentShip?.isRented && <span>Return Time: {currentShip?.returnTime + 1}</span> }
+            { currentShip?.isRented && <span>Return Time: {currentShip?.returnTime! + 1}</span> }
         </div>
     );
 
