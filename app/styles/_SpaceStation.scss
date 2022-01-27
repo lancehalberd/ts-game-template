@@ -30,6 +30,7 @@
     background-color: rgba(255, 255, 255, 0.9);
     padding: 30px;
     margin: 0 40px;
+    border-radius: 20px;
 }
 
 .item-picker {
@@ -96,4 +97,15 @@
 
 .fuel-slider {
     margin: 20px 0;
+}
+
+.preview-trip {
+    .preview-fuel-slider {
+        width: 40%;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+    }
 }

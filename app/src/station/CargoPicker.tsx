@@ -164,7 +164,7 @@ const CargoPicker = () => {
 
     return (
         <div style={{ margin: '20px' }}>
-            <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <Box sx={{ width: '100%' }}>
                 <Tabs value={tabIndex} onChange={handleTabChange} centered>
                     <Tab label="Digging Tools" />
                     <Tab label="Fuels" />
