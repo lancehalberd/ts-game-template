@@ -1,4 +1,9 @@
 import * as React from 'react';
+import {
+    Tooltip
+} from '@mui/material';
+
+import { GameContext } from '../App';
 
 interface Props {
     contract: Contract
@@ -20,11 +25,19 @@ const resourceColors: Record<OreType | FuelType, string> = {
     'magicCrystal': 'red',
 }
 
-function drawAsteroid(canvas: HTMLCanvasElement, contract: Contract) {
+function getAsteroidCanvasProperties(canvas: HTMLCanvasElement, contract: Contract) {
     const rows = contract.grid.length, columns = contract.grid[0].length
     const cellSize = Math.floor(Math.min(20, Math.min(canvas.width / columns, canvas.height / rows)));
-    const left = Math.floor((canvas.width - cellSize * columns) / 2);
-    const top = Math.floor((canvas.height - cellSize * rows) / 2);
+    return {
+        cellSize,
+        left: Math.floor((canvas.width - cellSize * columns) / 2),
+        top: Math.floor((canvas.height - cellSize * rows) / 2)
+    };
+}
+
+function drawAsteroid(canvas: HTMLCanvasElement, contract: Contract) {
+    const rows = contract.grid.length, columns = contract.grid[0].length
+    const {cellSize, left, top} = getAsteroidCanvasProperties(canvas, contract);
     const context = canvas.getContext('2d')!;
     const grid = contract.grid;
     context.fillStyle = 'black';
@@ -97,14 +110,45 @@ const AsteroidPane = ({
     width = 400,
     height = 400,
 }: Props) => {
-
+    const { gameApi } = React.useContext(GameContext);
+    const [tooltipText, setTooltipText] = React.useState('empty');
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
     React.useEffect(() => {
         const canvas = canvasRef.current!;
         drawAsteroid(canvas, contract);
     }, [contract])
+    const updateTooltip = React.useCallback((event) => {
+        const canvas = canvasRef.current;
+        if (!canvas) {
+            return;
+        }
+        const containerRect: DOMRect = canvas.getBoundingClientRect();
+        const x = event.pageX - containerRect.left;
+        const y = event.pageY - containerRect.top;
+        //console.log(x, y);
+        const {cellSize, left, top} = getAsteroidCanvasProperties(canvas, contract);
+        const row = Math.floor((y - top) / cellSize);
+        const column = Math.floor((x - left) / cellSize);
+        const cell = contract.grid[row]?.[column];
+        if (!cell?.durability) {
+            setTooltipText('empty');
+            return;
+        }
+        const durability = cell.durability | 0;
+        if (cell.resourceType) {
+            const resource = gameApi.getCargoByType(cell.resourceType);
+            setTooltipText(`(${durability}) ${resource.name} ${cell.resourceUnits!.toFixed(1)}`);
+        } else {
+            setTooltipText(`(${durability})`);
+        }
+        //console.log(' => ', column, row);
+    }, []);
 
-    return <canvas ref={canvasRef} width={ width } height={ height }/>
+    return (
+        <Tooltip title={ tooltipText } arrow followCursor>
+            <canvas ref={canvasRef} width={ width } height={ height } onMouseMove={ updateTooltip }/>
+        </Tooltip>
+    );
 };
 
 export default AsteroidPane;

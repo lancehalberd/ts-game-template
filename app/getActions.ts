@@ -1,5 +1,6 @@
 import {
-    copyContract, copyState, copyMiningState, copyStationState
+    copyContract, copyState, copyMiningState, copyStationState,
+    getCargoByType,
 } from 'app/state';
 
 export function getGetActions(state: State) {
@@ -25,5 +26,8 @@ export function getGetActions(state: State) {
         getContract(index: number) {
             return copyContract(state.station.availableContracts[index]);
         },
+        getCargoByType(cargoType: CargoType) {
+            return {...getCargoByType(state, cargoType)};
+        }
     };
 }
