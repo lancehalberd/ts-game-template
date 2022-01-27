@@ -10,6 +10,7 @@ import {
     ListItemText,
     Tab,
     Tabs,
+    Slider,
 } from '@mui/material';
 
 import BuildIcon from '@mui/icons-material/Build';
@@ -19,6 +20,8 @@ import DiamondIcon from '@mui/icons-material/Diamond';
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
 import YourCargo from './YourCargo';
+import { baseMarkup } from 'app/gameConstants';
+import { getTotalShipFuel } from 'app/state';
 
 export const getCargoItemIcon = (cargoType: string) => {
     switch (cargoType) {
@@ -34,16 +37,65 @@ export const getCargoItemIcon = (cargoType: string) => {
     }
 };
 
+const FuelSlider = ({
+    fuelItem,
+    onChange,
+    defaultAmount = 20,
+}: {
+    fuelItem: Cargo;
+    onChange: (units: number) => void;
+    defaultAmount?: number;
+}) => {
+    const { gameState } = React.useContext(GameContext);
+    const [fuelUnits, setFuelUnits] = React.useState<number>(defaultAmount);
+    const currentShip = gameState.station.ships[0];
+    const totalFuelUnits = getTotalShipFuel(currentShip);
+    const handleChange = (event: Event, newValue: number | number[]) => {
+        const newUnits = newValue as number;
+        setFuelUnits(newUnits);
+        onChange(newUnits);
+    };
+
+    const totalCost =
+        (fuelUnits + totalFuelUnits) * fuelItem.unitCost * baseMarkup;
+
+    return (
+        <div className="fuel-slider">
+            <div className="unit-count">
+                <strong>Fuel Units:</strong>
+                {` ${fuelUnits}`}
+            </div>
+            <div className="total-cost">
+                <strong>Total Cost:</strong>
+                {` ${totalCost}`}
+            </div>
+            <Slider
+                aria-label="Fuel Units"
+                value={fuelUnits}
+                max={100}
+                min={5}
+                marks
+                step={5}
+                valueLabelDisplay="auto"
+                onChange={handleChange}
+            />
+        </div>
+    );
+};
+
 const CargoPicker = () => {
-    const [value, setValue] = React.useState(0);
+    const DEFAULT_FUEL_AMOUNT = 20;
+    const [tabIndex, setTabIndex] = React.useState(0);
     const { gameState, gameApi, setGameState } = React.useContext(GameContext);
     const [selectedItem, setSelectedItem] = React.useState<Cargo>();
     const currentShip = gameState.station.ships[0];
+    const [fuelUnits, setFuelUnits] =
+        React.useState<number>(DEFAULT_FUEL_AMOUNT);
 
     console.log('CargoPicker gameState: ', gameState);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
+        setTabIndex(newValue);
         setSelectedItem(undefined);
     };
 
@@ -58,15 +110,14 @@ const CargoPicker = () => {
         if (shipType) {
             switch (item.type) {
                 case 'tool':
-                    gameApi.purchaseTool(
-                        item.cargoType,
-                        1,
-                        gameState?.currentShip?.shipType,
-                        { spendCredit: true }
-                    );
+                    gameApi.purchaseTool(item.cargoType, 1, shipType, {
+                        spendCredit: true,
+                    });
                     break;
                 case 'fuel':
-                    gameApi.purchaseFuel(shipType, 1, { spendCredit: true });
+                    gameApi.purchaseFuel(shipType, fuelUnits, {
+                        spendCredit: true,
+                    });
                     break;
                 case 'ore':
                     console.log('ERROR: Cannot purchase Ore');
@@ -76,6 +127,10 @@ const CargoPicker = () => {
         }
     };
 
+    const handleFuelChange = (fuelUnits: number) => {
+        setFuelUnits(fuelUnits);
+    };
+
     const camelToSpaces = (str: string): string => {
         const result = str.replace(/([A-Z])/g, ' $1');
         return result.charAt(0).toUpperCase() + result.slice(1);
@@ -83,7 +138,7 @@ const CargoPicker = () => {
 
     const visibleItems = () => {
         const { diggingTools, fuels, ores } = gameState.content;
-        switch (value) {
+        switch (tabIndex) {
             case 0:
                 return diggingTools;
                 break;
@@ -100,10 +155,17 @@ const CargoPicker = () => {
 
     const canAddItem = !!(currentShip && selectedItem);
 
+    const isItemDisabled = (cargoItem: Cargo) => {
+        if (cargoItem.type === 'fuel' && currentShip) {
+            return cargoItem.cargoType !== currentShip.fuelType;
+        }
+        return false;
+    };
+
     return (
         <div style={{ margin: '20px' }}>
-            <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                <Tabs value={value} onChange={handleTabChange} centered>
+            <Box sx={{ width: '100%' }}>
+                <Tabs value={tabIndex} onChange={handleTabChange} centered>
                     <Tab label="Digging Tools" />
                     <Tab label="Fuels" />
                     <Tab label="Ores" disabled />
@@ -121,6 +183,7 @@ const CargoPicker = () => {
                                             selectedItem?.cargoType ===
                                             item.cargoType
                                         }
+                                        disabled={isItemDisabled(item)}
                                     >
                                         <ListItemIcon>
                                             {getCargoItemIcon(item.type)}
@@ -146,6 +209,14 @@ const CargoPicker = () => {
                         })}
                 </div>
                 <div className="select-item-pane">
+                    {tabIndex === 1 && canAddItem && (
+                        <FuelSlider
+                            fuelItem={selectedItem}
+                            onChange={handleFuelChange}
+                            defaultAmount={DEFAULT_FUEL_AMOUNT}
+                        />
+                    )}
+
                     <Button
                         variant="contained"
                         size="large"

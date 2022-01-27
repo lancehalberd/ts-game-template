@@ -30,6 +30,7 @@
     background-color: rgba(255, 255, 255, 0.9);
     padding: 30px;
     margin: 0 40px;
+    border-radius: 20px;
 }
 
 .item-picker {
@@ -78,5 +79,33 @@
         .label {
             margin-left: 16px;
         }
+    }
+}
+
+.ship-name {
+    border-bottom: 1px dotted lightgrey;
+    text-decoration: none;
+}
+
+.ship-stats {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    gap: 10px;
+}
+
+.fuel-slider {
+    margin: 20px 0;
+}
+
+.preview-trip {
+    .preview-fuel-slider {
+        width: 40%;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
     }
 }
