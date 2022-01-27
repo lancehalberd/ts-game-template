@@ -47,8 +47,8 @@ export default function TopStatusBar() {
         rentalTime = '∞';
         rentalColor = 'primary';
     }
-    const contractID = gameState.currentContract
-        ? gameState.currentContract.id
+    const contractName = gameState.currentContract
+        ? gameState.currentContract.name
         : 'None';
 
     const shipPopover = (
@@ -110,7 +110,7 @@ export default function TopStatusBar() {
                 {vertDivider}
                 {getShipIcon()}
                 {vertDivider}
-                <ArticleIcon />: <span>{contractID}</span>
+                <ArticleIcon />: <span>{contractName}</span>
             </Box>
         </div>
     );

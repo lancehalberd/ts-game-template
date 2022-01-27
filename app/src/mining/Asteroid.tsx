@@ -39,14 +39,18 @@ interface Props {
     label: string;
     storage: CargoStorage;
     onSelectCargoType?: (cargoType: CargoType) => void;
+    showDetails?: boolean;
+    baseMass?: number
 }
 
-const Storage = ({ label, storage, onSelectCargoType }: Props) => {
+const Storage = ({ label, storage, onSelectCargoType, showDetails, baseMass = 0 }: Props) => {
     const { gameState } = React.useContext(GameContext);
     let cargo: Cargo[] = storage.cargo;
 
     // Each aggregate item is an icon, name of item, and count badge
     const uniqCargoTypes = new Set(cargo.map((item) => item.cargoType));
+    let cargoVolume: number = 0;
+    let cargoMass: number = 0;
     const aggItems = [...uniqCargoTypes].map((cargoType) => {
         const items = cargo.filter((item) => item.cargoType === cargoType);
         let total = 0;
@@ -56,6 +60,8 @@ const Storage = ({ label, storage, onSelectCargoType }: Props) => {
             } else {
                 total += item.units;
             }
+            cargoVolume += item.units * item.unitVolume;
+            cargoMass += item.units * item.unitMass;
         }
         const label = items[0].name;
 
@@ -73,6 +79,18 @@ const Storage = ({ label, storage, onSelectCargoType }: Props) => {
     return (
         <div className="your-cargo">
             <MuiHeader variant="h5">{label}</MuiHeader>
+            { showDetails && (
+                <>
+                    <div className="storage-volume">
+                        <strong>space:</strong>
+                        {` ${Math.round(cargoVolume)} / ${storage.cargoSpace}`}
+                    </div>
+                    <div className="storage-mass">
+                        <strong>mass:</strong>
+                        {` ${ (baseMass + cargoMass).toFixed(1) }kg`}
+                    </div>
+                </>
+            )}
             <div className="cargo-items">{aggItems}</div>
         </div>
     );
@@ -127,6 +145,8 @@ const Asteroid = () => {
                                 gameApi.unloadCargo(cargoType, 10000);
                                 refreshGameState();
                             }}
+                            showDetails
+                            baseMass={ gameState.currentShip!.mass }
                         />
                         <Storage
                             label="Unloaded Cargo"

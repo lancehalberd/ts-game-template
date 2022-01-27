@@ -203,6 +203,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
 
     return {
         id,
+        name: `${asteroidSize.prefix} ${asteroidType.name}`.trim(),
         grid,
         cost: Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5) * asteroidSize.costMultiplier,
         distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
@@ -221,8 +222,10 @@ export function generateContractList(state: State, amount: number): Contract[] {
         let resourceIndex = Math.floor(Math.random() * compositionKeys.length);
         const compositions: AsteroidComposition[] = <AsteroidComposition[]> asteroidCompositions.get(compositionKeys[resourceIndex]);
         const composition: AsteroidComposition = pickComposition(compositions);
-        console.log(composition)
+        // console.log(composition)
         contracts[i] = generateContract(state, i, Math.pow(resourceIndex+1, 1.5) * composition.approximate_cost, size, composition);
     }
+    // For now just use every other contract.
+    contracts.sort((A, B) => A.cost - B.cost).filter((contract, i) => (i % 2) === 0);
     return contracts;
 }

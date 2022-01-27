@@ -1,38 +1,45 @@
 export const asteroidSizes: Array<AsteroidSize> = [
     {
         // small
+        prefix: 'Small',
         "costMultiplier": 1,
         "sizeCoefficient": 10
     },{
         // medium
+        prefix: '',
         "costMultiplier": 2.5,
         "sizeCoefficient": 25,
     },{
         // large
+        prefix: 'Large',
         "costMultiplier": 7,
         "sizeCoefficient": 50
     }
 ];
 
 const ironCompositions: AsteroidComposition[] = [{
+    name: 'Paltry Meteor',
     "probability": 0.7,
     "approximate_cost": 10000,
     "resources": {
         "iron": 0.1
     }
 },{
+    name: 'Meteor',
     "probability": 0.2,
     "approximate_cost": 25000,
     "resources": {
         "iron": 0.25
     }
 },{
+    name: 'Ample Meteor',
     "probability": 0.08,
     "approximate_cost": 35000,
     "resources": {
         "iron": 0.4
     }
 },{
+    name: 'Abundant Meteor',
     "probability": 0.02,
     "approximate_cost": 50000,
     "resources": {
@@ -41,6 +48,7 @@ const ironCompositions: AsteroidComposition[] = [{
 }];
 
 const silverCompositions: AsteroidComposition[] = [{
+    name: 'Paltry Asteroid',
     "probability": 0.75,
     "approximate_cost": 32000,
     "resources": {
@@ -48,6 +56,7 @@ const silverCompositions: AsteroidComposition[] = [{
         "iron": 0.15
     }
 },{
+    name: 'Asteroid',
     "probability": 0.17,
     "approximate_cost": 63000,
     "resources": {
@@ -55,6 +64,7 @@ const silverCompositions: AsteroidComposition[] = [{
         "iron": 0.15
     }
 },{
+    name: 'Ample Asteroid',
     "probability": 0.06,
     "approximate_cost": 97000,
     "resources": {
@@ -62,6 +72,7 @@ const silverCompositions: AsteroidComposition[] = [{
         "iron": 0.15
     }
 },{
+    name: 'Abundant Asteroid',
     "probability": 0.02,
     "approximate_cost": 150000,
     "resources": {
@@ -70,6 +81,7 @@ const silverCompositions: AsteroidComposition[] = [{
 }];
 
 const goldCompositions: AsteroidComposition[] = [{
+        name: 'Paltry Gold Mine',
         "probability": 0.75,
         "approximate_cost": 55000,
         "resources": {
@@ -78,6 +90,7 @@ const goldCompositions: AsteroidComposition[] = [{
             "iron": 0.15
         }
     },{
+        name: 'Gold Mine',
         "probability": 0.17,
         "approximate_cost": 113000,
         "resources": {
@@ -86,6 +99,7 @@ const goldCompositions: AsteroidComposition[] = [{
             "iron": 0.10
         }
     },{
+        name: 'Ample Gold Mine',
         "probability": 0.06,
         "approximate_cost": 193000,
         "resources": {
@@ -94,6 +108,7 @@ const goldCompositions: AsteroidComposition[] = [{
             "iron": 0.10
         }
     },{
+        name: 'Pure Gold Mine',
         "probability": 0.02,
         "approximate_cost": 283000,
         "resources": {
@@ -102,6 +117,7 @@ const goldCompositions: AsteroidComposition[] = [{
     }];
 
 const platinumCompositions: AsteroidComposition[] = [{
+    name: 'Scattered Metal Trove',
     "probability": 0.80,
     "approximate_cost": 95000,
     "resources": {
@@ -111,6 +127,7 @@ const platinumCompositions: AsteroidComposition[] = [{
         "iron": 0.15
     }
 },{
+    name: 'Common Metal Trove',
     "probability": 0.15,
     "approximate_cost": 216000,
     "resources": {
@@ -120,6 +137,7 @@ const platinumCompositions: AsteroidComposition[] = [{
         "iron": 0.22
     }
 },{
+    name: 'Valuable Metal Trove',
     "probability": 0.04,
     "approximate_cost": 537000,
     "resources": {
@@ -129,6 +147,7 @@ const platinumCompositions: AsteroidComposition[] = [{
         "iron": 0.10
     }
 },{
+    name: 'Glorious Metal Trove',
     "probability": 0.01,
     "approximate_cost": 840000,
     "resources": {
@@ -138,6 +157,7 @@ const platinumCompositions: AsteroidComposition[] = [{
 }];
 
 const diamondCompositions: AsteroidComposition[] = [{
+    name: 'Sparkling Meteor',
     "probability": 0.80,
     "approximate_cost": 151000,
     "resources": {
@@ -148,6 +168,7 @@ const diamondCompositions: AsteroidComposition[] = [{
         "iron": 0.15
     }
 },{
+    name: 'Glittering Meteor',
     "probability": 0.17,
     "approximate_cost": 295000,
     "resources": {
@@ -158,6 +179,7 @@ const diamondCompositions: AsteroidComposition[] = [{
         "iron": 0.22
     }
 },{
+    name: 'Shining Meteor',
     "probability": 0.02,
     "approximate_cost": 978000,
     "resources": {
@@ -168,6 +190,7 @@ const diamondCompositions: AsteroidComposition[] = [{
         "iron": 0.08
     }
 },{
+    name: 'Blinding Meteor',
     "probability": 0.01,
     "approximate_cost": 1744000,
     "resources": {
@@ -178,6 +201,7 @@ const diamondCompositions: AsteroidComposition[] = [{
 }];
 
 const magicComposition: AsteroidComposition[] = [{
+    name: 'Mysterious Asteroid',
     "probability": 0.80,
     "approximate_cost": 134000,
     "resources": {
@@ -189,6 +213,7 @@ const magicComposition: AsteroidComposition[] = [{
         "iron": 0.20
     }
 },{
+    name: 'Magical Asteroid',
     "probability": 0.17,
     "approximate_cost": 221000,
     "resources": {
@@ -200,6 +225,7 @@ const magicComposition: AsteroidComposition[] = [{
         "iron": 0.22
     }
 },{
+    name: 'Fantastic Asteroid',
     "probability": 0.02,
     "approximate_cost": 1389000,
     "resources": {
@@ -211,6 +237,7 @@ const magicComposition: AsteroidComposition[] = [{
         "iron": 0.08
     }
 },{
+    name: 'Wonderous Asteroid',
     "probability": 0.01,
     "approximate_cost": 2755000,
     "resources": {

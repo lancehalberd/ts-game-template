@@ -57,10 +57,12 @@ declare global {
 
     // Asteroid definitions
     interface AsteroidSize {
+        prefix: string
         costMultiplier: number
         sizeCoefficient: number
     }
     interface AsteroidComposition {
+        name: string
         probability: number,
         approximate_cost: number,
         resources: Partial<Record<FuelType | OreType, number>>
@@ -133,6 +135,7 @@ declare global {
 
     interface Contract extends CargoStorage {
         id: number
+        name: string
         grid: (MiningCell | null)[][]
         cost: number
         distance: number

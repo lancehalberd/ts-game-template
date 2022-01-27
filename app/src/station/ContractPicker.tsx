@@ -61,7 +61,7 @@ const ContractPicker = () => {
                                         <ArticleIcon />
                                     </ListItemIcon>
                                     <ListItemText
-                                        primary={`Contract ${contract.id}`}
+                                        primary={`${contract.name}`}
                                     />
                                 </ListItemButton>
                             </ListItem>
