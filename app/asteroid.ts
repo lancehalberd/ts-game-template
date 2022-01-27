@@ -254,3 +254,22 @@ asteroidCompositions.set("gold_asteroid", goldCompositions);
 asteroidCompositions.set("platinum_asteroid", platinumCompositions);
 asteroidCompositions.set("diamond_asteroid", diamondCompositions);
 asteroidCompositions.set("magic_asteroid", magicComposition);
+
+
+export const fuelModifiers: {[index: string]: FuelResourceModifier} = {
+    'uranium': {
+        prefix: 'Nuclear',
+        probability: 0.18,
+        type: 'uranium'
+    },
+    'tritium': {
+        prefix: 'Heavy',
+        probability: 0.12,
+        type: 'tritium'
+    },
+    'magicFuel': {
+        prefix: 'Enchanted',
+        probability: 0.06,
+        type: 'magicFuel'
+    },
+};
