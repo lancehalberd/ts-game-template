@@ -67,6 +67,11 @@ declare global {
         approximate_cost: number,
         resources: Partial<Record<FuelType | OreType, number>>
     }
+    interface FuelResourceModifier {
+        prefix: string
+        probability: number,
+        type: FuelType
+    }
 
     // All Cargo definitions
     interface BaseCargo {

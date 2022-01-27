@@ -1,7 +1,7 @@
 import { averageTravelDistance } from 'app/gameConstants';
 import {getFuelByType, getOreByType} from 'app/state';
 import Random from 'app/utils/Random';
-import { asteroidSizes, asteroidCompositions } from  'app/asteroid';
+import { asteroidSizes, asteroidCompositions, fuelModifiers } from  'app/asteroid';
 
 // function getAllowedResources(targetContractValue: number): Array<string> {
 //     let ores;
@@ -57,12 +57,15 @@ import { asteroidSizes, asteroidCompositions } from  'app/asteroid';
 //     return oreProbabilities
 // }
 
-function determineCellResource(asteroidType: AsteroidComposition, relativeDepth: number): OreType|FuelType|null {
+function determineCellResource(asteroidType: AsteroidComposition, relativeDepth: number,
+                               fuelMod: FuelResourceModifier|null): OreType|FuelType|null {
     const resources: Array<FuelType|OreType> = Object.keys(asteroidType.resources) as (FuelType|OreType)[];
     for (let resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
         const rng = Math.random();
         if (asteroidType.resources && rng < asteroidType.resources[resources[resourceIndex]]! * relativeDepth) {
-            return <OreType|FuelType> resources[resourceIndex]
+            return <OreType> resources[resourceIndex]
+        } else if (fuelMod && rng < fuelMod.probability * Math.sqrt(relativeDepth)) {
+            return fuelMod.type
         }
     }
     return null
@@ -105,12 +108,23 @@ function pickComposition(compositions: AsteroidComposition[]): AsteroidCompositi
     return compositions[0]
 }
 
+function pickFuelResourceModifier(): FuelResourceModifier|null {
+    const rng = Math.random();
+    if (rng < 0.3) {
+        const fuelOptions: string[] = Object.keys(fuelModifiers);
+        const fuelIndex: number = Math.max(0, Math.min(2, Math.abs(Math.log2(Math.floor(Math.random()*8)) - 2)))
+        return fuelModifiers[fuelOptions[fuelIndex]]
+    }
+    return null
+}
+
 /*
 const mineralDistributions: [FuelType | OreType, number, number, number][][] = [
     [['gold', 0.05, 10, 40], ['silver', 0.05, 20, 80], ['iron', 0.1, 40, 200], ['uranium', 0.1, 40, 200]],
 ]
 */
-function generateContract(state: State, id : number, targetValue: number, asteroidSize: AsteroidSize, asteroidType: AsteroidComposition): Contract {
+function generateContract(state: State, id : number, targetValue: number, asteroidSize: AsteroidSize,
+                          asteroidType: AsteroidComposition, fuelModifier: FuelResourceModifier|null): Contract {
     const baseDiameter = asteroidSize.sizeCoefficient * (Math.log(targetValue) / Math.log(10) - 4) ;
 
     let xRadius = Math.floor(5 + Math.random() * baseDiameter);
@@ -182,7 +196,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
                 durability: 100 * densityCoefficient * miningDifficulty,
                 resourceDurability: 0,
             };
-            let cellResource = determineCellResource(asteroidType, percentDepth);
+            let cellResource = determineCellResource(asteroidType, percentDepth, fuelModifier);
             if (cellResource) {
                 newCell.resourceType = cellResource;
                 newCell.resourceUnits = genResourceUnits(newCell.resourceType);
@@ -200,10 +214,14 @@ function generateContract(state: State, id : number, targetValue: number, astero
             grid[i][j] = newCell;
         }
     }
+    let fuelModifierPrefix: string = '';
+    if (fuelModifier) {
+        fuelModifierPrefix = fuelModifier.prefix;
+    }
 
     return {
         id,
-        name: `${asteroidSize.prefix} ${asteroidType.name}`.trim(),
+        name: `${fuelModifierPrefix} ${asteroidSize.prefix} ${asteroidType.name}`.trim(),
         grid,
         cost: Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5) * asteroidSize.costMultiplier,
         distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
@@ -222,8 +240,10 @@ export function generateContractList(state: State, amount: number): Contract[] {
         let resourceIndex = Math.floor(Math.random() * compositionKeys.length);
         const compositions: AsteroidComposition[] = <AsteroidComposition[]> asteroidCompositions.get(compositionKeys[resourceIndex]);
         const composition: AsteroidComposition = pickComposition(compositions);
+        const fuelModifier: FuelResourceModifier|null = pickFuelResourceModifier();
         // console.log(composition)
-        contracts[i] = generateContract(state, i, Math.pow(resourceIndex+1, 1.5) * composition.approximate_cost, size, composition);
+        contracts[i] = generateContract(state, i, Math.pow(resourceIndex+1, 1.5) * composition.approximate_cost,
+            size, composition, fuelModifier);
     }
     // For now just use every other contract.
     contracts.sort((A, B) => A.cost - B.cost).filter((contract, i) => (i % 2) === 0);
