@@ -93,7 +93,7 @@ function genResourceUnits(resource: OreType|FuelType): number {
     }
 }
 
-function pickComposition(compositions: Array<AsteroidComposition>): AsteroidComposition {
+function pickComposition(compositions: AsteroidComposition[]): AsteroidComposition {
     let probability = Math.random();
     for(let i = 0; i < compositions.length; i++) {
         if (probability < compositions[i].probability) {
@@ -219,7 +219,7 @@ export function generateContractList(state: State, amount: number): Contract[] {
         const size: AsteroidSize = asteroidSizes[Math.max(0, Math.min(2, Math.abs(Math.floor(Math.log10(Math.floor(Math.random()*1000)))-2)))];
         let compositionKeys = Array.from(asteroidCompositions.keys());
         let resourceIndex = Math.floor(Math.random() * compositionKeys.length);
-        const compositions: Array<AsteroidComposition> = <Array<AsteroidComposition>> asteroidCompositions.get(compositionKeys[resourceIndex]);
+        const compositions: AsteroidComposition[] = <AsteroidComposition[]> asteroidCompositions.get(compositionKeys[resourceIndex]);
         const composition: AsteroidComposition = pickComposition(compositions);
         console.log(composition)
         contracts[i] = generateContract(state, i, Math.pow(resourceIndex+1, 1.5) * composition.approximate_cost, size, composition);

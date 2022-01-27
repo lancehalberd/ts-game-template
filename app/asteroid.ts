@@ -14,7 +14,7 @@ export const asteroidSizes: Array<AsteroidSize> = [
     }
 ];
 
-const ironCompositions: Array<AsteroidComposition> = [{
+const ironCompositions: AsteroidComposition[] = [{
     "probability": 0.7,
     "approximate_cost": 10000,
     "resources": {
@@ -40,7 +40,7 @@ const ironCompositions: Array<AsteroidComposition> = [{
     }
 }];
 
-const silverCompositions: Array<AsteroidComposition> = [{
+const silverCompositions: AsteroidComposition[] = [{
     "probability": 0.75,
     "approximate_cost": 32000,
     "resources": {
@@ -69,7 +69,7 @@ const silverCompositions: Array<AsteroidComposition> = [{
     }
 }];
 
-const goldCompositions: Array<AsteroidComposition> = [{
+const goldCompositions: AsteroidComposition[] = [{
         "probability": 0.75,
         "approximate_cost": 55000,
         "resources": {
@@ -101,7 +101,7 @@ const goldCompositions: Array<AsteroidComposition> = [{
         }
     }];
 
-const platinumCompositions: Array<AsteroidComposition> = [{
+const platinumCompositions: AsteroidComposition[] = [{
     "probability": 0.80,
     "approximate_cost": 95000,
     "resources": {
@@ -137,7 +137,7 @@ const platinumCompositions: Array<AsteroidComposition> = [{
     }
 }];
 
-const diamondCompositions: Array<AsteroidComposition> = [{
+const diamondCompositions: AsteroidComposition[] = [{
     "probability": 0.80,
     "approximate_cost": 151000,
     "resources": {
@@ -177,7 +177,7 @@ const diamondCompositions: Array<AsteroidComposition> = [{
     }
 }];
 
-const magicComposition: Array<AsteroidComposition> = [{
+const magicComposition: AsteroidComposition[] = [{
     "probability": 0.80,
     "approximate_cost": 134000,
     "resources": {
@@ -220,7 +220,7 @@ const magicComposition: Array<AsteroidComposition> = [{
     }
 }];
 
-export let asteroidCompositions: Map<string, Array<AsteroidComposition>> = new Map<string, Array<AsteroidComposition>>();
+export let asteroidCompositions: Map<string, AsteroidComposition[]> = new Map<string, AsteroidComposition[]>();
 asteroidCompositions.set("iron_asteroid", ironCompositions);
 asteroidCompositions.set("silver_asteroid", silverCompositions);
 asteroidCompositions.set("gold_asteroid", goldCompositions);
