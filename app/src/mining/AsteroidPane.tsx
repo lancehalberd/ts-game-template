@@ -29,15 +29,28 @@ function drawAsteroid(canvas: HTMLCanvasElement, contract: Contract) {
     const grid = contract.grid;
     context.fillStyle = 'black';
     context.fillRect(0, 0, canvas.width, canvas.height);
+    context.save();
+        context.fillStyle = '#8a805a';
+        context.translate(canvas.width / 2, canvas.height / 2);
+        context.scale(cellSize * (columns + 2), cellSize * (rows + 2));
+        context.beginPath();
+        context.arc(
+            0, 0,
+            0.5,
+            0, 2 * Math.PI
+        );
+        context.fill();
+    context.restore();
     for (let y = 0; y < rows; y++) {
         for (let x = 0; x < columns; x++) {
             const cell = grid[y][x];
             if (!cell) {
                 continue;
             }
-            context.fillStyle = '#7d511a';
+            //context.fillStyle = '#7d511a';
+            context.fillStyle = '#452d1b';
             const baseDurability = cell.durability - cell.resourceDurability;
-            context.globalAlpha = Math.min(1, Math.max(0.3, baseDurability / 400));
+            context.globalAlpha = Math.min(1, 0.3 + baseDurability / 400);
             context.fillRect(left + x * cellSize, top + y * cellSize, cellSize, cellSize);
             /*context.beginPath();
             context.arc(
