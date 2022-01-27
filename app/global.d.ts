@@ -6,195 +6,225 @@ export {};
 
 declare global {
     interface Window {
-        state?: State
-        gameApi?: GameApi
-        refreshReact?: (gameApi: GameApi) => void
+        state?: State;
+        gameApi?: GameApi;
+        refreshReact?: (gameApi: GameApi) => void;
     }
 
     interface IGameContext {
-        gameState: State
-        gameApi: GameApi
-        refreshGameState: () => void
+        gameState: State;
+        gameApi: GameApi;
+        refreshGameState: () => void;
     }
 
     type GameApi = {
         // This will only be available on a simulation.
-        state?: State
+        state?: State;
         // This returns a copy of the game api for simulation only.
         // Scripts can use this to test the outcome of a complex course of action.
         // And UI elements can use this for previewing results of single actions.
-        simulate: () => GameApi
-    } & ReturnType<typeof getGetActions>
-      & ReturnType<typeof getMiningApi>
-      & ReturnType<typeof getStationApi>;
+        simulate: () => GameApi;
+    } & ReturnType<typeof getGetActions> &
+        ReturnType<typeof getMiningApi> &
+        ReturnType<typeof getStationApi>;
+
+    type ItemType = 'tool' | 'fuel' | 'ore';
+
+    type StationStep =
+        | 'purchaseContract'
+        | 'rentShip'
+        | 'outfitShip'
+        | 'previewTrip';
 
     interface State {
-        debt: number
-        credits: number
-        creditLimit: number
+        debt: number;
+        credits: number;
+        creditLimit: number;
         // in days
-        time: number
+        time: number;
         content: {
-            readonly ships: readonly ShipDefinition[]
-            readonly diggingTools: readonly DiggingToolDefinition[]
-            readonly fuels: readonly Fuel[]
-            readonly ores: readonly Ore[]
-        }
-        station: Station
-        atStation: boolean
-        currentContract?: Contract
-        currentShip?: Ship
+            readonly ships: readonly ShipDefinition[];
+            readonly diggingTools: readonly DiggingToolDefinition[];
+            readonly fuels: readonly Fuel[];
+            readonly ores: readonly Ore[];
+        };
+        station: Station;
+        atStation: boolean;
+        currentContract?: Contract;
+        currentShip?: Ship;
+        currentStationStep: StationStep;
     }
     // CargoStorage
     interface CargoStorage {
-        cargoSpace: number
-        cargo: Cargo[]
+        cargoSpace: number;
+        cargo: Cargo[];
     }
     interface Station extends CargoStorage {
-        availableContracts: Contract[]
-        ships: Ship[]
+        availableContracts: Contract[];
+        ships: Ship[];
     }
 
     // Asteroid definitions
     interface AsteroidSize {
-        prefix: string
-        costMultiplier: number
-        sizeCoefficient: number
+        prefix: string;
+        costMultiplier: number;
+        sizeCoefficient: number;
     }
     interface AsteroidComposition {
-        name: string
-        probability: number,
-        approximate_cost: number,
-        resources: Partial<Record<FuelType | OreType, number>>
+        name: string;
+        probability: number;
+        approximate_cost: number;
+        resources: Partial<Record<FuelType | OreType, number>>;
     }
 
     // All Cargo definitions
     interface BaseCargo {
-        readonly type: string
-        readonly cargoType: string
+        readonly type: string;
+        readonly cargoType: string;
         // In credits per unit
-        readonly unitCost: number
+        readonly unitCost: number;
         // In kg per unit
-        readonly unitMass: number
+        readonly unitMass: number;
         // In liters per unit
-        readonly unitVolume: number
-        units: number
+        readonly unitVolume: number;
+        units: number;
     }
     interface Resource extends BaseCargo {
-        miningDurabilityPerUnit: number
+        miningDurabilityPerUnit: number;
     }
     type FuelType = 'uranium' | 'fuelCells' | 'tritium' | 'magicFuel';
     interface Fuel extends Resource {
-        type: 'fuel'
-        cargoType: FuelType
-        readonly name: string
-        readonly unitEnergy: number
+        type: 'fuel';
+        cargoType: FuelType;
+        readonly name: string;
+        readonly unitEnergy: number;
     }
-    type OreType = 'iron' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'magicCrystal';
+    type OreType =
+        | 'iron'
+        | 'silver'
+        | 'gold'
+        | 'platinum'
+        | 'diamond'
+        | 'magicCrystal';
     interface Ore extends Resource {
-        type: 'ore'
-        cargoType: OreType
-        readonly name: string
+        type: 'ore';
+        cargoType: OreType;
+        readonly name: string;
     }
     type OreDefinition = Readonly<Ore>;
-    type ToolType = 'basicHarvestingDrill' | 'basicDiggingDrill' | 'basicDiggingLaser' |
-        'advancedHarvestingDrill' | 'advancedDiggingDrill' | 'advancedDiggingLaser' |
-        'magicHarvestingDrill' | 'magicDiggingDrill' | 'magicDiggingLaser' |
-        'smallExplosives' | 'largeExplosives';
+    type ToolType =
+        | 'basicHarvestingDrill'
+        | 'basicDiggingDrill'
+        | 'basicDiggingLaser'
+        | 'advancedHarvestingDrill'
+        | 'advancedDiggingDrill'
+        | 'advancedDiggingLaser'
+        | 'magicHarvestingDrill'
+        | 'magicDiggingDrill'
+        | 'magicDiggingLaser'
+        | 'smallExplosives'
+        | 'largeExplosives';
     interface DiggingTool extends BaseCargo {
-        type: 'tool'
-        cargoType: ToolType
-        readonly name: string
+        type: 'tool';
+        cargoType: ToolType;
+        readonly name: string;
         // Number.POSITIVE_INFINITY can be used indefinitely.
-        remainingUses: number
+        remainingUses: number;
         // Number.POSITIVE_INFINITY destroys any cell.
-        readonly miningPower: number
+        readonly miningPower: number;
         // 0-1, % resources harvested while mining.
-        readonly miningEfficiency: number
+        readonly miningEfficiency: number;
         // Can be 0 for tools that don't use energy.
-        readonly energyPerUse: number
+        readonly energyPerUse: number;
     }
     type DiggingToolDefinition = Readonly<DiggingTool>;
     type CargoType = ToolType | FuelType | OreType;
-    type Cargo = DiggingTool | Fuel | Ore
+    type Cargo = DiggingTool | Fuel | Ore;
 
-    type ShipType = 'basicSmallShip' | 'basicShip' | 'basicBigShip'
-        | 'advancedSmallShip' | 'advancedShip' | 'advancedBigShip'
-        | 'magicSmallShip' | 'magicShip' | 'magicBigShip'
+    type ShipType =
+        | 'basicSmallShip'
+        | 'basicShip'
+        | 'basicBigShip'
+        | 'advancedSmallShip'
+        | 'advancedShip'
+        | 'advancedBigShip'
+        | 'magicSmallShip'
+        | 'magicShip'
+        | 'magicBigShip';
     interface Ship extends CargoStorage {
-        readonly shipType: ShipType
-        readonly name: string
-        readonly fuelType: FuelType
-        readonly mass: number
-        readonly cost: number
-        isRented: boolean
-        isOwned: boolean
-        returnTime?: number
+        readonly shipType: ShipType;
+        readonly name: string;
+        readonly fuelType: FuelType;
+        readonly mass: number;
+        readonly cost: number;
+        isRented: boolean;
+        isOwned: boolean;
+        returnTime?: number;
     }
     type ShipDefinition = Readonly<Ship>;
 
     interface Contract extends CargoStorage {
-        id: number
-        name: string
-        grid: (MiningCell | null)[][]
-        cost: number
-        distance: number
+        id: number;
+        name: string;
+        grid: (MiningCell | null)[][];
+        cost: number;
+        distance: number;
     }
 
-
     interface MiningCell {
-        durability: number
-        resourceType?: FuelType | OreType
-        resourceUnits?: number
-        resourceDurability: number
-        isRevealed?: boolean
+        durability: number;
+        resourceType?: FuelType | OreType;
+        resourceUnits?: number;
+        resourceDurability: number;
+        isRevealed?: boolean;
     }
 
     // Action succeeded
     interface GameApiSuccess {
-        success: true
-        amount?: number
+        success: true;
+        amount?: number;
     }
     // Action was prevented, can be completed with `force` option
     interface GameApiWarning {
-        warningType: 'spendingCredit' | 'lowFuel' | 'cargoNotEmpty' | 'multipleRentals'
-        warningMessage: string
+        warningType:
+            | 'spendingCredit'
+            | 'lowFuel'
+            | 'cargoNotEmpty'
+            | 'multipleRentals';
+        warningMessage: string;
     }
     // Action was invalid
     interface GameApiError {
-        errorType: 'creditExceeded' | 'duplicateShip' | 'invalidRequest'
-        errorMessage: string
+        errorType: 'creditExceeded' | 'duplicateShip' | 'invalidRequest';
+        errorMessage: string;
     }
 
     type GameApiResponse = GameApiSuccess | GameApiWarning | GameApiError;
 
-
-
-
     interface ExtraAnimationProperties {
         // The animation will loop unless this is explicitly set to false.
-        loop?: boolean
+        loop?: boolean;
         // Frame to start from after looping.
-        loopFrame?: number
+        loopFrame?: number;
     }
     type FrameAnimation = {
-        frames: Frame[]
-        frameDuration: number
-        duration: number
-    } & ExtraAnimationProperties
+        frames: Frame[];
+        frameDuration: number;
+        duration: number;
+    } & ExtraAnimationProperties;
 
     interface Rect {
-        x: number
-        y: number
-        w: number
-        h: number
+        x: number;
+        y: number;
+        w: number;
+        h: number;
     }
     interface FrameDimensions {
-        w: number
-        h: number
+        w: number;
+        h: number;
     }
 
     interface Frame extends Rect {
-        image: HTMLCanvasElement | HTMLImageElement,
+        image: HTMLCanvasElement | HTMLImageElement;
     }
 }

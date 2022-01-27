@@ -16,6 +16,7 @@ import { baseMarkup, baseRentalRate } from 'app/gameConstants';
 
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
+import { getTotalShipFuel, getTotalShipTools } from 'app/state';
 
 const DaySlider = ({
     ship,
@@ -93,6 +94,18 @@ const ShipPicker = () => {
     const sellShip = (ship: Ship) => {
         gameApi.sellShip(ship.shipType);
         refreshGameState();
+    };
+
+    const liquidateShip = (ship: Ship) => {
+        gameApi.sellAllCargo(ship.shipType);
+        refreshGameState();
+    };
+
+    const hasSellableCargo = (ship: Ship | undefined): boolean => {
+        if (!ship) return false;
+        const fuelUnits = getTotalShipFuel(ship);
+        const toolCount = getTotalShipTools(ship);
+        return fuelUnits > 0 || toolCount > 0;
     };
 
     const visibleItems = gameState.content.ships;
@@ -194,10 +207,21 @@ const ShipPicker = () => {
                                     Extend rental
                                 </Button>
                             )}
+                            {hasSellableCargo(myShip) && (
+                                <Button
+                                    variant="contained"
+                                    size="large"
+                                    color="success"
+                                    onClick={() => liquidateShip(selectedShip)}
+                                >
+                                    Liquidate Ship
+                                </Button>
+                            )}
                             {myShip?.isRented && (
                                 <Button
                                     variant="contained"
                                     size="large"
+                                    disabled={hasSellableCargo(myShip)}
                                     onClick={() => returnRental(selectedShip)}
                                 >
                                     Return rental
