@@ -350,8 +350,8 @@ function runBestContract(api, maxContractIndex, { debugActions, debugAsteroid = 
     refreshReact();
 }
 
-const bestContract = getBestContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
-startContract(gameApi, bestContract, { debugAsteroid: false, debugCargo: false });
+//const bestContract = getBestContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
+startContract(gameApi, 0, { debugAsteroid: false, debugCargo: false });
 refreshReact();
 
 //runBestContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });

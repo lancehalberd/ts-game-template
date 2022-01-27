@@ -13,8 +13,9 @@ export function getGetActions(state: State) {
         getTotalShipFuel(ship: Ship) {
             return getTotalShipFuel(ship);
         },
-        getMiningCell(x: number, y: number) {
-            return {...state.currentContract?.grid?.[y]?.[x]};
+        getMiningCell(x: number, y: number): MiningCell | null {
+            const cell = state.currentContract?.grid?.[y]?.[x] || null;
+            return cell ? {...cell} : cell;
         },
         getMiningTool(toolType: ToolType) {
             return {...state.currentShip?.cargo.find(cargo => cargo.cargoType === toolType)};

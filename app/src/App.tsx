@@ -5,6 +5,9 @@ import SpaceStation from './station/SpaceStation';
 import 'app/styles/App.scss';
 
 export const GameContext = React.createContext({} as IGameContext);
+export const useGameContext = (): IGameContext => {
+    return React.useContext(GameContext);
+}
 
 const App = () => {
     const [gameApi, setGameApi] = React.useState(window.gameApi!);

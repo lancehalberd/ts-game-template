@@ -82,7 +82,6 @@ const ContractPicker = () => {
                         />
                         <AsteroidPane
                             contract={selectedContract}
-                            readonly
                         />
                     </div>
                     <div className="select-item-pane">
