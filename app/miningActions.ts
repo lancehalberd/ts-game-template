@@ -35,6 +35,7 @@ function mineCell(state: State, contract: Contract, x: number, y: number, mining
     const p = Math.min(1, miningPower / cell.durability);
     if (cell.resourceType && cell.resourceUnits && cell.resourceUnits > 0) {
         gainResource(state, cell.resourceType, cell.resourceUnits * p, contract);
+        cell.resourceDurability -= cell.resourceDurability * p;
         cell.resourceUnits -= cell.resourceUnits * p;
     }
     cell.durability -= miningPower;

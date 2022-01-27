@@ -12,6 +12,7 @@ function copyShip(ship: Ship) {
 export function copyContract(contract: Contract): Contract {
     return {
         ...contract,
+        cargo: copyCargo(contract.cargo),
         grid: contract.grid.map(row => row.map(cell => cell ? {...cell} : cell)),
     }
 }
@@ -137,6 +138,9 @@ export function moveCargo(state: State, cargoType: CargoType, units: number, sou
                 cargo.units -= unitsToMove;
                 emptySpace -= unitsToMove * cargo.unitVolume;
                 gainResource(state, cargoType, unitsToMove, target);
+                if (cargo.units <= 0) {
+                    source.cargo.splice(i--, 1);
+                }
             }
         }
     }

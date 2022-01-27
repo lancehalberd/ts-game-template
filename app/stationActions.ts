@@ -185,7 +185,10 @@ export function getStationApi(state: State) {
             }
             const contract = getContractById(state, contractId);
             spendCredits(state, contract.cost, { spendCredit });
-            state.currentContract = contract;
+            state.currentContract = {
+                ...contract,
+                cargo: [],
+            }
         },
         purchaseFuel(shipType: ShipType, units: number, { spendCredit = false } = {}) {
             requireAtStation(state);

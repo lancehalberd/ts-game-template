@@ -5,13 +5,6 @@ import {
 
 import { GameContext } from '../App';
 
-interface Props {
-    contract: Contract
-    readonly?: boolean
-    width?: number
-    height?: number
-}
-
 const resourceColors: Record<OreType | FuelType, string> = {
     'uranium': '#a1a626',
     'fuelCells': '#a1ff9c',
@@ -105,10 +98,30 @@ function drawAsteroid(canvas: HTMLCanvasElement, contract: Contract) {
     }
 }
 
+function getCellText(gameApi: GameApi, cell?: MiningCell | null): string {
+    if (!cell?.durability) {
+        return 'empty';
+    }
+    const durability = cell.durability | 0;
+    if (!cell.resourceType) {
+        return `(${durability})`;
+    }
+    const resource = gameApi.getCargoByType(cell.resourceType);
+    return `(${durability}) ${resource.name} ${cell.resourceUnits!.toFixed(1)}`;
+}
+
+interface Props {
+    contract: Contract
+    width?: number
+    height?: number
+    onClickCell?: (x: number, y: number) => void
+}
+
 const AsteroidPane = ({
     contract,
     width = 400,
     height = 400,
+    onClickCell,
 }: Props) => {
     const { gameApi } = React.useContext(GameContext);
     const [tooltipText, setTooltipText] = React.useState('empty');
@@ -130,23 +143,37 @@ const AsteroidPane = ({
         const row = Math.floor((y - top) / cellSize);
         const column = Math.floor((x - left) / cellSize);
         const cell = contract.grid[row]?.[column];
-        if (!cell?.durability) {
-            setTooltipText('empty');
-            return;
-        }
-        const durability = cell.durability | 0;
-        if (cell.resourceType) {
-            const resource = gameApi.getCargoByType(cell.resourceType);
-            setTooltipText(`(${durability}) ${resource.name} ${cell.resourceUnits!.toFixed(1)}`);
-        } else {
-            setTooltipText(`(${durability})`);
-        }
+        setTooltipText(getCellText(gameApi, cell));
         //console.log(' => ', column, row);
     }, [contract]);
+    const handleClick = React.useCallback((event) => {
+        const canvas = canvasRef.current;
+        if (!canvas || !onClickCell) {
+            return;
+        }
+        const containerRect: DOMRect = canvas.getBoundingClientRect();
+        const x = event.pageX - containerRect.left;
+        const y = event.pageY - containerRect.top;
+        const {cellSize, left, top} = getAsteroidCanvasProperties(canvas, contract);
+        const row = Math.floor((y - top) / cellSize);
+        const column = Math.floor((x - left) / cellSize);
+        let cell = contract.grid[row]?.[column];
+        if (cell?.durability) {
+            onClickCell(column, row);
+            cell = gameApi.getMiningCell(column, row);
+            setTooltipText(getCellText(gameApi, cell));
+        }
+    }, [onClickCell]);
 
     return (
         <Tooltip title={ tooltipText } arrow followCursor>
-            <canvas ref={canvasRef} width={ width } height={ height } onMouseMove={ updateTooltip }/>
+            <canvas
+                ref={canvasRef}
+                width={ width }
+                height={ height }
+                onClick={ handleClick }
+                onMouseMove={ updateTooltip }
+            />
         </Tooltip>
     );
 };

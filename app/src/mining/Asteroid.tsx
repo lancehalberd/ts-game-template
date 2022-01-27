@@ -1,22 +1,160 @@
 import * as React from 'react';
 
+import { Badge, Button } from '@mui/material';
+
+
+import { getTotalShipFuel, isToolType } from 'app/state';
+
 import { GameContext } from '../App';
 import { MuiHeader } from '../mui';
 import TopStatusBar from '../TopStatusBar';
-import AsteroidPane from '../mining/AsteroidPane';
+import ToolPicker from './ToolPicker';
+import AsteroidPane from './AsteroidPane';
+import { getCargoItemIcon } from '../station/CargoPicker';
+
+interface CargoItemProps {
+    label: string
+    count: number
+    itemType: string
+    onClick?: () => void
+}
+
+const CargoItem = ({
+    label,
+    count,
+    itemType,
+    onClick,
+}: CargoItemProps) => {
+    const icon = getCargoItemIcon(itemType);
+    return (
+        <div className="cargo-agg-item" onClick={onClick}>
+            <Badge badgeContent={Math.round(count * 10) / 10} color="primary" max={99999}>
+                {icon}
+            </Badge>
+
+            <span className="label">{label}</span>
+        </div>
+    );
+};
+
+interface Props {
+    label: string
+    storage: CargoStorage
+    onSelectCargoType?: (cargoType: CargoType) => void
+}
+
+const Storage = ({ label, storage, onSelectCargoType }: Props) => {
+    const { gameState } = React.useContext(GameContext);
+    let cargo: Cargo[] = storage.cargo;
+
+    // Each aggregate item is an icon, name of item, and count badge
+    const uniqCargoTypes = new Set(cargo.map((item) => item.cargoType));
+    const aggItems = [...uniqCargoTypes].map((cargoType) => {
+        const items = cargo.filter((item) => item.cargoType === cargoType);
+        let total = 0;
+        for (const item of items) {
+            if (isToolType(gameState, item.cargoType)) {
+                total += 1;
+            } else {
+                total += item.units;
+            }
+        }
+        const label = items[0].name;
+
+        return (
+            <CargoItem
+                label={label}
+                count={total}
+                itemType={items[0].type}
+                key={label}
+                onClick={() => onSelectCargoType?.(items[0].cargoType)}
+            />
+        );
+    });
+
+    return (
+        <div className="your-cargo">
+            <MuiHeader variant="h5">{label}</MuiHeader>
+            <div className="cargo-items">{aggItems}</div>
+        </div>
+    );
+};
 
 const Asteroid = () => {
-    const { gameState } = React.useContext(GameContext);
+    const { gameApi, gameState, refreshGameState } = React.useContext(GameContext);
+    const [selectedToolType, setSelectedToolType] = React.useState(undefined as ToolType | undefined);
+
+
+    const { fuelToBurn, travelTime } = React.useMemo(() => {
+        const fuelToBurn = getTotalShipFuel(gameState.currentShip!);
+        const startTime = gameState.time;
+        const simulateApi = gameApi.simulate();
+        simulateApi.returnToStation(fuelToBurn, { ignoreLongTravelTime: true});
+        return {
+            travelTime: Math.ceil(simulateApi!.state!.time - startTime),
+            fuelToBurn,
+        };
+    }, [gameApi, gameState])
+
     return (
         <div className="space-station">
             <div className="header">
                 <MuiHeader variant="h1">Eve Offline</MuiHeader>
                 <TopStatusBar />
             </div>
-
-            <AsteroidPane
-                contract={gameState.currentContract!}
-            />
+            <div className="station-stepper">
+                <div className="item-picker">
+                    <ToolPicker selectedToolType={selectedToolType} onSelectTool={setSelectedToolType} />
+                    <div className='item-details'>
+                        <AsteroidPane
+                            contract={gameState.currentContract!}
+                            onClickCell={ (x, y) => {
+                                if (selectedToolType) {
+                                    gameApi.dig(x, y, selectedToolType);
+                                    refreshGameState();
+                                }
+                            }}
+                        />
+                    </div>
+                    <div className='select-item-pane'>
+                        <Storage
+                            label='Ship Cargo'
+                            storage={ gameState.currentShip! }
+                            onSelectCargoType={
+                                (cargoType: CargoType) => {
+                                    gameApi.unloadCargo(cargoType, 10000);
+                                    refreshGameState();
+                                }
+                            }
+                        />
+                        <Storage
+                            label='Unloaded Cargo'
+                            storage={ gameState.currentContract! }
+                            onSelectCargoType={
+                                (cargoType: CargoType) => {
+                                    gameApi.loadCargo(cargoType, 10000);
+                                    refreshGameState();
+                                }
+                            }
+                        />
+                        <div>
+                            <h2>Time to Return: {travelTime} days</h2>
+                            <div className="action-buttons">
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                        gameApi.returnToStation(fuelToBurn);
+                                        refreshGameState();
+                                    }}
+                                >
+                                    Return to Station
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

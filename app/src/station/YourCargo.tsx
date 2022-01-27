@@ -1,6 +1,6 @@
 import { Badge } from '@mui/material';
 import * as React from 'react';
-import { GameContext } from '../App';
+import { useGameContext } from '../App';
 import { MuiHeader } from '../mui';
 import { getCargoItemIcon } from './CargoPicker';
 
@@ -27,12 +27,21 @@ const CargoAggregateItem: React.FC<AggItemProps> = ({
     );
 };
 
-const YourCargo = () => {
-    const { gameState } = React.useContext(GameContext);
-    const cargo = [
-        ...gameState.station.cargo,
-        ...(gameState.station.ships[0]?.cargo || []),
-    ];
+interface Props {
+    storage?: CargoStorage
+}
+
+const YourCargo = ({ storage }: Props) => {
+    const { gameState } = useGameContext();
+    let cargo: Cargo[];
+    if (!storage) {
+        cargo = [
+            ...gameState.station.cargo,
+            ...(gameState.station.ships[0]?.cargo || []),
+        ];
+    } else {
+        cargo = storage.cargo;
+    }
 
     const calculateFuelCount = (fuelCargoItems: Cargo[]): number => {
         return fuelCargoItems.reduce((total, item) => total + item.units, 0);
