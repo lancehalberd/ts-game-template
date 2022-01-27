@@ -6,14 +6,34 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import ArticleIcon from '@mui/icons-material/Article';
 
 import { GameContext } from './App';
+import MuiPopover from './MuiPopover';
+
+const ShipElement = ({ shipName }: { shipName: string }) => (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+        <RocketLaunchIcon />:<span>{shipName}</span>
+    </div>
+);
 
 export default function TopStatusBar() {
     const { gameState } = React.useContext(GameContext);
 
-    const shipName = gameState.station.ships[0]?.name || 'None';
+    const currentShip = gameState.station.ships[0];
+    const shipName = currentShip?.name || 'None';
     const contractID = gameState.currentContract
         ? gameState.currentContract.id
         : 'None';
+
+    const getShipIcon = () => {
+        const shipEl = <ShipElement shipName={shipName} />;
+        return currentShip ? (
+            <MuiPopover popoverContent={<h3>I am a ship!</h3>}>
+                {shipEl}
+            </MuiPopover>
+        ) : (
+            shipEl
+        );
+    };
+
     return (
         <div className="top-status-bar">
             <Box
@@ -49,7 +69,7 @@ export default function TopStatusBar() {
                     {gameState.debt}
                 </span>
                 <Divider orientation="vertical" flexItem />
-                <RocketLaunchIcon />:<span>{shipName}</span>
+                {getShipIcon()}
                 <Divider orientation="vertical" flexItem />
                 <ArticleIcon />: <span>{contractID}</span>
             </Box>
