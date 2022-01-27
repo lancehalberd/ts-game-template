@@ -8,16 +8,16 @@ interface Props {
 }
 
 const resourceColors: Record<OreType | FuelType, string> = {
-    'uranium': 'mustard',
-    'fuelCells': 'lightgreen',
-    'tritium': 'green',
+    'uranium': '#a1a626',
+    'fuelCells': '#a1ff9c',
+    'tritium': '#1a8014',
     'magicFuel': 'purple',
-    'iron': 'mustard',
-    'silver': 'lightgreen',
-    'gold': 'green',
-    'platinum': 'purple',
-    'diamond': 'purple',
-    'magicCrystal': 'purple',
+    'iron': '#444',
+    'silver': '#aaa',
+    'gold': 'gold',
+    'platinum': '#ddd',
+    'diamond': '#82d3ff',
+    'magicCrystal': 'red',
 }
 
 function drawAsteroid(canvas: HTMLCanvasElement, contract: Contract) {
@@ -35,8 +35,36 @@ function drawAsteroid(canvas: HTMLCanvasElement, contract: Contract) {
             if (!cell) {
                 continue;
             }
-            context.fillStyle = 'brown';
+            context.fillStyle = '#7d511a';
+            const baseDurability = cell.durability - cell.resourceDurability;
+            context.globalAlpha = Math.min(1, Math.max(0.3, baseDurability / 400));
             context.fillRect(left + x * cellSize, top + y * cellSize, cellSize, cellSize);
+            /*context.beginPath();
+            context.arc(
+                left + (x + 0.5) * cellSize, top + (y + 0.5) * cellSize,
+                cellSize * 0.6,
+                0, 2 * Math.PI
+            );
+            context.fill();*/
+            context.globalAlpha = 1;
+            /*if (cell.resourceType) {
+                context.fillStyle = resourceColors[cell.resourceType];
+                context.beginPath();
+                context.arc(
+                    left + (x +0.5) * cellSize, top + (y +0.5) * cellSize,
+                    Math.max(1, cellSize / 2 * Math.min(1, (cell.resourceUnits || 0) / 100)),
+                    0, 2 * Math.PI
+                );
+                context.fill();
+            }*/
+        }
+    }
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < columns; x++) {
+            const cell = grid[y][x];
+            if (!cell) {
+                continue;
+            }
             if (cell.resourceType) {
                 context.fillStyle = resourceColors[cell.resourceType];
                 context.beginPath();

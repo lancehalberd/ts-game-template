@@ -161,11 +161,13 @@ function generateContract(state: State, id : number, targetValue: number): Contr
             const densityCoefficient = leftDensity * (1 - distributionIndex % 1) + rightDensity * (distributionIndex % 1);
             const newCell: MiningCell = {
                 durability: 100 * densityCoefficient * miningDifficulty,
+                resourceDurability: 0,
             };
             if (cellHasResource(targetValue, percentDepth)) {
                 newCell.resourceType = determineCellResource(targetValue, percentDepth);
                 newCell.resourceUnits = genResourceUnits(newCell.resourceType);
-                newCell.durability += oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
+                newCell.resourceDurability = oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
+                newCell.durability += newCell.resourceDurability;
             }
             /*for (const [cargoType, chance, min, max] of mineralDistribution) {
                 if (Math.random() < chance) {
