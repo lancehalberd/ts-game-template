@@ -226,7 +226,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
         id,
         name: `${fuelModifierPrefix} ${asteroidSize.prefix} ${asteroidType.name}`.trim(),
         grid,
-        cost: Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5) * asteroidSize.costMultiplier,
+        cost: Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5) * asteroidSize.costMultiplier * (fuelModifier?.costMultiplier || 1),
         distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
         cargo: [],
         // This should be practically infinite.
@@ -249,7 +249,7 @@ export function generateContractList(state: State, amount: number): Contract[] {
         const composition: AsteroidComposition = pickComposition(compositions);
         const fuelModifier: FuelResourceModifier|null = pickFuelResourceModifier();
         // console.log(composition)
-        contracts[i] = generateContract(state, i, composition.approximate_cost * 3 ** (resourceIndex + 1),
+        contracts[i] = generateContract(state, i, composition.approximate_cost * 2 ** (resourceIndex + 1),
             size, composition, fuelModifier);
     }
     // Sort and return 1 in every 5 contracts so we get an interesting spread.

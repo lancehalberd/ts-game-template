@@ -259,17 +259,20 @@ asteroidCompositions.set("magic_asteroid", magicComposition);
 export const fuelModifiers: {[index: string]: FuelResourceModifier} = {
     'uranium': {
         prefix: 'Nuclear',
-        probability: 0.18,
+        probability: 0.08,
+        costMultiplier: 3,
         type: 'uranium'
     },
     'tritium': {
         prefix: 'Heavy',
-        probability: 0.12,
+        probability: 0.06,
+        costMultiplier: 5,
         type: 'tritium'
     },
     'magicFuel': {
         prefix: 'Enchanted',
-        probability: 0.06,
+        probability: 0.04,
+        costMultiplier: 10,
         type: 'magicFuel'
     },
 };
