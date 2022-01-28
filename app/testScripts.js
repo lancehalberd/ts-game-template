@@ -99,6 +99,10 @@ function mineAsteroidBetter(api, {debugCargo, debugAsteroid, debugMining} = {}) 
             }
         }
     }
+    // Store all cargo initially in case someone was mining manually before this.
+    for (const resourceType of resouceTypes) {
+        api.loadCargo(resourceType, 10000);
+    }
     while (getDiggingTool(api)?.remainingUses) {
         if (api.getMiningState().currentContract.cargo.length) {
             if (debugMining) {
