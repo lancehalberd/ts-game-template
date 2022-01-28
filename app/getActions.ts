@@ -1,5 +1,5 @@
 import {
-    copyContract, copyState, copyMiningState, copyStationState, getTotalShipFuel,getCargoByType
+    copyContract, copyShip, copyState, copyMiningState, copyStationState, getTotalShipFuel,getCargoByType
 } from 'app/state';
 
 export function getGetActions(state: State) {
@@ -9,6 +9,12 @@ export function getGetActions(state: State) {
         },
         getMiningState() {
             return copyMiningState(state);
+        },
+        getShip(shipType: ShipType): Ship | undefined {
+            const ship = state.station.ships.find(ship => ship.shipType === shipType);
+            if (ship) {
+                return copyShip(ship);
+            }
         },
         getTotalShipFuel(ship: Ship) {
             return getTotalShipFuel(ship);

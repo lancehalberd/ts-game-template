@@ -8,12 +8,12 @@ export const asteroidSizes: Array<AsteroidSize> = [
         // medium
         prefix: '',
         "costMultiplier": 2.5,
-        "sizeCoefficient": 25,
+        "sizeCoefficient": 20,
     },{
         // large
         prefix: 'Large',
-        "costMultiplier": 7,
-        "sizeCoefficient": 50
+        "costMultiplier": 6,
+        "sizeCoefficient": 40
     }
 ];
 
