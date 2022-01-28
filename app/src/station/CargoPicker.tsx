@@ -22,6 +22,7 @@ import { DetailItem } from './StationStepper';
 import YourCargo from './YourCargo';
 import { baseMarkup } from 'app/gameConstants';
 import { getTotalShipFuel } from 'app/state';
+import { formatNumber } from 'app/utils/string';
 
 export const getCargoItemIcon = (cargoType: string) => {
     switch (cargoType) {
@@ -67,7 +68,7 @@ const FuelSlider = ({
             </div>
             <div className="total-cost">
                 <strong>Total Cost:</strong>
-                {` ${totalCost}`}
+                {` ${formatNumber(totalCost, true)}`}
             </div>
             <Slider
                 aria-label="Fuel Units"
@@ -86,7 +87,8 @@ const FuelSlider = ({
 const CargoPicker = () => {
     const DEFAULT_FUEL_AMOUNT = 20;
     const [tabIndex, setTabIndex] = React.useState(0);
-    const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
+    const { gameState, gameApi, refreshGameState } =
+        React.useContext(GameContext);
     const [selectedItem, setSelectedItem] = React.useState<Cargo>();
     const currentShip = gameState.station.ships[0];
     const [fuelUnits, setFuelUnits] =
@@ -160,6 +162,18 @@ const CargoPicker = () => {
         return false;
     };
 
+    const formattedValue = (key: string, value: string | number): string => {
+        const asNum = Number(value);
+        const isCurrency = key.toLowerCase().includes('cost');
+
+        if (isNaN(asNum)) return String(value);
+        else {
+            if (asNum > 1) {
+                return formatNumber(asNum, isCurrency);
+            } else return String(value);
+        }
+    };
+
     return (
         <div style={{ margin: '20px' }}>
             <Box sx={{ width: '100%' }}>
@@ -201,7 +215,10 @@ const CargoPicker = () => {
                                 <DetailItem
                                     key={keyStr}
                                     label={camelToSpaces(keyStr)}
-                                    value={selectedItem[keyStr as keyof Cargo]}
+                                    value={formattedValue(
+                                        keyStr,
+                                        selectedItem[keyStr as keyof Cargo]
+                                    )}
                                 />
                             );
                         })}

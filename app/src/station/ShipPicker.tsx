@@ -17,6 +17,7 @@ import { baseMarkup, baseRentalRate } from 'app/gameConstants';
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
 import { getTotalShipFuel, getTotalShipTools } from 'app/state';
+import { formatNumber } from 'app/utils/string';
 
 const DaySlider = ({
     ship,
@@ -44,7 +45,7 @@ const DaySlider = ({
             </div>
             <div className="total-cost">
                 <strong>Total Cost:</strong>
-                {` ${totalCost}`}
+                {` ${formatNumber(totalCost, true)}`}
             </div>
             <Slider
                 aria-label="Fuel Units"
@@ -154,18 +155,25 @@ const ShipPicker = () => {
                         />
                         <DetailItem
                             label="Cost"
-                            value={selectedShip.cost * baseMarkup}
+                            value={formatNumber(
+                                selectedShip.cost * baseMarkup,
+                                true
+                            )}
                         />
                         <DetailItem
                             label="Daily Rate"
-                            value={
-                                selectedShip.cost * baseRentalRate * baseMarkup
-                            }
+                            value={formatNumber(
+                                selectedShip.cost * baseRentalRate * baseMarkup,
+                                true
+                            )}
                         />
-                        <DetailItem label="Mass" value={selectedShip.mass} />
+                        <DetailItem
+                            label="Mass"
+                            value={formatNumber(selectedShip.mass)}
+                        />
                         <DetailItem
                             label="Cargo Space"
-                            value={selectedShip.cargoSpace}
+                            value={formatNumber(selectedShip.cargoSpace)}
                         />
                         <DetailItem
                             label="Fuel Type"
