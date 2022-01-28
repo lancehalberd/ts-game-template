@@ -395,7 +395,7 @@ export function generateInitialState(): State {
         // Every mining action takes 10,000 seconds so 10 actions a day.
         time: 0,
         // Player's liquid assets
-        credits: 100000,
+        credits: 200000,
         // Amount of money the player currently owes
         debt: 0,
         // The amount of debt the player may take on, increases based on players actions
