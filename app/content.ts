@@ -1,4 +1,5 @@
 import { generateContractList } from 'app/contract';
+import { contractNumber } from 'app/gameConstants';
 
 // More cost effective than Fuel Cells, but slower acceleration.
 const uranium: Fuel = {
@@ -416,6 +417,6 @@ export function generateInitialState(): State {
         currentStationStep: 'purchaseContract',
     };
     // Populate the initial list of contracts.
-    state.station.availableContracts = generateContractList(state, 20);
+    state.station.availableContracts = generateContractList(state, contractNumber);
     return state;
 }

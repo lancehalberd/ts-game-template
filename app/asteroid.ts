@@ -8,12 +8,12 @@ export const asteroidSizes: Array<AsteroidSize> = [
         // medium
         prefix: '',
         "costMultiplier": 2.5,
-        "sizeCoefficient": 25,
+        "sizeCoefficient": 20,
     },{
         // large
         prefix: 'Large',
-        "costMultiplier": 7,
-        "sizeCoefficient": 50
+        "costMultiplier": 6,
+        "sizeCoefficient": 40
     }
 ];
 
@@ -254,3 +254,25 @@ asteroidCompositions.set("gold_asteroid", goldCompositions);
 asteroidCompositions.set("platinum_asteroid", platinumCompositions);
 asteroidCompositions.set("diamond_asteroid", diamondCompositions);
 asteroidCompositions.set("magic_asteroid", magicComposition);
+
+
+export const fuelModifiers: {[index: string]: FuelResourceModifier} = {
+    'uranium': {
+        prefix: 'Nuclear',
+        probability: 0.08,
+        costMultiplier: 3,
+        type: 'uranium'
+    },
+    'tritium': {
+        prefix: 'Heavy',
+        probability: 0.06,
+        costMultiplier: 5,
+        type: 'tritium'
+    },
+    'magicFuel': {
+        prefix: 'Enchanted',
+        probability: 0.04,
+        costMultiplier: 10,
+        type: 'magicFuel'
+    },
+};

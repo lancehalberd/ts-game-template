@@ -1,4 +1,5 @@
 import { generateContractList } from 'app/contract';
+import { contractNumber } from 'app/gameConstants';
 import {
     advanceTimer,
     attemptTravel,
@@ -97,7 +98,7 @@ export function getMiningApi(state: State) {
             state.currentShip = undefined;
             state.atStation = true;
             // A new set of contracts is generated once you return to the station.
-            state.station.availableContracts = generateContractList(state, 20);
+            state.station.availableContracts = generateContractList(state, contractNumber);
         },
         loadCargo(cargoType: CargoType, units: number) {
             const { contract, ship } = requireAtContract(state);

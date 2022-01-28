@@ -8,7 +8,7 @@ import {
 function copyCargo(cargo: Cargo[]) {
     return cargo.map((cargo) => ({ ...cargo }));
 }
-function copyShip(ship: Ship) {
+export function copyShip(ship: Ship) {
     return {
         ...ship,
         cargo: copyCargo(ship.cargo),
