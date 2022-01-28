@@ -1,61 +1,7 @@
-import { averageTravelDistance, maxCargoVolume } from 'app/gameConstants';
+import { averageTravelDistance } from 'app/gameConstants';
 import {getFuelByType, getOreByType} from 'app/state';
 import Random from 'app/utils/Random';
 import { asteroidSizes, asteroidCompositions, fuelModifiers } from  'app/asteroid';
-
-// function getAllowedResources(targetContractValue: number): Array<string> {
-//     let ores;
-//     if (targetContractValue < 100000) {
-//         ores = ['iron']
-//     } else if (targetContractValue < 200000) {
-//         ores = ['iron', 'silver']
-//     } else if (targetContractValue < 300000) {
-//         ores = ['iron', 'silver', 'gold']
-//     } else if (targetContractValue < 400000) {
-//         ores = ['iron', 'silver', 'gold', 'platinum']
-//     } else if (targetContractValue < 600000) {
-//         ores = ['iron', 'silver', 'gold', 'platinum', 'diamond']
-//     } else {
-//         ores = ['iron', 'silver', 'gold', 'platinum', 'diamond', 'magicCrystal']
-//     }
-//     return ores
-// }
-// function cellHasResource(targetContractValue: number, relativeDepth: number): boolean {
-//     let minimumProbablity = 0.1;
-//     let valueCoefficient = targetContractValue/10000;
-//     let additionalProbability = Math.min(0.3, Math.pow(valueCoefficient, 0.45)/35) * relativeDepth;
-//     return Math.random() < minimumProbablity + additionalProbability;
-// }
-//
-// function getResourceProbability(oreLength: number, depthThreshold: number): Array<number> {
-//     // Generic graph for resources appearing at different thresholds
-//     // depth threshold  0       1       2       3       4
-//     // iron             0.9     0.7     0.3     0.1     0
-//     // silver           0.1     0.2     0.4     0.3     0.2
-//     // gold             0       0.1     0.2     0.3     0.3
-//     // platinum         0       0       0.1     0.2     0.25
-//     // diamond          0       0       0       0.1     0.15
-//     // magicCrystal     0       0       0       0       0.1
-//     // if a resource is unavailable due to cost thresholds, its probability will be added to iron
-//
-//     let probabilities = [
-//         [0.9, 0.7, 0.3, 0.1, 0],
-//         [0.1, 0.2, 0.4, 0.3, 0.2],
-//         [0  , 0.1, 0.2, 0.3, 0.3],
-//         [0  , 0  , 0.1, 0.2, 0.25],
-//         [0  , 0  , 0  , 0.1, 0.15],
-//         [0  , 0  , 0  , 0  , 0.1],
-//     ];
-//     let oreProbabilities = new Array(oreLength).fill(0)
-//     for (let ore = 0; ore < probabilities.length; ore++) {
-//         if (ore < oreLength) {
-//             oreProbabilities[ore] = probabilities[ore][depthThreshold];
-//         } else {
-//             oreProbabilities[0] += probabilities[ore][depthThreshold];
-//         }
-//     }
-//     return oreProbabilities
-// }
 
 function determineCellResource(asteroidType: AsteroidComposition, relativeDepth: number,
                                fuelMod: FuelResourceModifier|null): OreType|FuelType|null {
@@ -121,11 +67,6 @@ function pickFuelResourceModifier(): FuelResourceModifier|null {
     return null
 }
 
-/*
-const mineralDistributions: [FuelType | OreType, number, number, number][][] = [
-    [['gold', 0.05, 10, 40], ['silver', 0.05, 20, 80], ['iron', 0.1, 40, 200], ['uranium', 0.1, 40, 200]],
-]
-*/
 function generateContract(state: State, id : number, targetValue: number, asteroidSize: AsteroidSize,
                           asteroidType: AsteroidComposition, fuelModifier: FuelResourceModifier|null): Contract {
     const baseDiameter = asteroidSize.sizeCoefficient * (Math.log(targetValue) / Math.log(100) - 2);
@@ -172,10 +113,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
         [3, 0.5, 0.5, 3, 0.5],
     ]);
 
-    //const mineralDistribution = Random.element(mineralDistributions);
-
-    let cost = -20000;
-    let totalVolume = 0;
+    let cost = 0;
     let spawnedFuel = false;
     for (let i = 0; i < rows; i++) {
         grid[i] = [];
@@ -209,8 +147,9 @@ function generateContract(state: State, id : number, targetValue: number, astero
                 }
                 newCell.resourceType = cellResource;
                 newCell.resourceUnits = genResourceUnits(newCell.resourceType);
-                cost += oreMapping[cellResource].unitCost * newCell.resourceUnits * (0.3 + 0.2 * Math.random()) * ((1 - 0.6 * percentDepth) ** 2);
-                totalVolume += newCell.resourceUnits;
+                //cost += oreMapping[cellResource].unitCost * newCell.resourceUnits * (0.3 + 0.2 * Math.random()) * ((1 - 0.6 * percentDepth) ** 2);
+                const totalValue = oreMapping[cellResource].unitCost * newCell.resourceUnits;
+                cost += totalValue * Math.min(0.5, totalValue / (totalValue + Math.max(0, cost))) * (1 - 0.6 * percentDepth);
                 newCell.resourceDurability = oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
                 newCell.durability += newCell.resourceDurability;
             }
@@ -231,15 +170,12 @@ function generateContract(state: State, id : number, targetValue: number, astero
     if (fuelModifier && spawnedFuel) {
         fuelModifierPrefix = fuelModifier.prefix;
     }
-    if (totalVolume > maxCargoVolume) {
-        cost *= maxCargoVolume / totalVolume;
-    }
 
     return {
         id,
         name: `${fuelModifierPrefix} ${asteroidSize.prefix} ${asteroidType.name}`.trim(),
         grid,
-        cost: Math.floor(Math.max(4500 + 1000 * Math.random(), cost)),
+        cost: Math.floor(Math.max(4500 + 1000 * Math.random(), cost - 30000)),
         distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
         cargo: [],
         // This should be practically infinite.
