@@ -1,5 +1,7 @@
-import { baseMarkdown, baseRentalRate } from 'app/gameConstants';
+import { generateContractList } from 'app/contract';
+import { baseMarkdown, baseRentalRate, contractNumber } from 'app/gameConstants';
 import {
+    advanceTimer,
     attemptTravel,
     getCargoByType,
     getEmptyCargoSpace,
@@ -282,12 +284,12 @@ export function getStationApi(state: State) {
                 units,
             });
         },
-        purchaseTool(
-            toolType: ToolType,
-            units: number,
-            target?: ShipType,
-            { spendCredit = false } = {}
-        ) {
+        rest() {
+            advanceTimer(state, 1);
+            // A new set of contracts is generated once you return to the station.
+            state.station.availableContracts = generateContractList(state, contractNumber);
+        },
+        purchaseTool(toolType: ToolType, units: number, target?: ShipType, { spendCredit = false } = {}) {
             requireAtStation(state);
             const tool = getToolByType(state, toolType);
             const volumeNeeded = tool.unitVolume * units;

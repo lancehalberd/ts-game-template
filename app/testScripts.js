@@ -1,5 +1,6 @@
 const resouceTypes = [];
 const resourceMap = {};
+const shipMap = {};
 const content = gameApi.getState().content;
 for (const fuel of content.fuels) {
     resouceTypes.push(fuel.cargoType);
@@ -8,6 +9,9 @@ for (const fuel of content.fuels) {
 for (const ore of content.ores) {
     resouceTypes.push(ore.cargoType);
     resourceMap[ore.cargoType] = ore;
+}
+for (const ship of content.ships) {
+    shipMap[ship.shipType] = ship;
 }
 
 function asteroidToString(contract) {
@@ -23,52 +27,6 @@ function storageToString(storage) {
     return storage.cargo.map(cargo =>
         cargo.cargoType + ': ' + (cargo.remainingUses || cargo.units)
     ).join("\n");
-}
-function mineAsteroidBad(api, {debugCargo, debugAsteroid} = {}) {
-    function state() {
-        return api.state || api.getState();
-    }
-    if (debugAsteroid) {
-        console.log(asteroidToString(state().currentContract));
-    }
-    let rows = state().currentContract.grid.length
-    let columns = state().currentContract.grid[0].length
-    let x = 0, y = 0;
-    while (api.getMiningTool('basicDiggingDrill')?.remainingUses) {
-        const grid = state().currentContract.grid;
-        if (grid[y][x]?.durability) {
-            try {
-                // Use the harvesting drill for resources if any uses are left.
-                if (api.getMiningTool('basicHarvestingDrill')?.remainingUses
-                    && grid[y][x].resourceType
-                ) {
-                    api.dig(x, y, 'basicHarvestingDrill');
-                } else {
-                    api.dig(x, y, 'basicDiggingDrill');
-                }
-                continue;
-            } catch (e) {
-            }
-        }
-        x++;
-        if (x >= columns) {
-            x = 0;
-            y++;
-            if (y >= rows) {
-                break;
-            }
-        }
-    }
-    if (debugAsteroid) {
-        console.log(asteroidToString(state().currentContract));
-    }
-    // Set the amount high to make sure we load it all.
-    for (const resourceType of resouceTypes) {
-        api.loadCargo(resourceType, 10000);
-    }
-    if (debugCargo) {
-        console.log(storageToString(state().currentShip));
-    }
 }
 function attemptPlan(api, plan) {
     try {
@@ -87,23 +45,43 @@ function getState(api) {
 function getMiningState(api) {
     return api.state || api.getMiningState();
 }
-function digCell(api, x, y, diggingTool, harvestingTool, {debugMining} = {}) {
+function digCell(api, x, y, {debugMining} = {}) {
     cell = api.getMiningCell(x, y);
     if (debugMining) {
-        console.log(`Diggin at ${x},${y}`, cell.durability, cell.resourceType, cell.resourceUnits);
+        console.log(`Digging at ${x},${y}`, cell.durability, cell.resourceType, cell.resourceUnits);
     }
     while (cell?.durability) {
-        if (!cell.resourceType) {
-            api.dig(x, y, diggingTool);
-        } else {
-            if (api.getMiningTool(harvestingTool)?.remainingUses) {
-                api.dig(x, y, harvestingTool);
-            } else {
-                api.dig(x, y, diggingTool);
-            }
-        }
+        // Choose the most appropriate available tool to dig with.
+        const tool = cell.resourceType ? getHarvestingTool(api) : getDiggingTool(api);
+        api.dig(x, y, tool.cargoType);
         cell = api.getMiningCell(x, y);
     }
+}
+function getDiggingTool(api) {
+    return api.getMiningTool('magicDiggingDrill')
+        || api.getMiningTool('magicDiggingLaser')
+        || api.getMiningTool('advancedDiggingDrill')
+        || api.getMiningTool('advancedDiggingLaser')
+        || api.getMiningTool('basicDiggingDrill')
+        || api.getMiningTool('basicDiggingLaser')
+        || api.getMiningTool('magicHarvestingDrill')
+        || api.getMiningTool('advancedHarvestingDrill')
+        || api.getMiningTool('basicHarvestingDrill')
+        || api.getMiningTool('smallExplosives')
+        || api.getMiningTool('largeExplosives');
+}
+function getHarvestingTool(api) {
+    return api.getMiningTool('magicHarvestingDrill')
+        || api.getMiningTool('advancedHarvestingDrill')
+        || api.getMiningTool('basicHarvestingDrill')
+        || api.getMiningTool('magicDiggingLaser')
+        || api.getMiningTool('advancedDiggingLaser')
+        || api.getMiningTool('basicDiggingLaser')
+        || api.getMiningTool('magicDiggingDrill')
+        || api.getMiningTool('advancedDiggingDrill')
+        || api.getMiningTool('basicDiggingDrill')
+        || api.getMiningTool('smallExplosives')
+        || api.getMiningTool('largeExplosives');
 }
 function mineAsteroidBetter(api, {debugCargo, debugAsteroid, debugMining} = {}) {
     let state = getMiningState(api);
@@ -121,16 +99,22 @@ function mineAsteroidBetter(api, {debugCargo, debugAsteroid, debugMining} = {}) 
             }
         }
     }
-    while (api.getMiningTool('basicDiggingDrill')?.remainingUses) {
+    while (getDiggingTool(api)?.remainingUses) {
+        if (api.getMiningState().currentContract.cargo.length) {
+            if (debugMining) {
+                console.log('Stopping early, out of cargo space');
+            }
+            break;
+        }
         state = getMiningState(api);
-        const diggingDrill = api.getMiningTool('basicDiggingDrill');
-        const harvestingDrill = api.getMiningTool('basicHarvestingDrill');
+        const diggingDrill = getDiggingTool(api);
+        const harvestingDrill = getHarvestingTool(api);
         grid = state.currentContract.grid;
         const diggingPower = diggingDrill.miningPower;
         const harvestingPower = harvestingDrill?.miningPower || diggingPower;
         const {
             path, miningDigs, harvestDigs
-        } = findBestPathToDig(grid, resourceCoords, 5, diggingPower, harvestingPower);
+        } = findBestPathToDig(grid, resourceCoords, 8, diggingPower, harvestingPower);
         if (!path) {
             if (debugMining) {
                 console.log('No good paths left, stopping mining');
@@ -139,7 +123,7 @@ function mineAsteroidBetter(api, {debugCargo, debugAsteroid, debugMining} = {}) 
         if (!attemptPlan(api, (api, dryRun) => {
             // Dig the described path to harvest from the cell.
             for (const {x, y} of path) {
-                digCell(api, x, y, 'basicDiggingDrill', 'basicHarvestingDrill', {debugMining: !dryRun && debugMining});
+                digCell(api, x, y, {debugMining: !dryRun && debugMining});
             }
         })) {
             // If the plan failed, we are done digging.
@@ -147,6 +131,10 @@ function mineAsteroidBetter(api, {debugCargo, debugAsteroid, debugMining} = {}) 
                 console.log('Could not complete path, stopping mining');
             }
             break;
+        }
+        // Set the amount high to make sure we load it all.
+        for (const resourceType of resouceTypes) {
+            api.loadCargo(resourceType, 10000);
         }
     }
     // Set the amount high to make sure we load it all.
@@ -255,9 +243,9 @@ function findBestPathToDig(grid, resourceCoords, maxDigs, diggingPower, harvesti
         harvestDigs: bestHarvestDigs,
     };
 }
-function travelToContract(api) {
+function travelToContract(api, shipType) {
     const state = api.state || api.getStationState();
-    const ship = state.station.ships[0];
+    const ship = state.station.ships.find(ship => ship.shipType === shipType);
     const fuelAmount = ship.cargo.find(cargo => cargo.cargoType === ship.fuelType).units;
     api.travelToContract(ship.shipType, Math.floor(fuelAmount / 2));
 }
@@ -267,24 +255,51 @@ function returnToStation(api) {
     const fuelAmount = ship.cargo.find(cargo => cargo.cargoType === ship.fuelType).units;
     api.returnToStation(Math.floor(fuelAmount));
 }
-function getRentalTime(simulation) {
+function getRentalTime(simulation, shipType) {
     const startTime = simulation.state.time;
-    travelToContract(simulation);
+    travelToContract(simulation, shipType);
     mineAsteroidBetter(simulation);
     returnToStation(simulation);
     return Math.ceil(simulation.state.time - startTime);
 }
-function purchaseBasicLoadout(api, rentalTime, { debugActions } = {}) {
-    if (debugActions) {
-        console.log('Renting basicShip for ' + rentalTime + ' days');
+function purchaseShip(api, rentalTime, { debugActions } = {}) {
+    const state = api.getStationState();
+    const credits = state.credits;
+    for (const shipType of ['magicSmallShip', 'advancedSmallShip', 'basicSmallShip']) {
+        const myShip = state.station.ships.find(ship => ship.shipType === shipType);
+        if (myShip?.isOwned) {
+            if (debugActions) {
+                console.log(`Using own ${shipType}`);
+            }
+            return shipType;
+        }
+        if (credits > 50000 + shipMap[shipType].cost * 1.05) {
+            if (debugActions) {
+                console.log(`Buying ${shipType}`);
+            }
+            api.purchaseShip(shipType, { spendCredit: true });
+            return shipType;
+        }
+        /*if (credits > 200000 + shipMap[shipType].cost * 0.005 * rentalTime * 1.05) {
+            if (debugActions) {
+                console.log(`Renting ${shipType} for ${rentalTime} days`);
+            }
+            api.rentShip(shipType, rentalTime, { spendCredit: true });
+            return shipType;
+        }*/
     }
-    api.rentShip('basicShip', rentalTime, { spendCredit: true });
+    api.rentShip('basicSmallShip', rentalTime, { spendCredit: true });
+    return 'basicSmallShip';
+}
+function purchaseBasicLoadout(api, rentalTime, { debugActions } = {}) {
+    const shipType = purchaseShip(api, rentalTime, { debugActions });
     if (debugActions) {
         console.log('Purchasing 60 units of fuel, 1 basic digging drill and 2 basic harvesting drills.');
     }
-    api.purchaseFuel('basicShip', 60, { spendCredit: true });
-    api.purchaseTool('basicDiggingDrill', 1, 'basicShip', { spendCredit: true });
-    api.purchaseTool('basicHarvestingDrill', 2, 'basicShip', { spendCredit: true });
+    api.purchaseFuel(shipType, 60, { spendCredit: true });
+    api.purchaseTool('basicHarvestingDrill', 2, shipType, { spendCredit: true });
+    api.purchaseTool('basicDiggingDrill', 1, shipType, { spendCredit: true });
+    return shipType;
 }
 
 function startContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid} = {}) {
@@ -293,16 +308,17 @@ function startContract(api, contractIndex, {debugActions, debugCargo, debugAster
     }
     api.purchaseContract(contractIndex, { spendCredit: true });
     const rentalSimulation = api.simulate();
-    purchaseBasicLoadout(rentalSimulation, 20);
-    const rentalTime = getRentalTime(rentalSimulation);
-    purchaseBasicLoadout(api, rentalTime, {debugActions});
+    let shipType = purchaseBasicLoadout(rentalSimulation, 20);
+    const rentalTime = getRentalTime(rentalSimulation, shipType);
+    shipType = purchaseBasicLoadout(api, rentalTime, {debugActions});
     if (debugActions) {
         console.log('Traveling to contract ');
     }
-    travelToContract(api);
+    travelToContract(api, shipType);
+    return shipType;
 }
 function runContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid} = {}) {
-    startContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid});
+    const shipType = startContract(api, contractIndex, {debugActions, debugCargo, debugAsteroid});
     if (debugActions) {
         console.log('Mining asteroid');
     }
@@ -314,44 +330,65 @@ function runContract(api, contractIndex, {debugActions, debugCargo, debugAsteroi
     if (debugActions) {
         console.log('Selling all ore and returning rental');
     }
-    api.sellAllOre('basicShip');
-    api.returnShip('basicShip', { liquidateCargo: true });
+
+    const ship = api.getShip(shipType);
+    //console.log(api.getStationState().credits - api.getStationState().debt);
+    if (ship.isRented) {
+        api.returnShip(shipType, { liquidateCargo: true });
+    } else {
+        api.sellAllCargo(shipType);
+    }
+    //console.log('=> ' + (api.getStationState().credits - api.getStationState().debt));
 }
-function getBestContract(api, maxContractIndex, { debugAsteroid = false, debugCargo = false } = {}) {
-    let bestContract = 0, bestResult = -1000000, bestRentalTime = 20;
+function getShipValues(api) {
+    return api.getStationState().station.ships.reduce((sum, ship) => sum + ship.cost * 1.05, 0);
+}
+function getBestContract(api, maxContractIndex, { debugAsteroid, debugCargo, debugResults } = {}) {
+    let bestContract = -1, bestResult = 1000, bestRentalTime = 20;
     const startState = gameApi.getStationState();
     const startTime = startState.time;
-    const startCredits = startState.credits - startState.debt;
+
+    const startCredits = startState.credits - startState.debt + getShipValues(api);
     for (let i = 0; i < maxContractIndex; i++) {
         try {
             const simulation = gameApi.simulate();
             runContract(simulation, i, { debugAsteroid, debugCargo });
-            const deltaCredits = (simulation.state.credits - simulation.state.debt) - startCredits;
+            const deltaCredits = (simulation.state.credits - simulation.state.debt) - startCredits + getShipValues(simulation);
             const deltaTime = simulation.state.time - startTime;
             const result = deltaCredits / deltaTime;
             if (result > bestResult) {
-                console.log('New PR :) ', result, i, deltaTime);
+                if (debugResults) {
+                    console.log('New PR :) ', result, i, deltaTime);
+                }
                 bestResult = result;
                 bestContract = i;
                 bestRentalTime = Math.ceil(deltaTime);
-            } else {
+            } else if (debugResults) {
                 console.log('Worse :( ', result, i, deltaTime);
             }
         } catch (e) {
-            console.log('Failed on', i, e);
+            if (debugResults) {
+                console.log('Failed on', i, e);
+            }
         }
     }
     return bestContract;
 }
 
-function runBestContract(api, maxContractIndex, { debugActions, debugAsteroid = false, debugCargo = false } = {}) {
-    const bestContract = getBestContract(api, maxContractIndex, { debugAsteroid, debugCargo });
+function runBestContract(api, maxContractIndex, { debugActions, debugAsteroid, debugCargo, debugResults } = {}) {
+    const bestContract = getBestContract(api, maxContractIndex, { debugAsteroid, debugCargo, debugResults });
+    if (bestContract < 0) {
+        if (debugActions) {
+            console.log('No profitable contracts, resting');
+        }
+        gameApi.rest();
+        return;
+    }
     runContract(gameApi, bestContract, {debugActions});
-    refreshReact();
 }
 
 //const bestContract = getBestContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
-startContract(gameApi, 0, { debugAsteroid: false, debugCargo: false });
-refreshReact();
+//startContract(gameApi, 0, { debugAsteroid: false, debugCargo: false });refreshReact();
 
-//runBestContract(gameApi, 5, { debugAsteroid: false, debugCargo: false });
+//runBestContract(gameApi, 10, { debugAsteroid: false, debugCargo: false });refreshReact();
+runBestContract(gameApi, 10, { debugActions: true, debugResults: false, debugAsteroid: false, debugCargo: false });refreshReact();

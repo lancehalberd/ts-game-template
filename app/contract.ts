@@ -1,4 +1,4 @@
-import { averageTravelDistance } from 'app/gameConstants';
+import { averageTravelDistance, maxCargoVolume } from 'app/gameConstants';
 import {getFuelByType, getOreByType} from 'app/state';
 import Random from 'app/utils/Random';
 import { asteroidSizes, asteroidCompositions, fuelModifiers } from  'app/asteroid';
@@ -61,10 +61,10 @@ function determineCellResource(asteroidType: AsteroidComposition, relativeDepth:
                                fuelMod: FuelResourceModifier|null): OreType|FuelType|null {
     const resources: Array<FuelType|OreType> = Object.keys(asteroidType.resources) as (FuelType|OreType)[];
     for (let resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
-        const rng = Math.random();
-        if (asteroidType.resources && rng < asteroidType.resources[resources[resourceIndex]]! * relativeDepth) {
+        const resourceChance = asteroidType.resources[resources[resourceIndex]]!;
+        if (asteroidType.resources && Math.random() < resourceChance * relativeDepth) {
             return <OreType> resources[resourceIndex]
-        } else if (fuelMod && rng < fuelMod.probability/resources.length * Math.sqrt(relativeDepth)) {
+        } else if (fuelMod && Math.random() < fuelMod.probability * resourceChance * Math.sqrt(relativeDepth)) {
             return fuelMod.type
         }
     }
@@ -74,15 +74,15 @@ function determineCellResource(asteroidType: AsteroidComposition, relativeDepth:
 function genResourceUnits(resource: OreType|FuelType): number {
     switch (resource) {
         case "iron":
-            return 15 + Math.floor(Math.random() * 300);
+            return 30 + Math.floor(Math.random() * 300);
         case "silver":
-            return 10 + Math.floor(Math.random() * 200);
+            return 20 + Math.floor(Math.random() * 200);
         case "gold":
-            return 7 + Math.floor(Math.random() * 140);
+            return 10 + Math.floor(Math.random() * 150);
         case "platinum":
-            return 4 + Math.floor(Math.random() * 100);
+            return 5 + Math.floor(Math.random() * 100);
         case "diamond":
-            return 3 + Math.floor(Math.random() * 70);
+            return 5 + Math.floor(Math.random() * 50);
         case "magicCrystal":
             return 1 + Math.floor(Math.random() * 30);
         case "uranium":
@@ -113,7 +113,7 @@ function pickFuelResourceModifier(): FuelResourceModifier|null {
     if (rng < 0.3) {
         const fuelOptions: string[] = Object.keys(fuelModifiers);
         let fuelIndex = 0;
-        while (fuelIndex < fuelOptions.length - 1 && Math.random() < 0.3) {
+        while (fuelIndex < fuelOptions.length - 1 && Math.random() < 0.4) {
             fuelIndex++;
         }
         return fuelModifiers[fuelOptions[fuelIndex]]
@@ -174,6 +174,9 @@ function generateContract(state: State, id : number, targetValue: number, astero
 
     //const mineralDistribution = Random.element(mineralDistributions);
 
+    let cost = -20000;
+    let totalVolume = 0;
+    let spawnedFuel = false;
     for (let i = 0; i < rows; i++) {
         grid[i] = [];
         const y = yRadius - 0.5 - i;
@@ -201,8 +204,13 @@ function generateContract(state: State, id : number, targetValue: number, astero
             };
             let cellResource = determineCellResource(asteroidType, percentDepth, fuelModifier);
             if (cellResource) {
+                if (oreMapping[cellResource].type === 'fuel') {
+                    spawnedFuel = true;
+                }
                 newCell.resourceType = cellResource;
                 newCell.resourceUnits = genResourceUnits(newCell.resourceType);
+                cost += oreMapping[cellResource].unitCost * newCell.resourceUnits * (0.3 + 0.2 * Math.random()) * ((1 - 0.6 * percentDepth) ** 2);
+                totalVolume += newCell.resourceUnits;
                 newCell.resourceDurability = oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
                 newCell.durability += newCell.resourceDurability;
             }
@@ -217,16 +225,21 @@ function generateContract(state: State, id : number, targetValue: number, astero
             grid[i][j] = newCell;
         }
     }
+    //let cost = Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5);
+    // Apply the fuel prefix and cost modifier if fuel spawned somewhere.
     let fuelModifierPrefix: string = '';
-    if (fuelModifier) {
+    if (fuelModifier && spawnedFuel) {
         fuelModifierPrefix = fuelModifier.prefix;
+    }
+    if (totalVolume > maxCargoVolume) {
+        cost *= maxCargoVolume / totalVolume;
     }
 
     return {
         id,
         name: `${fuelModifierPrefix} ${asteroidSize.prefix} ${asteroidType.name}`.trim(),
         grid,
-        cost: Math.floor(targetValue * (0.9 + 0.2 * Math.random()) / 5) * asteroidSize.costMultiplier * (fuelModifier?.costMultiplier || 1),
+        cost: Math.floor(Math.max(4500 + 1000 * Math.random(), cost)),
         distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
         cargo: [],
         // This should be practically infinite.
@@ -254,5 +267,8 @@ export function generateContractList(state: State, amount: number): Contract[] {
     }
     // Sort and return 1 in every 5 contracts so we get an interesting spread.
     contracts.sort((A, B) => A.cost - B.cost);
-    return contracts.filter((contract, i) => (i % 5) === 0);
+    return contracts.filter((contract, i) => (i % 5) === 0).map((contract, i) => ({
+        ...contract,
+        id: i,
+    }));
 }

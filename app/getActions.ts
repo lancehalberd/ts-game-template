@@ -23,8 +23,9 @@ export function getGetActions(state: State) {
             const cell = state.currentContract?.grid?.[y]?.[x] || null;
             return cell ? {...cell} : cell;
         },
-        getMiningTool(toolType: ToolType) {
-            return {...state.currentShip?.cargo.find(cargo => cargo.cargoType === toolType)};
+        getMiningTool(toolType: ToolType): DiggingTool | null {
+            const tool = state.currentShip?.cargo.find(cargo => cargo.cargoType === toolType) as DiggingTool;
+            return tool ? {...tool} : null;
         },
         getStationState() {
             return copyStationState(state);
