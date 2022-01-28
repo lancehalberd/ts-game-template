@@ -64,7 +64,7 @@ function determineCellResource(asteroidType: AsteroidComposition, relativeDepth:
         const rng = Math.random();
         if (asteroidType.resources && rng < asteroidType.resources[resources[resourceIndex]]! * relativeDepth) {
             return <OreType> resources[resourceIndex]
-        } else if (fuelMod && rng < fuelMod.probability * Math.sqrt(relativeDepth)) {
+        } else if (fuelMod && rng < fuelMod.probability/resources.length * Math.sqrt(relativeDepth)) {
             return fuelMod.type
         }
     }
