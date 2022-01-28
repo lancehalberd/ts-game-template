@@ -28,7 +28,7 @@ function requireAtContract(state: State) {
     return {contract, ship};
 }
 
-function mineCell(state: State, contract: Contract, x: number, y: number, miningPower: number) {
+function mineCell(state: State, contract: Contract, x: number, y: number, miningPower: number): OreType | FuelType | undefined {
     const cell = contract.grid[y]?.[x];
     // Explosives will often hit empty cells, we just ignore them.
     if (!cell) {
@@ -44,6 +44,7 @@ function mineCell(state: State, contract: Contract, x: number, y: number, mining
     if (cell.durability <= 0) {
         contract.grid[y][x] = null;
     }
+    return cell.resourceType;
 }
 
 export function getMiningApi(state: State) {
@@ -84,9 +85,11 @@ export function getMiningApi(state: State) {
                     }
                 }
             } else {
-                mineCell(state, contract, x, y, tool.miningPower);
+                const resourceType = mineCell(state, contract, x, y, tool.miningPower);
+                if (resourceType) {
+                    moveAllCargo(state, contract, ship, resourceType);
+                }
             }
-            moveAllCargo(state, contract, ship);
             advanceTimer(state, 0.1);
             tool.remainingUses--;
             if (tool.remainingUses <= 0) {

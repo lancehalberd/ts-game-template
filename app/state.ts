@@ -187,7 +187,8 @@ export function moveCargo(
 export function moveAllCargo(
     state: State,
     source: CargoStorage,
-    target: CargoStorage
+    target: CargoStorage,
+    cargoType?: CargoType
 ) {
     // Do nothing if the source and target are not distinct.
     if (source === target) {
@@ -196,6 +197,9 @@ export function moveAllCargo(
     let emptySpace = getEmptyCargoSpace(target);
     for (let i = 0; i < source.cargo.length; i++) {
         const cargo = source.cargo[i];
+        if (cargoType && cargoType !== cargo.cargoType) {
+            continue;
+        }
         let unitsToMove = Math.min(
             cargo.units,
             emptySpace / cargo.unitVolume

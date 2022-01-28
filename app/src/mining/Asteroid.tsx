@@ -112,9 +112,16 @@ const Asteroid = () => {
         const fuelToBurn = getTotalShipFuel(gameState.currentShip!);
         const startTime = gameState.time;
         const simulateApi = gameApi.simulate();
-        simulateApi.returnToStation(fuelToBurn, { ignoreLongTravelTime: true });
+        try {
+            simulateApi.returnToStation(fuelToBurn, { ignoreLongTravelTime: true, ignoreDebtInterest: true });
+        } catch {
+            return {
+                travelTime: '',
+                fuelToBurn,
+            };
+        }
         return {
-            travelTime: Math.floor(simulateApi!.state!.time - startTime),
+            travelTime: `${Math.floor(simulateApi!.state!.time - startTime)} days`,
             fuelToBurn,
         };
     }, [gameApi, gameState]);
@@ -171,14 +178,14 @@ const Asteroid = () => {
                                 refreshGameState();
                             }}
                         />
-                        <div>
-                            <h2>Time to Return: {travelTime} days</h2>
+                        { travelTime && <div>
+                            <h2>Time to Return: {travelTime}</h2>
                             <div className="action-buttons">
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     onClick={() => {
-                                        gameApi.returnToStation(fuelToBurn);
+                                        gameApi.returnToStation(fuelToBurn, { ignoreDebtInterest: true, ignoreLongTravelTime: true });
                                         refreshGameState();
                                         setStationStep('rentShip');
                                     }}
@@ -187,6 +194,13 @@ const Asteroid = () => {
                                 </Button>
                             </div>
                         </div>
+                        }
+                        { !travelTime &&
+                            <div>
+                                <h2>Stranded</h2>
+                                <p>Add fuel to cargo or refresh page to start over :(</p>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
