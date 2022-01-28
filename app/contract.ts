@@ -209,7 +209,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
                 }
                 newCell.resourceType = cellResource;
                 newCell.resourceUnits = genResourceUnits(newCell.resourceType);
-                cost += oreMapping[cellResource].unitCost * newCell.resourceUnits * 0.5 * ((1 - 0.6 * percentDepth) ** 2);
+                cost += oreMapping[cellResource].unitCost * newCell.resourceUnits * (0.3 + 0.2 * Math.random()) * ((1 - 0.6 * percentDepth) ** 2);
                 totalVolume += newCell.resourceUnits;
                 newCell.resourceDurability = oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
                 newCell.durability += newCell.resourceDurability;
@@ -239,7 +239,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
         id,
         name: `${fuelModifierPrefix} ${asteroidSize.prefix} ${asteroidType.name}`.trim(),
         grid,
-        cost: Math.floor(Math.max(5000, cost)),
+        cost: Math.floor(Math.max(4500 + 1000 * Math.random(), cost)),
         distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
         cargo: [],
         // This should be practically infinite.
