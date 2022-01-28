@@ -95,7 +95,10 @@ const PreviewTrip = () => {
     };
 
     const handleEmbarkClick = () => {
-        gameApi.travelToContract(ship.shipType, fuelBurnUnits);
+        gameApi.travelToContract(ship.shipType, fuelBurnUnits, {
+            ignoreDebtInterest: true,
+            ignoreLongTravelTime: true,
+        });
         refreshGameState();
     };
 

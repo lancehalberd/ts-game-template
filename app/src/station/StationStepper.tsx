@@ -52,8 +52,6 @@ export default function StationStepper() {
         setActiveStep(stepIndex);
     }, [gameState.currentStationStep]);
 
-    console.log('CURRENT STEP: ', gameState.currentStationStep);
-
     React.useEffect(() => {
         if (gameState.currentContract) {
             setCompleted({ ...completed, 0: true });

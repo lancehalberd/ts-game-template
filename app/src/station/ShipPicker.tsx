@@ -66,6 +66,18 @@ const ShipPicker = () => {
     const [selectedShip, setSelectedShip] = React.useState<Ship>();
     const [duration, setDuration] = React.useState(20);
 
+    React.useEffect(() => {
+        const stationShip = gameState.station.ships[0];
+        if (
+            stationShip &&
+            stationShip.isRented &&
+            gameState.currentStationStep === 'rentShip'
+        ) {
+            // setHasPreSelectedShip(true);
+            setSelectedShip(stationShip);
+        }
+    }, [gameState.station.ships]);
+
     const myShip: Ship | undefined =
         selectedShip &&
         gameState.station.ships.find(
@@ -237,10 +249,12 @@ const ShipPicker = () => {
                                 </Button>
                             )}
                         </Stack>
-                        <p>
-                            Choose the desired ship for this Contract. Then,
-                            outfit it!
-                        </p>
+                        {!myShip?.isRented && !myShip?.isOwned && (
+                            <p>
+                                Choose the desired ship for this Contract. Then,
+                                outfit it!
+                            </p>
+                        )}
                     </div>
                 </>
             )}
