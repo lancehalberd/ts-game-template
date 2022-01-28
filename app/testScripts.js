@@ -391,4 +391,4 @@ function runBestContract(api, maxContractIndex, { debugActions, debugAsteroid, d
 //startContract(gameApi, 0, { debugAsteroid: false, debugCargo: false });refreshReact();
 
 //runBestContract(gameApi, 10, { debugAsteroid: false, debugCargo: false });refreshReact();
-runBestContract(gameApi, 10, { debugActions: true, debugResults: false, debugAsteroid: false, debugCargo: false });refreshReact();
+//runBestContract(gameApi, 10, { debugActions: true, debugResults: false, debugAsteroid: false, debugCargo: false });refreshReact();
