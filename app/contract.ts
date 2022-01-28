@@ -209,7 +209,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
                 }
                 newCell.resourceType = cellResource;
                 newCell.resourceUnits = genResourceUnits(newCell.resourceType);
-                cost += oreMapping[cellResource].unitCost * newCell.resourceUnits * 0.6 * (1 - 0.6 * percentDepth) ** 2;
+                cost += oreMapping[cellResource].unitCost * newCell.resourceUnits * 0.5 * ((1 - 0.6 * percentDepth) ** 2);
                 totalVolume += newCell.resourceUnits;
                 newCell.resourceDurability = oreMapping[newCell.resourceType].miningDurabilityPerUnit * newCell.resourceUnits;
                 newCell.durability += newCell.resourceDurability;
