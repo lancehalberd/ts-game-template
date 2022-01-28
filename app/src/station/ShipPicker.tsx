@@ -63,15 +63,13 @@ const DaySlider = ({
 const ShipPicker = () => {
     const { gameState, gameApi, refreshGameState, setStationStep, stationStep } =
         React.useContext(GameContext);
-    const [selectedShip, setSelectedShip] = React.useState<Ship>();
+    const [selectedShip, setSelectedShip] = React.useState<Ship>(gameState.content.ships[0]);
     const [duration, setDuration] = React.useState(20);
 
     React.useEffect(() => {
         const stationShip = gameState.station.ships[0];
         if (
-            stationShip &&
-            stationShip.isRented &&
-            stationStep === 'rentShip'
+            stationShip && stationStep === 'rentShip'
         ) {
             // setHasPreSelectedShip(true);
             setSelectedShip(stationShip);
@@ -216,7 +214,7 @@ const ShipPicker = () => {
                                     Buy This Ship
                                 </Button>
                             )}
-                            {myShip?.isRented && (
+                            {myShip?.isRented && (myShip.returnTime! > gameState.time) && (
                                 <Button
                                     variant="contained"
                                     size="large"

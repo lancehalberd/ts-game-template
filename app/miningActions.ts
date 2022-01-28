@@ -8,6 +8,7 @@ import {
     getFuelByType,
     getToolFromStorage,
     moveCargo,
+    moveAllCargo,
 } from 'app/state';
 
 function requireAtContract(state: State) {
@@ -85,6 +86,7 @@ export function getMiningApi(state: State) {
             } else {
                 mineCell(state, contract, x, y, tool.miningPower);
             }
+            moveAllCargo(state, contract, ship);
             advanceTimer(state, 0.1);
             tool.remainingUses--;
             if (tool.remainingUses <= 0) {

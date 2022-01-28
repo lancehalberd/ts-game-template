@@ -33,7 +33,7 @@ const ContractDetailItem = ({
 const ContractPicker = () => {
     const { gameState, gameApi, refreshGameState, setStationStep } =
         React.useContext(GameContext);
-    const [selectedContract, setSelectedContract] = React.useState<Contract | undefined>();
+    const [selectedContract, setSelectedContract] = React.useState<Contract>(gameState.station.availableContracts[0]);
 
     const handleContractClick = (contract: Contract) => {
         setSelectedContract(contract);
@@ -79,7 +79,7 @@ const ContractPicker = () => {
                     onClick={() => {
                         gameApi.rest();
                         refreshGameState();
-                        setSelectedContract(undefined);
+                        setSelectedContract(gameApi.getContract(0));
                     } }
                 >
                     Wait for New Contracts

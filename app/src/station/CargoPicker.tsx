@@ -89,14 +89,30 @@ const CargoPicker = () => {
     const [tabIndex, setTabIndex] = React.useState(0);
     const { gameState, gameApi, refreshGameState, setStationStep } =
         React.useContext(GameContext);
-    const [selectedItem, setSelectedItem] = React.useState<Cargo>();
+    const [selectedItem, setSelectedItem] = React.useState<Cargo | undefined>(gameState.content.diggingTools[0]);
     const currentShip = gameState.station.ships[0];
     const [fuelUnits, setFuelUnits] =
         React.useState<number>(DEFAULT_FUEL_AMOUNT);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
-        setSelectedItem(undefined);
+        switch (newValue) {
+            case 0:
+                setSelectedItem(gameState.content.diggingTools[0]);
+                break;
+            case 1:
+                if (currentShip) {
+                    setSelectedItem(gameState.content.fuels.find(fuel => fuel.cargoType === currentShip.fuelType));
+                } else {
+                    setSelectedItem(undefined);
+                }
+                break;
+            case 2:
+                setSelectedItem(gameState.content.ores[0]);
+                break;
+            default:
+                setSelectedItem(undefined);
+        }
     };
 
     const handleItemClick = (item: Cargo) => {

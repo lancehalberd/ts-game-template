@@ -105,9 +105,8 @@ const Storage = ({
 const Asteroid = () => {
     const { gameApi, gameState, refreshGameState, setStationStep } =
         React.useContext(GameContext);
-    const [selectedToolType, setSelectedToolType] = React.useState(
-        undefined as ToolType | undefined
-    );
+    const tools = gameState.currentShip!.cargo.filter(cargo => cargo.type === 'tool') as DiggingTool[];
+    const [selectedToolType, setSelectedToolType] = React.useState<ToolType | undefined>(tools[0]?.cargoType);
 
     const { fuelToBurn, travelTime } = React.useMemo(() => {
         const fuelToBurn = getTotalShipFuel(gameState.currentShip!);

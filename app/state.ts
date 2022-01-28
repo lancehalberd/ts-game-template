@@ -177,9 +177,47 @@ export function moveCargo(
                 cargo.units -= unitsToMove;
                 emptySpace -= unitsToMove * cargo.unitVolume;
                 gainResource(state, cargoType, unitsToMove, target);
-                if (cargo.units <= 0) {
+                if (cargo.units < 0.1) {
                     source.cargo.splice(i--, 1);
                 }
+            }
+        }
+    }
+}
+export function moveAllCargo(
+    state: State,
+    source: CargoStorage,
+    target: CargoStorage
+) {
+    // Do nothing if the source and target are not distinct.
+    if (source === target) {
+        return;
+    }
+    let emptySpace = getEmptyCargoSpace(target);
+    for (let i = 0; i < source.cargo.length; i++) {
+        const cargo = source.cargo[i];
+        let unitsToMove = Math.min(
+            cargo.units,
+            emptySpace / cargo.unitVolume
+        );
+        if (cargo.type === 'tool') {
+            unitsToMove = Math.floor(unitsToMove);
+        }
+        // Not enough room to move any more cargo to the target storage, so we stop.
+        if (unitsToMove <= 0) {
+            return;
+        }
+        if (cargo.type === 'tool') {
+            // Tools are discrete objects that must be moved in entirety.
+            // This is because they have unique state 'remainingUses' tracked for each object.
+            source.cargo.splice(i--, 1);
+            target.cargo.push(cargo);
+        } else {
+            cargo.units -= unitsToMove;
+            emptySpace -= unitsToMove * cargo.unitVolume;
+            gainResource(state, cargo.cargoType, unitsToMove, target);
+            if (cargo.units < 0.1) {
+                source.cargo.splice(i--, 1);
             }
         }
     }
