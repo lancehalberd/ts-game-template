@@ -79,7 +79,6 @@ declare global {
     interface FuelResourceModifier {
         prefix: string
         probability: number
-        costMultiplier: number
         type: FuelType
     }
 

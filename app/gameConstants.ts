@@ -19,6 +19,8 @@ export const baseRentalRate = 0.005;
 export const baseMarkup = 1.05;
 export const baseMarkdown = 0.95;
 
+export const maxCargoVolume = 100000;
+
 
 /*
 1e9 distance in 10 days

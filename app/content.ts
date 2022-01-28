@@ -91,7 +91,7 @@ const diamond: Ore = {
     type: 'ore',
     cargoType: 'diamond',
     name: 'Diamond',
-    unitCost: 700,
+    unitCost: 3000,
     unitMass: 3.5, // 3.53 g/cm^3
     unitVolume: 1,
     miningDurabilityPerUnit: 30,
@@ -101,10 +101,10 @@ const magicCrystal: Ore = {
     type: 'ore',
     cargoType: 'magicCrystal',
     name: 'Magic Crystal',
-    unitCost: 15000,
+    unitCost: 50000,
     unitMass: 50, // diamond is already very light, so let's make magic crystals heavy.
     unitVolume: 1,
-    miningDurabilityPerUnit: 50,
+    miningDurabilityPerUnit: 40,
     units: 0,
 };
 

@@ -7,13 +7,13 @@ export const asteroidSizes: Array<AsteroidSize> = [
     },{
         // medium
         prefix: '',
-        "costMultiplier": 2.5,
-        "sizeCoefficient": 20,
+        "costMultiplier": 2,
+        "sizeCoefficient": 15,
     },{
         // large
         prefix: 'Large',
-        "costMultiplier": 6,
-        "sizeCoefficient": 40
+        "costMultiplier": 4,
+        "sizeCoefficient": 30
     }
 ];
 
@@ -157,11 +157,11 @@ const platinumCompositions: AsteroidComposition[] = [{
 }];
 
 const diamondCompositions: AsteroidComposition[] = [{
-    name: 'Sparkling Meteor',
+    name: 'Glinting Meteor',
     "probability": 0.80,
     "approximate_cost": 151000,
     "resources": {
-        "diamond": 0.02,
+        "diamond": 0.05,
         "platinum": 0.03,
         "gold": 0.03,
         "silver": 0.05,
@@ -172,7 +172,7 @@ const diamondCompositions: AsteroidComposition[] = [{
     "probability": 0.17,
     "approximate_cost": 295000,
     "resources": {
-        "diamond": 0.05,
+        "diamond": 0.1,
         "platinum": 0.09,
         "gold": 0.08,
         "silver": 0.11,
@@ -259,20 +259,17 @@ asteroidCompositions.set("magic_asteroid", magicComposition);
 export const fuelModifiers: {[index: string]: FuelResourceModifier} = {
     'uranium': {
         prefix: 'Nuclear',
-        probability: 0.08,
-        costMultiplier: 3,
+        probability: 0.5,
         type: 'uranium'
     },
     'tritium': {
         prefix: 'Heavy',
-        probability: 0.06,
-        costMultiplier: 5,
+        probability: 0.25,
         type: 'tritium'
     },
     'magicFuel': {
         prefix: 'Enchanted',
-        probability: 0.04,
-        costMultiplier: 10,
+        probability: 0.05,
         type: 'magicFuel'
     },
 };
