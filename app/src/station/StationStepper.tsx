@@ -38,19 +38,10 @@ export const DetailItem = ({
 };
 
 export default function StationStepper() {
-    const { gameState, stationStep } = React.useContext(GameContext);
-    const [activeStep, setActiveStep] = React.useState(0);
+    const { gameState, stationStep, setStationStep } = React.useContext(GameContext);
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
     }>({});
-
-    React.useEffect(() => {
-        const activeItem = steps.find(
-            (step) => step.key === stationStep
-        );
-        const stepIndex = (activeItem && steps.indexOf(activeItem)) || 0;
-        setActiveStep(stepIndex);
-    }, [stationStep]);
 
     React.useEffect(() => {
         if (gameState.currentContract) {
@@ -74,28 +65,26 @@ export default function StationStepper() {
     };
 
     const handleStep = (step: number) => () => {
-        setActiveStep(step);
+        setStationStep(steps[step].key);
     };
 
     const handleReset = () => {
-        setActiveStep(0);
+        setStationStep(steps[0].key);
         setCompleted({});
     };
 
-    const getStepContent = (activeStep: number) => {
-        switch (activeStep) {
-            case 0:
+    const stepIndex = steps.findIndex(step => step.key === stationStep);
+
+    const getStepContent = () => {
+        switch (stationStep) {
+            case 'purchaseContract':
                 return <ContractPicker />;
-                break;
-            case 1:
+            case 'rentShip':
                 return <ShipPicker />;
-                break;
-            case 2:
+            case 'outfitShip':
                 return <CargoPicker />;
-                break;
-            case 3:
+            case 'previewTrip':
                 return <PreviewTrip />;
-                break;
             default:
                 return 'TBD';
         }
@@ -104,7 +93,7 @@ export default function StationStepper() {
     return (
         <div className="station-stepper">
             <Box sx={{ width: '100%' }}>
-                <Stepper nonLinear activeStep={activeStep}>
+                <Stepper nonLinear activeStep={stepIndex}>
                     {steps.map((stepItem, index) => (
                         <Step key={stepItem.label} completed={completed[index]}>
                             <StepButton
@@ -135,7 +124,7 @@ export default function StationStepper() {
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
-                            {getStepContent(activeStep)}
+                            {getStepContent()}
                         </React.Fragment>
                     )}
                 </div>
