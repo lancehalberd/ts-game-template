@@ -170,7 +170,7 @@ const Asteroid = () => {
                                     color="primary"
                                     onClick={() => {
                                         gameApi.returnToStation(fuelToBurn);
-                                        // setStationStep('rentShip');
+                                        gameApi.setStationStep('rentShip');
                                         refreshGameState();
                                     }}
                                 >

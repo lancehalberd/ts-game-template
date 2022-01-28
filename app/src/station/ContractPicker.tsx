@@ -12,6 +12,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import * as React from 'react';
 import { GameContext } from '../App';
 import AsteroidPane from '../mining/AsteroidPane';
+import { formatNumber } from 'app/utils/string';
 
 const ContractDetailItem = ({
     label,
@@ -28,7 +29,8 @@ const ContractDetailItem = ({
 };
 
 const ContractPicker = () => {
-    const { gameState, gameApi, refreshGameState } = React.useContext(GameContext);
+    const { gameState, gameApi, refreshGameState } =
+        React.useContext(GameContext);
     const [selectedContract, setSelectedContract] = React.useState<Contract>();
 
     const handleContractClick = (contract: Contract) => {
@@ -74,15 +76,17 @@ const ContractPicker = () => {
                     <div className="item-details">
                         <ContractDetailItem
                             label="Cost"
-                            value={selectedContract.cost}
+                            value={formatNumber(selectedContract.cost, true)}
                         />
                         <ContractDetailItem
                             label="Distance"
-                            value={selectedContract.distance}
+                            value={formatNumber(
+                                selectedContract.distance,
+                                false,
+                                true
+                            )}
                         />
-                        <AsteroidPane
-                            contract={selectedContract}
-                        />
+                        <AsteroidPane contract={selectedContract} />
                     </div>
                     <div className="select-item-pane">
                         <Button

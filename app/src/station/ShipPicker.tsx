@@ -17,6 +17,7 @@ import { baseMarkup, baseRentalRate } from 'app/gameConstants';
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
 import { getTotalShipFuel, getTotalShipTools } from 'app/state';
+import { formatNumber } from 'app/utils/string';
 
 const DaySlider = ({
     ship,
@@ -44,7 +45,7 @@ const DaySlider = ({
             </div>
             <div className="total-cost">
                 <strong>Total Cost:</strong>
-                {` ${totalCost}`}
+                {` ${formatNumber(totalCost, true)}`}
             </div>
             <Slider
                 aria-label="Fuel Units"
@@ -65,6 +66,18 @@ const ShipPicker = () => {
         React.useContext(GameContext);
     const [selectedShip, setSelectedShip] = React.useState<Ship>();
     const [duration, setDuration] = React.useState(20);
+
+    React.useEffect(() => {
+        const stationShip = gameState.station.ships[0];
+        if (
+            stationShip &&
+            stationShip.isRented &&
+            gameState.currentStationStep === 'rentShip'
+        ) {
+            // setHasPreSelectedShip(true);
+            setSelectedShip(stationShip);
+        }
+    }, [gameState.station.ships]);
 
     const myShip: Ship | undefined =
         selectedShip &&
@@ -142,18 +155,25 @@ const ShipPicker = () => {
                         />
                         <DetailItem
                             label="Cost"
-                            value={selectedShip.cost * baseMarkup}
+                            value={formatNumber(
+                                selectedShip.cost * baseMarkup,
+                                true
+                            )}
                         />
                         <DetailItem
                             label="Daily Rate"
-                            value={
-                                selectedShip.cost * baseRentalRate * baseMarkup
-                            }
+                            value={formatNumber(
+                                selectedShip.cost * baseRentalRate * baseMarkup,
+                                true
+                            )}
                         />
-                        <DetailItem label="Mass" value={selectedShip.mass} />
+                        <DetailItem
+                            label="Mass"
+                            value={formatNumber(selectedShip.mass)}
+                        />
                         <DetailItem
                             label="Cargo Space"
-                            value={selectedShip.cargoSpace}
+                            value={formatNumber(selectedShip.cargoSpace)}
                         />
                         <DetailItem
                             label="Fuel Type"
@@ -237,10 +257,12 @@ const ShipPicker = () => {
                                 </Button>
                             )}
                         </Stack>
-                        <p>
-                            Choose the desired ship for this Contract. Then,
-                            outfit it!
-                        </p>
+                        {!myShip?.isRented && !myShip?.isOwned && (
+                            <p>
+                                Choose the desired ship for this Contract. Then,
+                                outfit it!
+                            </p>
+                        )}
                     </div>
                 </>
             )}

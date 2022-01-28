@@ -1,7 +1,9 @@
-import { Button, Slider, Stack } from '@mui/material';
+import { Button, Card, Slider, Stack } from '@mui/material';
 import { getTotalShipFuel } from 'app/state';
+import { formatNumber } from 'app/utils/string';
 import * as React from 'react';
 import { GameContext } from '../App';
+import { MuiHeader } from '../mui';
 
 const MIN_FUEL_BURN = 10;
 
@@ -95,31 +97,52 @@ const PreviewTrip = () => {
     };
 
     const handleEmbarkClick = () => {
-        gameApi.travelToContract(ship.shipType, fuelBurnUnits);
+        gameApi.travelToContract(ship.shipType, fuelBurnUnits, {
+            ignoreDebtInterest: true,
+            ignoreLongTravelTime: true,
+        });
         refreshGameState();
     };
 
     return (
         <div className="preview-trip">
-            <h3>Distance to Asteroid:</h3>
-            {contract!.distance} meters
-            <h3>Fuel to Burn:</h3>
-            <Stack
-                spacing={2}
-                direction="row"
-                sx={{ mb: 1 }}
-                alignItems="center"
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '20px',
+                }}
             >
-                <h3 style={{ color: 'green' }}>{MIN_FUEL_BURN}</h3>
-                <FuelSlider
-                    maxAmount={shipFuelUnits}
-                    onChange={handleFuelChange}
-                    amount={fuelBurnUnits}
-                />
-                <h3 style={{ color: 'orange' }}>{shipFuelUnits} units</h3>
-            </Stack>
-            <h3>Time to Arrive:</h3>
-            {timeToTravel}
+                <Card>
+                    <MuiHeader variant="h5">Distance to Asteroid:</MuiHeader>
+                    <span>{formatNumber(contract!.distance, false, true)}</span>
+                </Card>
+
+                <Card>
+                    <MuiHeader variant="h5">Fuel to Burn:</MuiHeader>
+                    <Stack
+                        spacing={2}
+                        direction="row"
+                        sx={{ mb: 1 }}
+                        alignItems="center"
+                    >
+                        <h3 style={{ color: 'green' }}>{MIN_FUEL_BURN}</h3>
+                        <FuelSlider
+                            maxAmount={shipFuelUnits}
+                            onChange={handleFuelChange}
+                            amount={fuelBurnUnits}
+                        />
+                        <h3 style={{ color: 'orange' }}>
+                            {shipFuelUnits} units
+                        </h3>
+                    </Stack>
+                </Card>
+
+                <Card>
+                    <MuiHeader variant="h5">Time to Arrive:</MuiHeader>
+                    <span>{timeToTravel}</span>
+                </Card>
+            </div>
             <div className="action-buttons">
                 <Button
                     variant="contained"
