@@ -136,7 +136,7 @@ interface Props {
     contract: Contract;
     width?: number;
     height?: number;
-    onClickCell?: (x: number, y: number) => void;
+    onClickCell?: (x: number, y: number, event: React.MouseEvent) => void;
 }
 
 const AsteroidPane = ({
@@ -175,7 +175,7 @@ const AsteroidPane = ({
         [contract]
     );
     const handleClick = React.useCallback(
-        (event) => {
+        (event: React.MouseEvent) => {
             const canvas = canvasRef.current;
             if (!canvas || !onClickCell) {
                 return;
@@ -191,7 +191,7 @@ const AsteroidPane = ({
             const column = Math.floor((x - left) / cellSize);
             let cell = contract.grid[row]?.[column];
             if (cell?.durability) {
-                onClickCell(column, row);
+                onClickCell(column, row, event);
                 cell = gameApi.getMiningCell(column, row);
                 setTooltipText(getCellText(gameApi, cell));
             }

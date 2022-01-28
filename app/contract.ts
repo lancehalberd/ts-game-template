@@ -175,7 +175,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
         id,
         name: `${fuelModifierPrefix} ${asteroidSize.prefix} ${asteroidType.name}`.trim(),
         grid,
-        cost: Math.floor(Math.max(4500 + 1000 * Math.random(), cost - 30000)),
+        cost: Math.floor(Math.max(9000 + 2000 * Math.random(), cost - 100000)),
         distance: Math.floor(averageTravelDistance * distanceDifficulty * (0.9 + 0.2 * Math.random())),
         cargo: [],
         // This should be practically infinite.

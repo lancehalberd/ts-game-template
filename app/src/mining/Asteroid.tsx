@@ -135,9 +135,19 @@ const Asteroid = () => {
                     <div className="item-details">
                         <AsteroidPane
                             contract={gameState.currentContract!}
-                            onClickCell={(x, y) => {
+                            onClickCell={(x, y, event) => {
                                 if (selectedToolType) {
-                                    gameApi.dig(x, y, selectedToolType);
+                                    if (event.shiftKey) {
+                                        try {
+                                            for (let i = 0; i < 100; i++) {
+                                                gameApi.dig(x, y, selectedToolType);
+                                            }
+                                        } catch {
+
+                                        }
+                                    } else {
+                                        gameApi.dig(x, y, selectedToolType);
+                                    }
                                     refreshGameState();
                                 }
                             }}
