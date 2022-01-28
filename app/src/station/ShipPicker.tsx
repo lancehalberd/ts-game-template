@@ -16,7 +16,6 @@ import { baseMarkup, baseRentalRate } from 'app/gameConstants';
 
 import { GameContext } from '../App';
 import { DetailItem } from './StationStepper';
-import { getTotalShipFuel, getTotalShipTools } from 'app/state';
 import { formatNumber } from 'app/utils/string';
 
 const DaySlider = ({
