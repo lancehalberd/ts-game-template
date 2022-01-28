@@ -115,10 +115,7 @@ const ShipPicker = () => {
     };
 
     const hasSellableCargo = (ship: Ship | undefined): boolean => {
-        if (!ship) return false;
-        const fuelUnits = getTotalShipFuel(ship);
-        const toolCount = getTotalShipTools(ship);
-        return fuelUnits > 0 || toolCount > 0;
+        return !!ship?.cargo.length;
     };
 
     const visibleItems = gameState.content.ships;
@@ -251,6 +248,7 @@ const ShipPicker = () => {
                                 <Button
                                     variant="contained"
                                     size="large"
+                                    disabled={hasSellableCargo(myShip)}
                                     onClick={() => sellShip(selectedShip)}
                                 >
                                     Sell This Ship
