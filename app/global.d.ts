@@ -15,6 +15,8 @@ declare global {
         gameState: State;
         gameApi: GameApi;
         refreshGameState: () => void;
+        stationStep: StationStep;
+        setStationStep(step: StationStep): void;
     }
 
     type GameApi = {
@@ -52,7 +54,6 @@ declare global {
         atStation: boolean;
         currentContract?: Contract;
         currentShip?: Ship;
-        currentStationStep: StationStep;
     }
     // CargoStorage
     interface CargoStorage {

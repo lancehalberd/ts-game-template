@@ -104,10 +104,6 @@ function returnShip(state: State, ship: Ship, liquidateCargo = false) {
 
 export function getStationApi(state: State) {
     return {
-        setStationStep(stationStep: StationStep) {
-            requireAtStation(state);
-            state.currentStationStep = stationStep;
-        },
         purchaseShip(shipType: ShipType, { spendCredit = false } = {}) {
             requireAtStation(state);
             const ship = getShipByType(state, shipType);

@@ -61,7 +61,7 @@ const DaySlider = ({
 };
 
 const ShipPicker = () => {
-    const { gameState, gameApi, refreshGameState } =
+    const { gameState, gameApi, refreshGameState, setStationStep, stationStep } =
         React.useContext(GameContext);
     const [selectedShip, setSelectedShip] = React.useState<Ship>();
     const [duration, setDuration] = React.useState(20);
@@ -71,7 +71,7 @@ const ShipPicker = () => {
         if (
             stationShip &&
             stationShip.isRented &&
-            gameState.currentStationStep === 'rentShip'
+            stationStep === 'rentShip'
         ) {
             // setHasPreSelectedShip(true);
             setSelectedShip(stationShip);
@@ -94,6 +94,7 @@ const ShipPicker = () => {
             spendCredit: true,
         });
         refreshGameState();
+        setStationStep('outfitShip');
     };
     const returnRental = (ship: Ship) => {
         gameApi.returnShip(ship.shipType);
@@ -102,6 +103,7 @@ const ShipPicker = () => {
     const buyShip = (ship: Ship) => {
         gameApi.purchaseShip(ship.shipType, { spendCredit: true });
         refreshGameState();
+        setStationStep('outfitShip');
     };
     const sellShip = (ship: Ship) => {
         gameApi.sellShip(ship.shipType);

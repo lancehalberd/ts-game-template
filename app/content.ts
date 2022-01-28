@@ -414,7 +414,6 @@ export function generateInitialState(): State {
         // The current contract the player has taken,
         // contains the state of the current asteroid when mining.
         currentContract: undefined,
-        currentStationStep: 'purchaseContract',
     };
     // Populate the initial list of contracts.
     state.station.availableContracts = generateContractList(state, contractNumber);

@@ -185,7 +185,7 @@ function generateContract(state: State, id : number, targetValue: number, astero
 
 export function generateContractList(state: State, amount: number): Contract[] {
     const contracts: Contract[] = [];
-    for (let i = 0; i < amount * 5; i++) {
+    for (let i = 0; i < amount * 5 - 4; i++) {
         // effectively weighting asteroid sized to be 100:10:1 ratio for small to large asteroids
         let sizeIndex = 0;
         while (sizeIndex < asteroidSizes.length - 1 && Math.random() < 0.3) {

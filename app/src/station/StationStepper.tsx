@@ -38,7 +38,7 @@ export const DetailItem = ({
 };
 
 export default function StationStepper() {
-    const { gameState } = React.useContext(GameContext);
+    const { gameState, stationStep } = React.useContext(GameContext);
     const [activeStep, setActiveStep] = React.useState(0);
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
@@ -46,11 +46,11 @@ export default function StationStepper() {
 
     React.useEffect(() => {
         const activeItem = steps.find(
-            (step) => step.key === gameState.currentStationStep
+            (step) => step.key === stationStep
         );
         const stepIndex = (activeItem && steps.indexOf(activeItem)) || 0;
         setActiveStep(stepIndex);
-    }, [gameState.currentStationStep]);
+    }, [stationStep]);
 
     React.useEffect(() => {
         if (gameState.currentContract) {

@@ -87,7 +87,7 @@ const FuelSlider = ({
 const CargoPicker = () => {
     const DEFAULT_FUEL_AMOUNT = 20;
     const [tabIndex, setTabIndex] = React.useState(0);
-    const { gameState, gameApi, refreshGameState } =
+    const { gameState, gameApi, refreshGameState, setStationStep } =
         React.useContext(GameContext);
     const [selectedItem, setSelectedItem] = React.useState<Cargo>();
     const currentShip = gameState.station.ships[0];
@@ -113,17 +113,24 @@ const CargoPicker = () => {
                     gameApi.purchaseTool(item.cargoType, 1, shipType, {
                         spendCredit: true,
                     });
-                    break;
+                    refreshGameState();
+                    return;
                 case 'fuel':
                     gameApi.purchaseFuel(shipType, fuelUnits, {
                         spendCredit: true,
                     });
-                    break;
+                    const diggingTool = currentShip?.cargo.find(
+                        (cargoItem) => cargoItem.type === 'tool'
+                    );
+                    if (diggingTool) {
+                        setStationStep('previewTrip');
+                    }
+                    refreshGameState();
+                    return;
                 case 'ore':
                     console.log('ERROR: Cannot purchase Ore');
-                    break;
+                    return;
             }
-            refreshGameState();
         }
     };
 

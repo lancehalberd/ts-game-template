@@ -12,6 +12,7 @@ export const useGameContext = (): IGameContext => {
 const App = () => {
     const [gameApi, setGameApi] = React.useState(window.gameApi!);
     const [gameState, setGameState] = React.useState(gameApi.getState());
+    const [stationStep, setStationStep] = React.useState('purchaseContract' as StationStep);
     // This takes `newGameApi` as an argument to allow attaching a simulated state to the UI.
     window.refreshReact = (newGameApi?: GameApi) => {
         if (newGameApi) {
@@ -26,7 +27,7 @@ const App = () => {
     }, [gameApi]);
 
     return (
-        <GameContext.Provider value={{ gameState, gameApi, refreshGameState }}>
+        <GameContext.Provider value={{ gameState, gameApi, refreshGameState, stationStep, setStationStep }}>
             {gameState.atStation ? <SpaceStation /> : <Asteroid />}
         </GameContext.Provider>
     );

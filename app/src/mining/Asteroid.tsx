@@ -103,7 +103,7 @@ const Storage = ({
 };
 
 const Asteroid = () => {
-    const { gameApi, gameState, refreshGameState } =
+    const { gameApi, gameState, refreshGameState, setStationStep } =
         React.useContext(GameContext);
     const [selectedToolType, setSelectedToolType] = React.useState(
         undefined as ToolType | undefined
@@ -180,8 +180,8 @@ const Asteroid = () => {
                                     color="primary"
                                     onClick={() => {
                                         gameApi.returnToStation(fuelToBurn);
-                                        gameApi.setStationStep('rentShip');
                                         refreshGameState();
+                                        setStationStep('rentShip');
                                     }}
                                 >
                                     Return to Station

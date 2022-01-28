@@ -9,6 +9,8 @@ import {
 } from '@mui/material';
 import ArticleIcon from '@mui/icons-material/Article';
 
+import { contractNumber } from 'app/gameConstants';
+
 import * as React from 'react';
 import { GameContext } from '../App';
 import AsteroidPane from '../mining/AsteroidPane';
@@ -29,9 +31,9 @@ const ContractDetailItem = ({
 };
 
 const ContractPicker = () => {
-    const { gameState, gameApi, refreshGameState } =
+    const { gameState, gameApi, refreshGameState, setStationStep } =
         React.useContext(GameContext);
-    const [selectedContract, setSelectedContract] = React.useState<Contract>();
+    const [selectedContract, setSelectedContract] = React.useState<Contract | undefined>();
 
     const handleContractClick = (contract: Contract) => {
         setSelectedContract(contract);
@@ -40,9 +42,10 @@ const ContractPicker = () => {
     const handleContractSelect = (contract: Contract) => {
         gameApi.purchaseContract(contract.id, { spendCredit: true });
         refreshGameState();
+        setStationStep('rentShip');
     };
 
-    const visibleContracts = gameState.station.availableContracts.slice(0, 10);
+    const visibleContracts = gameState.station.availableContracts.slice(0, contractNumber);
 
     return (
         <div className="item-picker">
@@ -70,6 +73,17 @@ const ContractPicker = () => {
                         );
                     })}
                 </List>
+                <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => {
+                        gameApi.rest();
+                        refreshGameState();
+                        setSelectedContract(undefined);
+                    } }
+                >
+                    Wait for New Contracts
+                </Button>
             </div>
             {selectedContract && (
                 <>
